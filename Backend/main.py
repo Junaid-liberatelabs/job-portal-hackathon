@@ -17,6 +17,7 @@ from app.api.router import router as api_router
 from app.core.config import settings
 # from app.core.exceptions import register_exception_handlers
 from app.core.logging_config import get_logger, setup_logging
+from app.db.init_db import init_db
 # from langgraph.checkpoint.memory import MemorySaver
 # from saaslab.db.base import Base
 # from saaslab.db.session import sync_engine
@@ -46,7 +47,7 @@ async def lifespan(app: FastAPI):
     # app.state.checkpointer = MemorySaver()
     logger.info("Starting up application...")
     # Example: Initialize database connections, load models, etc.
-    # await init_db()
+    await init_db()
     
     
 

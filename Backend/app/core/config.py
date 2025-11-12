@@ -25,24 +25,12 @@ class Settings(BaseSettings):
     # Server settings
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    # CORS settings
-    # Security settings
-    # SECRET_KEY: str
-    # ALGORITHM: str = "HS256"
-    # ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # 30 minutes
-    # REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # 7 days
 
-    # # LLM Settings
-    # OPENAI_API_KEY: Optional[str] = None
-    # ANTHROPIC_API_KEY: Optional[str] = None
-    # GOOGLE_API_KEY: Optional[str] = None
-    # PPLX_API_KEY: Optional[str] = None
-    # SERPER_DEV_API_KEY: Optional[str] = None
 
-    # LANGCHAIN_TRACING_V2: str = "true"
-    # LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
-    # LANGCHAIN_API_KEY: Optional[str] = None
-    # LANGCHAIN_PROJECT: Optional[str] = None
+    # Security
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
 
 
