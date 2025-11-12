@@ -31,7 +31,8 @@ async def create_resource(resource: ResourceCreate, db: Session = Depends(get_db
     - **tags**: List of tags for categorization (optional)
     """
     try:
-        resource_data = resource.model_dump()
+        # Use mode='json' to convert HttpUrl to string
+        resource_data = resource.model_dump(mode='json')
         new_resource = crud_create_resource(db, resource_data)
         return new_resource
     except Exception as e:
@@ -95,7 +96,8 @@ async def update_resource(
     - **resource_id**: The unique identifier of the resource to update
     - All fields are optional - only provided fields will be updated
     """
-    update_data = resource.model_dump(exclude_unset=True)
+    # Use mode='json' to convert HttpUrl to string
+    update_data = resource.model_dump(exclude_unset=True, mode='json')
     
     if not update_data:
         raise HTTPException(
