@@ -24,6 +24,7 @@ def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
     - **education_level**: User's education level
     - **preferred_career_track**: User's preferred career path
     - **password**: Secure password (will be hashed)
+    - **skills**: Optional list of skills (defaults to empty list)
     """
     # Check if user already exists
     existing_user = get_user_by_email(db, email=user_data.email)
@@ -58,7 +59,7 @@ def login(
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": user.email, "user_id": user.id}, expires_delta=access_token_expires
     )
 
     return Token(access_token=access_token, token_type="bearer")

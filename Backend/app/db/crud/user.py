@@ -12,7 +12,7 @@ def get_user_by_email(db: Session, email: str):
 
 
 def create_user(db: Session, user: UserRegister):
-    """Create a new user"""
+    """Create a new user with optional skills"""
     hashed_password = get_password_hash(user.password)
 
     db_user = User(
@@ -22,7 +22,7 @@ def create_user(db: Session, user: UserRegister):
         education_level=user.education_level,
         preferred_career_track=user.preferred_career_track,
         hashed_password=hashed_password,
-        skills=getattr(user, "skills", []),  # Handle skills if provided
+        skills=user.skills,  # Skills from UserRegister schema (defaults to empty list)
     )
 
     db.add(db_user)

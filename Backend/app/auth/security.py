@@ -3,9 +3,15 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from app.core.config import settings
 from pwdlib import PasswordHash
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 
 # Initialize password hasher with Argon2
 pwd_context = PasswordHash.recommended()
+
+# OAuth2 scheme for token authentication
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -29,3 +35,6 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     return encoded_jwt
+
+
+
