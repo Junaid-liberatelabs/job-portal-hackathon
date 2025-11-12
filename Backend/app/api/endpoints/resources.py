@@ -1,32 +1,86 @@
-from datetime import timedelta
-from typing import Annotated
+from typing import List, Optional
 
+from app.db.crud.resources import (
+    create_resource as crud_create_resource,
+    delete_resource as crud_delete_resource,
+    get_resource_by_id,
+    get_resources,
+    update_resource as crud_update_resource,
+)
 from app.db.session import get_db
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.schemas.resources import (ResourceCreate, ResourceInDB,
-                                               ResourceResponse,
-                                               ResourceUpdate)
+from app.api.schemas.resources import (
+    ResourceCreate,
+    ResourceResponse,
+    ResourceUpdate,
+)
 
 router = APIRouter()
 
 
-@router.post("/", response_model=ResourceResponse)
+@router.post("/", response_model=ResourceResponse, status_code=status.HTTP_201_CREATED)
 async def create_resource(resource: ResourceCreate, db: Session = Depends(get_db)):
-    new_resource = ResourceInDB(**resource.dict())
-    db.add(new_resource)
-    db.commit()
-    db.refresh(new_resource)
-    return new_resource
+    """
+    Create a new learning resource.
+    
+    - **name**: Resource name (required)
+    - **description**: Resource description (required)
+    - **url**: Resource URL (required, must be valid URL)
+    - **tags**: List of tags for categorization (optional)
+    """
+    try:
+        resource_data = resource.model_dump()
+        new_resource = crud_create_resource(db, resource_data)
+        return new_resource
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to create resource: {str(e)}",
+        )
+
+
+@router.get("/", response_model=List[ResourceResponse])
+async def list_resources(
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum number of records to return"),
+    tags: Optional[str] = Query(None, description="Comma-separated list of tags to filter by"),
+    db: Session = Depends(get_db),
+):
+    """
+    Get a list of learning resources with optional filtering.
+    
+    - **skip**: Number of records to skip (for pagination)
+    - **limit**: Maximum number of records to return (default: 100, max: 1000)
+    - **tags**: Comma-separated list of tags (e.g., "Python,Web Development")
+    """
+    # Parse tags if provided
+    tags_list = None
+    if tags:
+        tags_list = [t.strip() for t in tags.split(",") if t.strip()]
+    
+    resources = get_resources(
+        db=db,
+        skip=skip,
+        limit=limit,
+        tags=tags_list,
+    )
+    return resources
 
 
 @router.get("/{resource_id}", response_model=ResourceResponse)
 async def get_resource(resource_id: str, db: Session = Depends(get_db)):
-    resource = db.query(ResourceInDB).filter(ResourceInDB.id == resource_id).first()
+    """
+    Get a specific learning resource by ID.
+    
+    - **resource_id**: The unique identifier of the resource
+    """
+    resource = get_resource_by_id(db, resource_id)
     if not resource:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resource not found",
         )
     return resource
 
@@ -35,25 +89,44 @@ async def get_resource(resource_id: str, db: Session = Depends(get_db)):
 async def update_resource(
     resource_id: str, resource: ResourceUpdate, db: Session = Depends(get_db)
 ):
-    db_resource = db.query(ResourceInDB).filter(ResourceInDB.id == resource_id).first()
-    if not db_resource:
+    """
+    Update an existing learning resource.
+    
+    - **resource_id**: The unique identifier of the resource to update
+    - All fields are optional - only provided fields will be updated
+    """
+    update_data = resource.model_dump(exclude_unset=True)
+    
+    if not update_data:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No fields to update",
         )
-    for key, value in resource.dict().items():
-        setattr(db_resource, key, value)
-    db.commit()
-    db.refresh(db_resource)
-    return db_resource
+    
+    updated_resource = crud_update_resource(db, resource_id, update_data)
+    
+    if not updated_resource:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resource not found",
+        )
+    
+    return updated_resource
 
 
-@router.delete("/{resource_id}")
+@router.delete("/{resource_id}", status_code=status.HTTP_200_OK)
 async def delete_resource(resource_id: str, db: Session = Depends(get_db)):
-    db_resource = db.query(ResourceInDB).filter(ResourceInDB.id == resource_id).first()
-    if not db_resource:
+    """
+    Delete a learning resource.
+    
+    - **resource_id**: The unique identifier of the resource to delete
+    """
+    success = crud_delete_resource(db, resource_id)
+    
+    if not success:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resource not found",
         )
-    db.delete(db_resource)
-    db.commit()
+    
     return {"message": "Resource deleted successfully"}
