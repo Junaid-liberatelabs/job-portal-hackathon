@@ -1,3 +1,4 @@
 <template>
-HI
+<div>HI</div>
+
 </template>
