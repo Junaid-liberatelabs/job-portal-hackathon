@@ -247,25 +247,40 @@
         </div>
 
         <Card variant="glass" class="p-6">
-          <SkillChart
-            v-if="auth.user?.skills && auth.user.skills.length > 0"
-            :skills="auth.user.skills"
-            :chart-type="chartType"
-          />
-          <div v-else class="py-10 text-center">
-            <p class="text-sm text-ink-500">Add skills below to visualize your skill profile</p>
-          </div>
-          
-          <div class="mt-4 flex gap-2">
-            <Button
-              v-for="type in ['pie', 'radar', 'bar']"
-              :key="type"
-              :variant="chartType === type ? 'primary' : 'outline'"
-              size="sm"
-              @click="chartType = type as 'pie' | 'radar' | 'bar'"
-            >
-              {{ type.charAt(0).toUpperCase() + type.slice(1) }} chart
-            </Button>
+          <div class="space-y-4">
+            <!-- Chart Type Selector -->
+            <div class="flex items-center justify-between border-b border-ink-100 pb-4">
+              <h3 class="text-lg font-semibold text-ink-900">Skill Analysis</h3>
+              <div class="flex gap-2">
+                <Button
+                  v-for="type in ['pie', 'radar', 'bar']"
+                  :key="type"
+                  :variant="chartType === type ? 'primary' : 'outline'"
+                  size="sm"
+                  @click="chartType = type as 'pie' | 'radar' | 'bar'"
+                  class="min-w-[80px]"
+                >
+                  {{ type.charAt(0).toUpperCase() + type.slice(1) }}
+                </Button>
+              </div>
+            </div>
+            
+            <!-- Chart Container -->
+            <div class="relative">
+              <SkillChart
+                v-if="auth.user?.skills && auth.user.skills.length > 0"
+                :skills="skillsForChart"
+                :chart-type="chartType"
+                :height="400"
+              />
+              <div v-else class="py-20 text-center">
+                <svg class="mx-auto h-16 w-16 text-ink-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <p class="text-sm font-medium text-ink-600 mb-2">No skills added yet</p>
+                <p class="text-xs text-ink-500">Add skills below to visualize your skill profile</p>
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -320,6 +335,82 @@
             </button>
           </div>
         </div>
+      </section>
+
+      <!-- Experience Tab -->
+      <section v-show="activeTab === 'experience'" class="space-y-6">
+        <Card variant="glass" class="p-8">
+          <h2 class="font-display text-2xl font-semibold text-ink-900 mb-6">Experience Level</h2>
+          <form class="space-y-6" @submit.prevent="handleUpdateExperience">
+            <div class="space-y-4">
+              <label class="text-sm font-medium text-ink-700">Select your experience level</label>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <label 
+                  v-for="level in experienceLevels" 
+                  :key="level.value"
+                  :class="[
+                    'flex flex-col items-center gap-3 rounded-2xl border-2 p-6 cursor-pointer transition-all',
+                    form.experience_level === level.value
+                      ? 'border-brand-500 bg-brand-50 shadow-lg shadow-brand-500/20'
+                      : 'border-ink-200 bg-white hover:border-brand-300 hover:shadow-md'
+                  ]"
+                >
+                  <input
+                    type="radio"
+                    v-model="form.experience_level"
+                    :value="level.value"
+                    class="sr-only"
+                  />
+                  <div class="text-4xl">{{ level.icon }}</div>
+                  <div class="text-center">
+                    <p class="font-semibold text-ink-900">{{ level.label }}</p>
+                    <p class="text-xs text-ink-500 mt-1">{{ level.description }}</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <Button type="submit" :disabled="auth.loading" class="w-full">
+              Save Experience Level
+            </Button>
+          </form>
+        </Card>
+      </section>
+
+      <!-- Career Preferences Tab -->
+      <section v-show="activeTab === 'career'" class="space-y-6">
+        <Card variant="glass" class="p-8">
+          <h2 class="font-display text-2xl font-semibold text-ink-900 mb-6">Career Preferences</h2>
+          <form class="space-y-6" @submit.prevent="handleUpdateCareer">
+            <div class="space-y-4">
+              <label class="text-sm font-medium text-ink-700">Preferred Career Track</label>
+              <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <label 
+                  v-for="track in tracks" 
+                  :key="track"
+                  :class="[
+                    'flex items-center justify-center gap-3 rounded-xl border-2 p-4 cursor-pointer transition-all',
+                    form.preferred_career_track === track
+                      ? 'border-brand-500 bg-brand-50 text-brand-700 font-semibold shadow-md'
+                      : 'border-ink-200 bg-white text-ink-700 hover:border-brand-300'
+                  ]"
+                >
+                  <input
+                    type="radio"
+                    v-model="form.preferred_career_track"
+                    :value="track"
+                    class="sr-only"
+                  />
+                  {{ track }}
+                </label>
+              </div>
+            </div>
+
+            <Button type="submit" :disabled="auth.loading" class="w-full">
+              Save Career Preferences
+            </Button>
+          </form>
+        </Card>
       </section>
 
       <section v-show="activeTab === 'analytics'" class="space-y-6 rounded-[32px] border border-white/70 bg-white/80 p-10 shadow-[0_45px_140px_-80px_rgba(168,85,247,0.22)] backdrop-blur">
@@ -516,6 +607,48 @@ const handleUpdateEducation = async () => {
   }
 }
 
+const handleUpdateExperience = async () => {
+  const full_name = `${form.first_name} ${form.last_name}`.trim()
+  const payload: UpdateProfilePayload = {
+    full_name,
+    education_level: form.education_level,
+    experience_level: form.experience_level,
+    preferred_career_track: form.preferred_career_track
+  }
+
+  const result = await auth.updateProfile(payload)
+  if (result) {
+    statusMessage.value = 'Experience level updated successfully.'
+    setTimeout(() => {
+      statusMessage.value = ''
+    }, 3000)
+  }
+}
+
+const handleUpdateCareer = async () => {
+  const full_name = `${form.first_name} ${form.last_name}`.trim()
+  const payload: UpdateProfilePayload = {
+    full_name,
+    education_level: form.education_level,
+    experience_level: form.experience_level,
+    preferred_career_track: form.preferred_career_track
+  }
+
+  const result = await auth.updateProfile(payload)
+  if (result) {
+    statusMessage.value = 'Career preferences updated successfully.'
+    setTimeout(() => {
+      statusMessage.value = ''
+    }, 3000)
+  }
+}
+
+const experienceLevels = [
+  { value: 'entry', label: 'Entry Level', icon: '🌱', description: 'Starting your career' },
+  { value: 'junior', label: 'Junior', icon: '🚀', description: '1-3 years experience' },
+  { value: 'mid', label: 'Mid Level', icon: '⭐', description: '3-7 years experience' }
+]
+
 const skillInput = ref('')
 
 const handleAddSkill = async () => {
@@ -569,6 +702,32 @@ const getCategoryColor = (category: string) => {
   return colors[category] || colors.other
 }
 
+const skillsForChart = computed(() => {
+  if (!auth.user?.skills || auth.user.skills.length === 0) return []
+  
+  // Group skills by category and assign weights
+  const categoryWeights: Record<string, number> = {
+    programming: 85,
+    design: 75,
+    'soft-skills': 70,
+    data: 80,
+    other: 60
+  }
+  
+  return auth.user.skills.map((skill, index) => {
+    const category = categorizedSkills.value.find(s => s.name === skill)?.category || 'other'
+    // Add some variation to values so chart looks more interesting
+    const baseValue = categoryWeights[category] || 60
+    const variation = (index % 3) * 10 // Adds 0, 10, or 20
+    
+    return {
+      name: skill,
+      value: baseValue + variation,
+      category
+    }
+  })
+})
+
 const suggestedSkills = computed(() => {
   const track = auth.user?.preferred_career_track?.toLowerCase() || ''
   const existing = new Set((auth.user?.skills || []).map(s => s.toLowerCase()))
@@ -585,7 +744,7 @@ const suggestedSkills = computed(() => {
   const trackKey = Object.keys(suggestions).find(key => track.includes(key.toLowerCase()))
   const trackSkills = trackKey ? suggestions[trackKey] : []
   
-  return trackSkills.filter(skill => !existing.has(skill.toLowerCase())).slice(0, 5)
+  return trackSkills?.filter(skill => !existing.has(skill.toLowerCase())).slice(0, 5) || []
 })
 
 const skillCategories = computed(() => {

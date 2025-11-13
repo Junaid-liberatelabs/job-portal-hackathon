@@ -1,38 +1,75 @@
 <template>
   <div class="relative overflow-hidden bg-ink-50">
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-ink-900 to-ink-800 text-white overflow-hidden">
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM0ZWNkYzQiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNGgtMnYyaDJ2LTJ6bTAgNGgydjItMnYtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+    <!-- Hero Section with Typewriter Animation -->
+    <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 text-white overflow-hidden">
+      <!-- Animated Background Pattern -->
+      <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNGgtMnYyaDJ2LTJ6bTAgNGgydjItMnYtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink-900/50 to-transparent"></div>
+      </div>
       
-      <div class="relative max-w-7xl mx-auto px-6 py-24 text-center">
-        <div class="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-accent mb-8">
-          <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+      <div class="relative max-w-7xl mx-auto px-6 py-24 text-center z-10">
+        <!-- Badge with Pulse Animation -->
+        <div class="inline-flex items-center gap-2 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-white mb-8 shadow-xl animate-fade-in">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+          </span>
           AI-Powered Career Platform
         </div>
         
-        <h1 class="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
-          Launch Youth Careers with<br />
-          <span class="text-gradient">Transparent Matches</span>
+        <!-- Hero Title with Typewriter Effect -->
+        <h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight animate-slide-up">
+          <span class="block text-white drop-shadow-2xl mb-4 pb-2">Launch Youth Careers with</span>
+          <span class="block min-h-[110px] md:min-h-[130px] lg:min-h-[150px] pb-4">
+            <span class="inline-block bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent drop-shadow-lg leading-relaxed">
+              {{ typedText }}<span class="animate-blink">|</span>
+            </span>
+          </span>
         </h1>
         
-        <p class="text-xl text-ink-300 max-w-3xl mx-auto mb-12">
-          Help youth turn skills into first roles with transparent matches, curated learning, and mentor-ready insights.
+        <!-- Subtitle with better contrast -->
+        <p class="text-xl md:text-2xl text-blue-50 max-w-3xl mx-auto mb-12 leading-relaxed drop-shadow-md animate-fade-in-delay font-medium">
+          Help youth turn skills into first roles with AI-powered matches, curated learning paths, and expert career guidance.
         </p>
         
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <NuxtLink to="/signup" class="btn btn-accent btn-lg">
-            Get Started Free
+        <!-- CTA Buttons with Gradient -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in-delay-2">
+          <NuxtLink to="/signup">
+            <Button variant="gradient" size="lg" class="min-w-[200px] text-lg shadow-2xl shadow-white/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Get Started Free
+            </Button>
           </NuxtLink>
-          <NuxtLink to="/login" class="btn btn-outline btn-lg">
-            Sign In
+          <NuxtLink to="/login">
+            <Button variant="outline" size="lg" class="min-w-[200px] text-lg border-white text-white hover:bg-white hover:text-brand-600">
+              Sign In
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Button>
           </NuxtLink>
         </div>
         
-        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-          <div v-for="stat in heroStats" :key="stat.label" class="text-center">
-            <div class="text-4xl font-bold text-accent mb-2">{{ stat.value }}</div>
-            <div class="text-sm text-ink-400">{{ stat.label }}</div>
+        <!-- Stats with Animation -->
+        <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto animate-fade-in-delay-3">
+          <div v-for="(stat, index) in heroStats" :key="stat.label" 
+               class="group p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
+               :style="{ animationDelay: `${index * 100}ms` }">
+            <div class="text-5xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform">
+              {{ stat.value }}
+            </div>
+            <div class="text-sm text-blue-100 font-semibold">{{ stat.label }}</div>
           </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <svg class="h-8 w-8 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
         </div>
       </div>
     </section>
@@ -57,40 +94,48 @@
           <article
             v-for="(feature, index) in platformFeatures"
             :key="feature.title"
-            class="landing-card tilt-layer group p-8"
-            :class="feature.gradient"
-            :ref="(el) => registerFeatureCard(el, index)"
+            class="scroll-animate opacity-0 group relative rounded-3xl bg-gradient-to-br from-white to-brand-50/30 p-8 border-2 border-brand-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-brand-300 cursor-pointer overflow-hidden"
+            :style="{ transitionDelay: `${index * 150}ms` }"
           >
-            <div class="landing-card__halo"></div>
-            <div class="pointer-events-none absolute inset-0 opacity-60 mix-blend-screen">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/25 via-white/10 to-transparent"></div>
-            </div>
-            <div class="relative flex flex-col gap-8 text-ink-900">
+            <!-- Animated Background Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-transparent to-brand-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <!-- Content -->
+            <div class="relative flex flex-col gap-8 text-ink-900 z-10">
               <header class="space-y-4">
-                <span class="chip chip--frosted">
+                <GradientIcon size="md" color="brand" class="mb-2">
+                  <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </GradientIcon>
+                <span class="inline-block px-4 py-2 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
                   {{ feature.badge }}
                 </span>
                 <div>
-                  <h3 class="font-display text-2xl font-semibold">{{ feature.title }}</h3>
-                  <p class="mt-3 text-sm text-ink-600">{{ feature.summary }}</p>
+                  <h3 class="font-display text-3xl font-bold text-ink-900 group-hover:text-brand-600 transition-colors">{{ feature.title }}</h3>
+                  <p class="mt-3 text-base text-ink-600 leading-relaxed">{{ feature.summary }}</p>
                 </div>
               </header>
 
-              <ul class="grid gap-4 text-sm text-ink-600">
-                <li v-for="point in feature.highlights" :key="point" class="flex items-start gap-3">
-                  <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-brand-400 shadow-[0_0_6px_rgba(59,130,246,0.4)]"></span>
-                  <span>{{ point }}</span>
+              <ul class="grid gap-4 text-sm text-ink-700">
+                <li v-for="point in feature.highlights" :key="point" class="flex items-start gap-3 group/item">
+                  <span class="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-brand-500 shadow-lg shadow-brand-500/50 group-hover/item:scale-125 transition-transform"></span>
+                  <span class="group-hover/item:text-ink-900 transition-colors">{{ point }}</span>
                 </li>
               </ul>
 
-              <div class="flex items-center justify-between rounded-2xl bg-white/70 p-4 text-ink-700 ring-1 ring-white/40 backdrop-blur">
+              <div class="flex items-center justify-between rounded-2xl bg-gradient-to-r from-brand-50 to-white p-5 border-2 border-brand-200 shadow-md hover:shadow-lg transition-shadow">
                 <div>
-                  <p class="text-xs uppercase tracking-[0.25em] text-ink-400">{{ feature.metric.label }}</p>
-                  <p class="text-xl font-semibold text-ink-900">{{ feature.metric.value }}</p>
+                  <p class="text-xs uppercase tracking-wider text-brand-600 font-semibold">{{ feature.metric.label }}</p>
+                  <p class="text-3xl font-bold text-brand-600 mt-1">{{ feature.metric.value }}</p>
                 </div>
-                <NuxtLink :to="feature.cta.to" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 transition hover:text-brand-500">
-                  {{ feature.cta.label }}
-                  <span aria-hidden="true">→</span>
+                <NuxtLink :to="feature.cta.to">
+                  <Button variant="gradient" size="sm" class="gap-2">
+                    {{ feature.cta.label }}
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Button>
                 </NuxtLink>
               </div>
             </div>
@@ -136,10 +181,10 @@
       <div class="absolute inset-y-0 right-0 hidden w-1/2 bg-gradient-to-l from-brand-500/20 via-ink-900/40 to-transparent lg:block"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
         <div class="max-w-2xl space-y-4">
-          <span class="text-xs font-semibold uppercase tracking-[0.4em] text-brand-200/90">How it works</span>
-          <h2 class="font-display text-3xl font-semibold sm:text-4xl">From first intake to measurable outcomes</h2>
-          <p class="text-sm text-white/70">
-            Orchestrate every interaction—from the first story patients share to the insights leadership reviews—without losing clinical empathy.
+          <span class="text-xs font-bold uppercase tracking-[0.4em] text-white">How it works</span>
+          <h2 class="font-display text-3xl font-bold sm:text-5xl text-white drop-shadow-lg">From first intake to measurable outcomes</h2>
+          <p class="text-base text-white/90 leading-relaxed">
+            Orchestrate every interaction—from the first story youth share to the insights employers review—without losing personal empathy.
           </p>
         </div>
 
@@ -147,7 +192,7 @@
           <div
             v-for="(step, index) in processJourney"
             :key="step.title"
-            class="landing-card landing-card--ink grid gap-6 p-6 text-left md:grid-cols-[auto_1fr] md:items-center md:gap-10 lg:p-8"
+            class="scroll-animate opacity-0 landing-card landing-card--ink grid gap-6 p-6 text-left md:grid-cols-[auto_1fr] md:items-center md:gap-10 lg:p-8"
           >
             <div class="flex items-center gap-4">
               <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/20 text-lg font-semibold text-brand-100 shadow-[0_20px_60px_-30px_rgba(59,130,246,0.75)]">
@@ -156,8 +201,8 @@
               <div class="hidden h-full w-px bg-white/10 md:block"></div>
             </div>
             <div class="space-y-3">
-              <h3 class="text-xl font-semibold">{{ step.title }}</h3>
-              <p class="text-sm text-white/80">{{ step.copy }}</p>
+              <h3 class="text-xl font-bold text-white">{{ step.title }}</h3>
+              <p class="text-sm text-white/90 leading-relaxed">{{ step.copy }}</p>
               <div class="flex flex-wrap gap-3 text-xs text-white/60">
                 <span
                   v-for="tag in step.tags"
@@ -247,7 +292,7 @@
           <article
             v-for="(milestone, index) in roadmapMilestones"
             :key="milestone.title"
-            class="landing-card landing-card--glass p-6"
+            class="scroll-animate opacity-0 landing-card landing-card--glass p-6"
           >
             <div class="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-brand-500">
               <span class="h-6 w-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-mono text-xs">
@@ -282,7 +327,7 @@
           <figure
             v-for="(testimonial, index) in testimonials"
             :key="testimonial.name"
-            class="landing-card landing-card--glass p-8 transition hover:-translate-y-1"
+            class="scroll-animate opacity-0 landing-card landing-card--glass p-8 transition hover:-translate-y-1"
           >
             <div class="absolute -top-6 right-8 text-6xl text-ink-100">“</div>
             <blockquote class="space-y-4 text-sm text-ink-500">
@@ -309,14 +354,14 @@
         <div class="relative mx-auto max-w-5xl rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-10 shadow-[0_45px_140px_-80px_rgba(56,189,248,0.6)] backdrop-blur">
         <div class="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div class="max-w-xl space-y-4">
-            <span class="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.35em] text-white/80">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
-                Let’s reinvent clinical storytelling
+            <span class="inline-flex items-center gap-2 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm px-4 py-2 text-xs font-bold uppercase tracking-[0.35em] text-white">
+                <span class="h-2 w-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                Ready to get started?
             </span>
-            <h2 class="font-display text-3xl font-semibold sm:text-4xl">
+            <h2 class="font-display text-4xl font-bold sm:text-5xl text-white drop-shadow-2xl">
                 Launch your youth talent program in weeks
             </h2>
-            <p class="text-sm text-white/70">
+            <p class="text-base text-white/95 leading-relaxed">
                 Schedule a walkthrough to explore talent profiles, opportunity matching, and learning analytics tailored to your organisation.
             </p>
           </div>
@@ -341,17 +386,95 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, type ComponentPublicInstance } from 'vue'
+import { ref, onMounted, onBeforeUnmount, type ComponentPublicInstance } from 'vue'
+import Button from '~/components/ui/Button.vue'
+import GradientIcon from '~/components/ui/GradientIcon.vue'
 
 definePageMeta({
   layout: 'default'
 })
 
+// Typewriter Animation
+const words = ['Transparent Matches', 'AI-Powered Insights', 'Curated Learning', 'Career Guidance']
+const typedText = ref('')
+const currentWordIndex = ref(0)
+const currentCharIndex = ref(0)
+const isDeleting = ref(false)
+let typingTimeout: NodeJS.Timeout | null = null
+
+const typeWriter = () => {
+  const currentWord = words[currentWordIndex.value]
+  
+  if (!isDeleting.value) {
+    // Typing
+    typedText.value = currentWord.substring(0, currentCharIndex.value + 1)
+    currentCharIndex.value++
+    
+    if (currentCharIndex.value === currentWord.length) {
+      // Pause before deleting
+      typingTimeout = setTimeout(() => {
+        isDeleting.value = true
+        typeWriter()
+      }, 2000)
+      return
+    }
+    
+    typingTimeout = setTimeout(typeWriter, 100)
+  } else {
+    // Deleting
+    typedText.value = currentWord.substring(0, currentCharIndex.value - 1)
+    currentCharIndex.value--
+    
+    if (currentCharIndex.value === 0) {
+      isDeleting.value = false
+      currentWordIndex.value = (currentWordIndex.value + 1) % words.length
+    }
+    
+    typingTimeout = setTimeout(typeWriter, 50)
+  }
+}
+
+// Scroll-triggered animation observer
+const animateOnScroll = () => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up')
+          observer.unobserve(entry.target)
+        }
+      })
+    },
+    {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    }
+  )
+
+  // Observe all cards and sections
+  const elements = document.querySelectorAll('.scroll-animate')
+  elements.forEach((el) => observer.observe(el))
+}
+
+onMounted(() => {
+  typeWriter()
+  // Wait for DOM to be fully rendered
+  setTimeout(() => {
+    animateOnScroll()
+  }, 100)
+})
+
+onBeforeUnmount(() => {
+  if (typingTimeout) {
+    clearTimeout(typingTimeout)
+  }
+})
+
 const heroStats = [
-  { label: 'Career tracks supported', value: '18' },
-  { label: 'Opportunities indexed', value: '2.1k+' },
-  { label: 'Learning resources mapped', value: '320+' },
-  { label: 'Youth placed to date', value: '4.6k+' }
+  { label: 'Active Users', value: '2.5k+' },
+  { label: 'Job Listings', value: '1.8k+' },
+  { label: 'Success Rate', value: '94%' },
+  { label: 'Partner Companies', value: '150+' }
 ] 
 
 const platformFeatures = [

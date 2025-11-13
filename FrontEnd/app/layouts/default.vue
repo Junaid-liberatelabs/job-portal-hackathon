@@ -1,175 +1,14 @@
 <template>
   <div class="flex min-h-screen flex-col bg-ink-50 text-ink-900">
-    <header class="sticky top-0 z-50 border-b border-white/10 bg-white/70 backdrop-blur-xl backdrop-saturate-150">
-      <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <NuxtLink to="/" class="group flex items-center gap-3">
-          <div class="relative h-11 w-11 overflow-hidden rounded-2xl bg-hero-gradient shadow-lg shadow-brand-500/40 ring-2 ring-white/40 transition-transform duration-300 group-hover:-translate-y-0.5">
-            <span class="absolute inset-0 flex items-center justify-center text-lg font-semibold text-white">CI</span>
-          </div>
-          <div class="flex flex-col leading-none">
-            <span class="font-display text-lg font-semibold tracking-tight text-ink-900">CareerIn</span>
-            <span class="text-xs font-medium uppercase tracking-[0.35em] text-ink-400">Youth Careers</span>
-          </div>
-        </NuxtLink>
-
-        <div class="hidden items-center gap-6 text-sm font-medium text-ink-500 md:flex">
-          <div
-            v-for="group in computedNavGroups"
-            :key="group.label"
-            class="relative"
-            @mouseenter="handleMouseEnter(group.label)"
-            @mouseleave="scheduleClose"
-          >
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 rounded-full px-3 py-1 transition-colors hover:text-ink-900"
-              @click="toggleGroup(group.label)"
-            >
-              {{ group.label }}
-              <svg
-                class="h-4 w-4 text-ink-400 transition-transform duration-200"
-                :class="{ 'rotate-180 text-ink-600': openGroup === group.label }"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-            <div
-              class="absolute left-1/2 top-full z-50 mt-3 w-64 -translate-x-1/2 rounded-3xl border border-white/70 bg-white/90 p-4 shadow-[0_25px_80px_-45px_rgba(15,23,42,0.3)] backdrop-blur transition-all duration-200"
-              :class="openGroup === group.label ? 'visible pointer-events-auto opacity-100' : 'invisible pointer-events-none opacity-0'"
-              @mouseenter="handleMouseEnter(group.label)"
-              @mouseleave="scheduleClose"
-            >
-              <NuxtLink
-                v-for="item in group.items"
-                :key="item.to"
-                :to="item.to"
-                class="block rounded-2xl px-3 py-2 text-sm text-ink-500 transition hover:bg-ink-50 hover:text-ink-900"
-              >
-                {{ item.label }}
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-
-        <div class="hidden items-center gap-3 md:flex">
-          <template v-if="auth.isAuthenticated">
-            <NuxtLink
-              to="/dashboard"
-              class="inline-flex items-center justify-center rounded-full border border-ink-200/80 px-4 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-200 hover:text-ink-900"
-            >
-              Dashboard
-            </NuxtLink>
-            <button
-              type="button"
-              class="inline-flex items-center justify-center rounded-full bg-ink-900 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-ink-900/20 transition hover:bg-ink-800"
-              @click="handleLogout"
-            >
-              Sign Out
-            </button>
-          </template>
-          <template v-else>
-            <NuxtLink
-              to="/login"
-              class="inline-flex items-center justify-center rounded-full border border-ink-200/80 px-4 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-200 hover:text-ink-900"
-            >
-              Sign In
-            </NuxtLink>
-            <NuxtLink
-              to="/signup"
-              class="inline-flex items-center justify-center rounded-full bg-ink-900 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-ink-900/20 transition hover:bg-ink-800"
-            >
-              Create Profile
-            </NuxtLink>
-          </template>
-        </div>
-
-        <button
-          type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-200/80 text-ink-600 transition hover:border-brand-200 hover:text-ink-900 md:hidden"
-          @click="mobileNavOpen = !mobileNavOpen"
-        >
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
-          </svg>
-          <span class="sr-only">Open navigation</span>
-        </button>
-      </nav>
-
-      <Transition name="fade">
-        <div
-          v-if="mobileNavOpen"
-          class="border-t border-white/10 bg-white/95 px-6 py-4 shadow-lg shadow-ink-900/5 md:hidden"
-        >
-          <div class="space-y-5 text-sm text-ink-600">
-            <div
-              v-for="group in computedNavGroups"
-              :key="`mobile-${group.label}`"
-              class="space-y-2"
-            >
-              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-ink-400">
-                {{ group.label }}
-              </p>
-              <NuxtLink
-                v-for="item in group.items"
-                :key="item.to"
-                :to="item.to"
-                class="block rounded-2xl px-3 py-2 transition hover:bg-ink-100/70 hover:text-ink-900"
-                @click="mobileNavOpen = false"
-              >
-                {{ item.label }}
-              </NuxtLink>
-            </div>
-          </div>
-          <div class="mt-6 flex flex-col gap-3">
-            <template v-if="auth.isAuthenticated">
-              <NuxtLink
-                to="/dashboard"
-                class="w-full rounded-full border border-ink-200/70 px-4 py-2 text-center text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:text-ink-900"
-                @click="mobileNavOpen = false"
-              >
-                Dashboard
-              </NuxtLink>
-              <button
-                type="button"
-                class="w-full rounded-full bg-ink-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-ink-800"
-                @click="handleMobileLogout"
-              >
-                Sign Out
-              </button>
-            </template>
-            <template v-else>
-              <NuxtLink
-                to="/login"
-                class="w-full rounded-full border border-ink-200/70 px-4 py-2 text-center text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:text-ink-900"
-                @click="mobileNavOpen = false"
-              >
-                Sign In
-              </NuxtLink>
-              <NuxtLink
-                to="/signup"
-                class="w-full rounded-full bg-ink-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-ink-800"
-                @click="mobileNavOpen = false"
-              >
-                Create Profile
-              </NuxtLink>
-            </template>
-          </div>
-        </div>
-      </Transition>
-    </header>
+    <!-- Use PublicNavigation for landing page, Navigation for authenticated pages -->
+    <PublicNavigation v-if="!isAuthenticated" />
+    <Navigation v-else />
 
     <main class="flex-1">
       <slot />
     </main>
 
-    <footer class="border-t border-white/10 bg-white/75 py-12 backdrop-blur-xl">
+    <footer v-if="!isAuthenticated" class="border-t border-white/10 bg-white/75 py-12 backdrop-blur-xl">
       <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6 text-sm text-ink-500 lg:flex-row lg:items-start lg:justify-between lg:px-10">
         <div class="flex items-start gap-4">
           <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-hero-gradient text-white shadow-lg shadow-brand-500/30 ring-2 ring-white/40">
@@ -227,108 +66,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from '#imports'
+import { computed } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import Navigation from '~/components/layout/Navigation.vue'
+import PublicNavigation from '~/components/layout/PublicNavigation.vue'
 
-const route = useRoute()
-const router = useRouter()
-const auth = useAuthStore()
-
-onMounted(() => {
-  if (auth.token && !auth.user) {
-    auth.fetchProfile()
-  }
-})
-
-const publicNavGroups = [
-  {
-    label: 'Platform',
-    items: [
-      { label: 'Features', to: '/#features' },
-      { label: 'Foundations', to: '/#foundations' },
-      { label: 'How It Works', to: '/#process' }
-    ]
-  },
-  {
-    label: 'Insights',
-    items: [
-      { label: 'Matching', to: '/#matching' },
-      { label: 'Roadmap', to: '/#roadmap' },
-      { label: 'Testimonials', to: '/#testimonials' }
-    ]
-  },
-  {
-    label: 'Company',
-    items: [{ label: 'Contact', to: '/#contact' }]
-  }
-]
-
-const workspaceGroup = {
-  label: 'Workspace',
-  items: [
-    { label: 'Dashboard', to: '/dashboard' },
-    { label: 'Jobs', to: '/jobs' },
-    { label: 'Resources', to: '/resources' },
-    { label: 'Profile', to: '/profile' }
-  ]
-}
-
-const computedNavGroups = computed(() =>
-  auth.isAuthenticated ? [workspaceGroup, ...publicNavGroups] : publicNavGroups
-)
-
-const mobileNavOpen = ref(false)
-const openGroup = ref<string | null>(null)
-const closeTimer = ref<ReturnType<typeof setTimeout> | null>(null)
-
-const toggleGroup = (label: string) => {
-  openGroup.value = openGroup.value === label ? null : label
-}
-
-const handleMouseEnter = (label: string) => {
-  if (closeTimer.value) {
-    clearTimeout(closeTimer.value)
-    closeTimer.value = null
-  }
-  openGroup.value = label
-}
-
-const scheduleClose = () => {
-  if (closeTimer.value) {
-    clearTimeout(closeTimer.value)
-  }
-  closeTimer.value = setTimeout(() => {
-    openGroup.value = null
-    closeTimer.value = null
-  }, 180)
-}
-
-watch(
-  () => route.fullPath,
-  () => {
-    mobileNavOpen.value = false
-    openGroup.value = null
-    if (closeTimer.value) {
-      clearTimeout(closeTimer.value)
-      closeTimer.value = null
-    }
-  }
-)
-
+const authStore = useAuthStore()
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 const currentYear = new Date().getFullYear()
-
-const handleLogout = async () => {
-  auth.logout()
-  if (route.path !== '/') {
-    await router.push('/')
-  }
-}
-
-const handleMobileLogout = async () => {
-  await handleLogout()
-  mobileNavOpen.value = false
-}
 </script>
 
 <style scoped>
