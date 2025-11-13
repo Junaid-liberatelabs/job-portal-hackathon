@@ -84,33 +84,13 @@
       </section>
 
       <section class="grid gap-6 lg:grid-cols-2">
-        <article
+        <JobCard
           v-for="job in jobs"
           :key="job.id"
-          class="landing-card landing-card--glass border border-white/60 p-6"
-        >
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 class="font-display text-xl font-semibold text-ink-900">{{ job.title }}</h2>
-              <p class="text-sm text-ink-500">{{ job.company }}</p>
-            </div>
-            <span class="rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">{{ capitalize(job.job_type) }}</span>
-          </div>
-          <p class="mt-3 text-sm text-ink-500 line-clamp-3">{{ job.description }}</p>
-          <div class="mt-4 flex flex-wrap gap-2 text-xs text-ink-500">
-            <span v-for="skill in job.required_skills" :key="`${job.id}-${skill}`" class="rounded-full bg-white px-3 py-1 font-semibold">
-              {{ skill }}
-            </span>
-          </div>
-          <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-ink-500">
-            <span>Experience: {{ experienceLabel(job.recommended_experience_level) }}</span>
-            <span v-if="overlap(job).length">Matches: {{ overlap(job).join(', ') }}</span>
-          </div>
-          <NuxtLink :to="`/jobs/${job.id}`" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-600 transition hover:text-brand-500">
-            View details
-            <span aria-hidden="true">→</span>
-          </NuxtLink>
-        </article>
+          :job="job as any"
+          :user-skills="auth.user?.skills || []"
+          @click="navigateToJob(job.id)"
+        />
 
         <div v-if="!pending && !jobs.length" class="rounded-[28px] border border-ink-100/70 bg-white/80 p-10 text-sm text-ink-500">
           No roles found. Try expanding your filters or broadening the skill list.
@@ -122,9 +102,10 @@
 
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
-import { definePageMeta, useAsyncData } from '#imports'
+import { definePageMeta, useAsyncData, useRouter } from '#imports'
 import { useAuthStore, type ExperienceLevel, type JobType } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
+import JobCard from '~/components/features/JobCard.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -146,8 +127,13 @@ const experienceLevels: ExperienceLevel[] = ['student', 'entry', 'junior']
 
 const auth = useAuthStore()
 const api = useApi()
+const router = useRouter()
 
 await auth.fetchProfile()
+
+const navigateToJob = (jobId: string) => {
+  router.push(`/jobs/${jobId}`)
+}
 
 const filters = reactive({
   search: '',

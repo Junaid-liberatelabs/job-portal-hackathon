@@ -227,7 +227,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAuthStore } from '~/stores/auth'
 
@@ -235,9 +235,11 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-if (process.client && auth.token && !auth.user) {
-  auth.fetchProfile()
-}
+onMounted(() => {
+  if (auth.token && !auth.user) {
+    auth.fetchProfile()
+  }
+})
 
 const publicNavGroups = [
   {

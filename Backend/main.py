@@ -86,14 +86,18 @@ def create_application() -> FastAPI:
     )
 
     # Set up CORS middleware
-    # if settings.BACKEND_CORS_ORIGINS:
-    #     app.add_middleware(
-    #         CORSMiddleware,
-    #         allow_origins=settings.BACKEND_CORS_ORIGINS,
-    #         allow_credentials=True,
-    #         allow_methods=["*"],
-    #         allow_headers=["*"],
-    #     )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:3000",
+            "http://localhost:3001", 
+            "http://localhost:3002",
+            "http://localhost:8000"
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     # Add security middleware
     # app.add_middleware(GZipMiddleware, minimum_size=1000)

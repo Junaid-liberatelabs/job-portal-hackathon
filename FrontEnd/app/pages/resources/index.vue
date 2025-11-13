@@ -73,27 +73,12 @@
       </section>
 
       <section class="grid gap-6 lg:grid-cols-2">
-        <article
+        <CourseCard
           v-for="resource in filteredResources"
           :key="resource.id"
-          class="landing-card landing-card--glass border border-white/60 p-6"
-        >
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="font-display text-xl font-semibold text-ink-900">{{ resource.name }}</h2>
-              <p class="text-sm text-ink-500">{{ resource.platform }}</p>
-            </div>
-            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">{{ costLabel(resource) }}</span>
-          </div>
-          <p class="mt-3 text-sm text-ink-500 line-clamp-3">{{ resource.description }}</p>
-          <div class="mt-4 flex flex-wrap gap-2 text-xs text-ink-500">
-            <span v-for="tag in resource.tags" :key="`${resource.id}-${tag}`" class="rounded-full bg-white px-3 py-1 font-semibold">{{ tag }}</span>
-          </div>
-          <a :href="resource.url" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-600 transition hover:text-brand-500">
-            Open resource
-            <span aria-hidden="true">↗</span>
-          </a>
-        </article>
+          :resource="resource as any"
+          @view="handleViewResource"
+        />
 
         <div v-if="!pending && !filteredResources.length" class="rounded-[28px] border border-ink-100/70 bg-white/80 p-10 text-sm text-ink-500">
           No resources found. Try a different skill keyword or reset your filters.
@@ -104,9 +89,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
-import { definePageMeta, useAsyncData } from '#imports'
+import { computed, reactive, onMounted } from 'vue'
+import { definePageMeta, useAsyncData, useRoute } from '#imports'
 import { useApi } from '~/composables/useApi'
+import CourseCard from '~/components/features/CourseCard.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -122,12 +108,23 @@ interface ResourceResponse {
 }
 
 const api = useApi()
+const route = useRoute()
 
 const filters = reactive({
   keyword: '',
   cost: '',
   skill: ''
 })
+
+onMounted(() => {
+  if (route.query.skill && typeof route.query.skill === 'string') {
+    filters.skill = route.query.skill
+  }
+})
+
+const handleViewResource = (resource: ResourceResponse) => {
+  window.open(resource.url, '_blank', 'noopener,noreferrer')
+}
 
 const { data, pending, refresh } = await useAsyncData('resources-list', () =>
   api<ResourceResponse[]>('/resources/', { query: { limit: 200 } }),

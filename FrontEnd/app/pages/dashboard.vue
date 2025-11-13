@@ -77,28 +77,13 @@
           </NuxtLink>
         </div>
         <div class="grid gap-6 lg:grid-cols-2">
-          <article
+          <JobCard
             v-for="job in recommendedJobs"
             :key="job.id"
-            class="landing-card landing-card--glass border border-white/60 p-6"
-          >
-            <div class="flex items-center justify-between">
-              <h3 class="font-display text-xl font-semibold text-ink-900">{{ job.title }}</h3>
-              <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">{{ job.company }}</span>
-            </div>
-            <p class="mt-3 text-sm text-ink-500 line-clamp-3">{{ job.description }}</p>
-            <div class="mt-4 flex flex-wrap gap-2 text-xs text-ink-500">
-              <span v-for="skill in job.required_skills" :key="`${job.id}-${skill}`" class="rounded-full bg-white px-3 py-1 font-semibold">{{ skill }}</span>
-            </div>
-            <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-ink-500">
-              <span>Experience: {{ capitalize(job.recommended_experience_level) }}</span>
-              <span>{{ overlapMessage(job) }}</span>
-            </div>
-            <NuxtLink :to="`/jobs/${job.id}`" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-600 transition hover:text-brand-500">
-              View details
-              <span aria-hidden="true">→</span>
-            </NuxtLink>
-          </article>
+            :job="job as any"
+            :user-skills="auth.user?.skills || []"
+            @click="navigateToJob(job.id)"
+          />
           <p v-if="!recommendedJobs.length" class="rounded-3xl border border-ink-100/70 bg-white/80 p-6 text-sm text-ink-500">
             Add more skills or adjust your track to see tailored matches.
           </p>
@@ -119,27 +104,12 @@
           </NuxtLink>
         </div>
         <div class="grid gap-6 lg:grid-cols-2">
-          <article
+          <CourseCard
             v-for="resource in recommendedResources"
             :key="resource.id"
-            class="landing-card landing-card--glass border border-white/60 p-6"
-          >
-            <div class="flex items-center justify-between">
-              <h3 class="font-display text-lg font-semibold text-ink-900">{{ resource.name }}</h3>
-              <span class="rounded-full bg-ink-900/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-ink-600">{{ resource.platform }}</span>
-            </div>
-            <p class="mt-3 text-sm text-ink-500 line-clamp-3">{{ resource.description }}</p>
-            <div class="mt-4 flex flex-wrap gap-2 text-xs text-ink-500">
-              <span v-for="tag in resource.tags" :key="`${resource.id}-${tag}`" class="rounded-full bg-white px-3 py-1 font-semibold">{{ tag }}</span>
-            </div>
-            <div class="mt-5 flex items-center justify-between text-xs text-ink-500">
-              <span>Cost: {{ resourceCost(resource) }}</span>
-              <a :href="resource.url" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition hover:text-brand-500">
-                Open resource
-                <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </article>
+            :resource="resource as any"
+            @view="handleViewResource"
+          />
           <p v-if="!recommendedResources.length" class="rounded-3xl border border-ink-100/70 bg-white/80 p-6 text-sm text-ink-500">
             Tell us more about the skills you want to strengthen to unlock personalised learning plans.
           </p>
@@ -151,9 +121,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { definePageMeta, useAsyncData } from '#imports'
+import { definePageMeta, useAsyncData, useRouter } from '#imports'
 import { useAuthStore, type ExperienceLevel } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
+import JobCard from '~/components/features/JobCard.vue'
+import CourseCard from '~/components/features/CourseCard.vue'
 
 interface JobResponse {
   id: string
@@ -164,6 +136,10 @@ interface JobResponse {
   job_location?: string | null
   required_skills: string[]
   recommended_experience_level: ExperienceLevel
+  salary_range_min?: number | null
+  salary_range_max?: number | null
+  created_at?: string
+  updated_at?: string
 }
 
 interface ResourceResponse {
@@ -173,6 +149,8 @@ interface ResourceResponse {
   url: string
   platform?: string
   tags: string[]
+  created_at?: string
+  updated_at?: string
 }
 
 definePageMeta({
@@ -181,8 +159,17 @@ definePageMeta({
 
 const auth = useAuthStore()
 const api = useApi()
+const router = useRouter()
 
 await auth.fetchProfile()
+
+const navigateToJob = (jobId: string) => {
+  router.push(`/jobs/${jobId}`)
+}
+
+const handleViewResource = (resource: ResourceResponse) => {
+  window.open(resource.url, '_blank', 'noopener,noreferrer')
+}
 
 const { data: jobsData } = await useAsyncData('dashboard-jobs', () =>
   api<JobResponse[]>('/jobs/', {

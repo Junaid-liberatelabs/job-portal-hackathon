@@ -36,8 +36,10 @@ export type UpdateProfilePayload = {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(process.client ? localStorage.getItem('ci_token') : null)
-  const tokenType = ref<string | null>(process.client ? localStorage.getItem('ci_token_type') : 'Bearer')
+  const isClient = typeof window !== 'undefined'
+  
+  const token = ref<string | null>(isClient ? localStorage.getItem('ci_token') : null)
+  const tokenType = ref<string | null>(isClient ? localStorage.getItem('ci_token_type') : 'Bearer')
   const user = ref<UserProfile | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -45,7 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => Boolean(token.value))
 
   const persistToken = () => {
-    if (!process.client) return
+    if (!isClient) return
     if (token.value) {
       localStorage.setItem('ci_token', token.value)
       localStorage.setItem('ci_token_type', tokenType.value ?? 'Bearer')
@@ -97,16 +99,37 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      await api<UserProfile>('/auth/register', {
+      console.log('Registration payload:', payload)
+      const response = await api<UserProfile>('/auth/register', {
         method: 'POST',
         body: payload,
         suppressAuthError: true
       })
+      console.log('Registration successful:', response)
       // Automatically log in after successful registration
       await login(payload.email, payload.password)
       return true
     } catch (err: any) {
-      error.value = err?.response?._data?.detail ?? 'Unable to create account. Please try again.'
+      console.error('Registration error:', err)
+      console.error('Error details:', err?.data)
+      console.error('Error response:', err?.response)
+      
+      // Try to extract the most specific error message
+      let errorMessage = 'Unable to create account. Please try again.'
+      
+      if (err?.data?.detail) {
+        errorMessage = typeof err.data.detail === 'string' 
+          ? err.data.detail 
+          : JSON.stringify(err.data.detail)
+      } else if (err?.response?._data?.detail) {
+        errorMessage = typeof err.response._data.detail === 'string'
+          ? err.response._data.detail
+          : JSON.stringify(err.response._data.detail)
+      } else if (err?.message) {
+        errorMessage = err.message
+      }
+      
+      error.value = errorMessage
       return false
     } finally {
       loading.value = false

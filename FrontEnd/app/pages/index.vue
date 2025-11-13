@@ -1,36 +1,54 @@
 <template>
   <div class="relative overflow-hidden bg-ink-50">
-    <ExperienceNav :sections="navSections" :offset="navOffset" />
-
-    <ThreeDHero
-      :stats="heroStats"
-      description="Help youth turn skills into first roles with transparent matches, curated learning, and mentor-ready insights."
-      :primary-cta="{ label: 'Book a walkthrough', to: '/#contact' }"
-      :secondary-cta="{ label: 'Explore platform', to: '/#features' }"
-      :scene-colors="{ a: '#1d4ed8', b: '#38bdf8' }"
-      :scene-density="0.9"
-    >
-      <template #headline>
-        Launch youth careers with transparent matches<br class="hidden sm:block" />
-        and <span class="bg-gradient-to-r from-sky-500 via-emerald-400 to-teal-300 bg-clip-text text-transparent">actionable learning paths</span>.
-      </template>
-    </ThreeDHero>
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-ink-900 to-ink-800 text-white overflow-hidden">
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM0ZWNkYzQiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNGgtMnYyaDJ2LTJ6bTAgNGgydjItMnYtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+      
+      <div class="relative max-w-7xl mx-auto px-6 py-24 text-center">
+        <div class="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-accent mb-8">
+          <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
+          AI-Powered Career Platform
+        </div>
+        
+        <h1 class="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          Launch Youth Careers with<br />
+          <span class="text-gradient">Transparent Matches</span>
+        </h1>
+        
+        <p class="text-xl text-ink-300 max-w-3xl mx-auto mb-12">
+          Help youth turn skills into first roles with transparent matches, curated learning, and mentor-ready insights.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <NuxtLink to="/signup" class="btn btn-accent btn-lg">
+            Get Started Free
+          </NuxtLink>
+          <NuxtLink to="/login" class="btn btn-outline btn-lg">
+            Sign In
+          </NuxtLink>
+        </div>
+        
+        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div v-for="stat in heroStats" :key="stat.label" class="text-center">
+            <div class="text-4xl font-bold text-accent mb-2">{{ stat.value }}</div>
+            <div class="text-sm text-ink-400">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section id="features" class="relative border-t border-white/40 bg-white py-24 lg:py-28">
-      <div class="pointer-events-none absolute inset-0 -z-10 opacity-60">
-        <HeroScene color-a="#1d4ed8" color-b="#38bdf8" :density="0.45" />
-      </div>
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-200/50 to-transparent"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
         <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
+          <div>
             <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Platform chapters</span>
             <h2 class="section-heading mt-3">
               Shape every chapter of the youth career journey<br class="hidden lg:block" />
               with <span class="bg-gradient-to-r from-sky-500 via-emerald-400 to-teal-300 bg-clip-text text-transparent">clear, guided steps</span>.
             </h2>
           </div>
-          <p class="section-subheading" v-scroll-reveal="{ direction: 'up', distance: 24, duration: 720, delay: 160 }">
+          <p class="section-subheading">
             Capture skills, surface opportunities, and plan learning sprints—without losing the human support that matters most.
           </p>
         </div>
@@ -84,7 +102,7 @@
     <section id="foundations" class="relative border-t border-white/50 bg-ink-50 py-24 lg:py-28">
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-200/40 to-transparent"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
+        <div class="max-w-2xl space-y-4">
           <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Foundational Pillars</span>
           <h2 class="section-heading">Built for students, mentors, and early-career partners</h2>
           <p class="section-subheading">
@@ -97,7 +115,6 @@
             v-for="(item, index) in platformPillars"
             :key="item.title"
             class="landing-card landing-card--glass p-6 transition hover:-translate-y-1"
-            v-scroll-reveal="{ direction: 'up', distance: 40, duration: 920, delay: index * 140 }"
           >
             <div class="chip chip--ink mb-4">
               {{ item.tag }}
@@ -118,7 +135,7 @@
     <section id="process" class="relative overflow-hidden bg-ink-900 py-24 text-white lg:py-28">
       <div class="absolute inset-y-0 right-0 hidden w-1/2 bg-gradient-to-l from-brand-500/20 via-ink-900/40 to-transparent lg:block"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 36, duration: 720 }">
+        <div class="max-w-2xl space-y-4">
           <span class="text-xs font-semibold uppercase tracking-[0.4em] text-brand-200/90">How it works</span>
           <h2 class="font-display text-3xl font-semibold sm:text-4xl">From first intake to measurable outcomes</h2>
           <p class="text-sm text-white/70">
@@ -131,7 +148,6 @@
             v-for="(step, index) in processJourney"
             :key="step.title"
             class="landing-card landing-card--ink grid gap-6 p-6 text-left md:grid-cols-[auto_1fr] md:items-center md:gap-10 lg:p-8"
-            v-scroll-reveal="{ direction: 'up', distance: 48, duration: 960, delay: index * 160 }"
           >
             <div class="flex items-center gap-4">
               <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/20 text-lg font-semibold text-brand-100 shadow-[0_20px_60px_-30px_rgba(59,130,246,0.75)]">
@@ -158,15 +174,12 @@
     </section>
 
     <section id="matching" class="relative bg-white py-24 lg:py-28">
-      <div class="pointer-events-none absolute inset-0 -z-10 opacity-45">
-        <HeroScene color-a="#0ea5e9" color-b="#2563eb" :density="0.35" />
-      </div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
         <div class="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center">
           <div class="space-y-6">
-            <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500" v-scroll-reveal="{ direction: 'up', distance: 24, duration: 720 }">Matching</span>
-            <h2 class="section-heading" v-scroll-reveal="{ direction: 'up', distance: 24, duration: 760, delay: 120 }">Explainable recommendations for every youth</h2>
-            <p class="section-subheading" v-scroll-reveal="{ direction: 'up', distance: 16, duration: 760, delay: 220 }">
+            <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Matching</span>
+            <h2 class="section-heading">Explainable recommendations for every youth</h2>
+            <p class="section-subheading">
               Students, mentors, and employers see exactly why a role or resource was surfaced—so decisions stay transparent and confidence stays high.
             </p>
 
@@ -175,7 +188,6 @@
                 v-for="(highlight, index) in matchingHighlights"
                 :key="highlight.title"
                 class="landing-card landing-card--brand border-transparent p-5"
-                v-scroll-reveal="{ direction: 'up', distance: 40, duration: 940, delay: index * 160 }"
               >
                 <h3 class="font-display text-lg font-semibold text-ink-900">{{ highlight.title }}</h3>
                 <p class="mt-2 text-sm text-ink-600">{{ highlight.copy }}</p>
@@ -183,7 +195,7 @@
             </div>
           </div>
 
-          <div class="landing-card landing-card--glass relative overflow-hidden border-ink-100/30 bg-gradient-to-br from-white to-ink-50 p-8" v-scroll-reveal="{ direction: 'up', distance: 36, duration: 980, delay: 220 }">
+          <div class="landing-card landing-card--glass relative overflow-hidden border-ink-100/30 bg-gradient-to-br from-white to-ink-50 p-8">
             <div class="relative space-y-6">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-ink-500">Sample match card</span>
@@ -221,12 +233,9 @@
     </section>
 
     <section id="roadmap" class="relative border-t border-white/40 bg-white py-24 lg:py-28">
-      <div class="pointer-events-none absolute inset-0 -z-10 opacity-35">
-        <HeroScene color-a="#1e3a8a" color-b="#38bdf8" :density="0.28" />
-      </div>
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-200/50 to-transparent"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
+        <div class="max-w-2xl space-y-4">
           <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Product Roadmap</span>
           <h2 class="section-heading">Momentum toward deeper guidance and automation</h2>
           <p class="section-subheading">
@@ -239,7 +248,6 @@
             v-for="(milestone, index) in roadmapMilestones"
             :key="milestone.title"
             class="landing-card landing-card--glass p-6"
-            v-scroll-reveal="{ direction: 'up', distance: 44, duration: 920, delay: index * 150 }"
           >
             <div class="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-brand-500">
               <span class="h-6 w-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-mono text-xs">
@@ -262,7 +270,7 @@
 
     <section id="testimonials" class="border-t border-white/40 bg-ink-50 py-24 lg:py-28">
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
+        <div class="max-w-2xl space-y-4">
           <span class="text-xs font-semibold uppercase tracking-[0.35em] text-ink-400">Testimonials</span>
           <h2 class="section-heading">Trusted by youth, mentors, and hiring partners</h2>
           <p class="section-subheading">
@@ -275,7 +283,6 @@
             v-for="(testimonial, index) in testimonials"
             :key="testimonial.name"
             class="landing-card landing-card--glass p-8 transition hover:-translate-y-1"
-            v-scroll-reveal="{ direction: 'up', distance: 48, duration: 940, delay: index * 170 }"
           >
             <div class="absolute -top-6 right-8 text-6xl text-ink-100">“</div>
             <blockquote class="space-y-4 text-sm text-ink-500">
@@ -299,7 +306,7 @@
         <div class="absolute right-0 top-0 h-60 w-60 translate-x-1/3 rounded-full bg-emerald-400/40 blur-3xl"></div>
       </div>
 
-      <div class="relative mx-auto max-w-5xl rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-10 shadow-[0_45px_140px_-80px_rgba(56,189,248,0.6)] backdrop-blur" v-scroll-reveal="{ distance: 0, duration: 960 }">
+        <div class="relative mx-auto max-w-5xl rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-10 shadow-[0_45px_140px_-80px_rgba(56,189,248,0.6)] backdrop-blur">
         <div class="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div class="max-w-xl space-y-4">
             <span class="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.35em] text-white/80">
@@ -335,10 +342,10 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, type ComponentPublicInstance } from 'vue'
-import HeroScene from '~/components/HeroScene.vue'
-import { useScrollAnimation } from '~/composables/useScrollAnimation'
-import ExperienceNav from '~/components/layout/ExperienceNav.vue'
-import ThreeDHero from '~/components/hero/ThreeDHero.vue'
+
+definePageMeta({
+  layout: 'default'
+})
 
 const heroStats = [
   { label: 'Career tracks supported', value: '18' },
@@ -627,57 +634,7 @@ const testimonials = [
   }
 ] as const
 
-const { createTiltEffect, observeElement } = useScrollAnimation()
-
-const featureRevealCleanup = new Map<HTMLElement, () => void>()
-const featureTiltCleanup = new Map<HTMLElement, () => void>()
-
 const registerFeatureCard = (el: Element | ComponentPublicInstance | null, index: number) => {
-  if (!import.meta.client) return
-
-  const element = el instanceof HTMLElement ? el : null
-  if (!element) return
-
-  featureRevealCleanup.get(element)?.()
-  featureTiltCleanup.get(element)?.()
-
-  element.classList.add('sr-base')
-  element.style.setProperty('--sr-transform', 'translate3d(0, 48px, 0)')
-  element.style.setProperty('--sr-duration', '940ms')
-  element.style.setProperty('--sr-delay', `${index * 140}ms`)
-
-  const { stop } = observeElement(element, {
-    threshold: 0.28,
-    once: true,
-    onEnter: () => {
-      requestAnimationFrame(() => {
-        element.classList.add('sr-visible')
-      })
-    }
-  })
-
-  featureRevealCleanup.set(element, stop)
-
-  const { destroy } = createTiltEffect(element, { maxAngle: 6, perspective: 960 })
-  featureTiltCleanup.set(element, destroy)
+  // Simplified - no animations for now
 }
-
-onBeforeUnmount(() => {
-  featureRevealCleanup.forEach((stop) => stop())
-  featureRevealCleanup.clear()
-  featureTiltCleanup.forEach((destroy) => destroy())
-  featureTiltCleanup.clear()
-})
-
-const navSections = [
-  { id: 'features', label: 'Features' },
-  { id: 'foundations', label: 'Pillars' },
-  { id: 'process', label: 'Journey' },
-  { id: 'matching', label: 'Matching' },
-  { id: 'roadmap', label: 'Roadmap' },
-  { id: 'testimonials', label: 'Proof' },
-  { id: 'contact', label: 'Demo' }
-] as { id: string; label: string }[]
-
-const navOffset = 96
 </script>

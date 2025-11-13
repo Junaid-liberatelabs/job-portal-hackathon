@@ -2,6 +2,23 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* CareerConnect Design System - Custom Utilities */
+:root {
+  /* Colors */
+  --color-primary: #1a2332;
+  --color-secondary: #ff6b6b;
+  --color-accent: #4ecdc4;
+  --color-neutral: #f8f9fa;
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, var(--color-accent), #44a08d);
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, var(--color-accent), #44a08d);
+}
+
 html {
   scroll-behavior: initial;
 }
