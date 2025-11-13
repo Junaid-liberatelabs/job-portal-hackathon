@@ -5,8 +5,8 @@ Provides functions to populate the database with initial data.
 
 import logging
 from app.db.session import SessionLocal
-from app.db.seeds.jobs_seed import seed_jobs
-from app.db.seeds.resources_seed import seed_resources
+from app.db.seeded_data.jobs_seed import seed_jobs
+from app.db.seeded_data.resources_seed import seed_resources
 
 logger = logging.getLogger(__name__)
 

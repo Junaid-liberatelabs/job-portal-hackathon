@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from app.api.dependencies import get_current_user
+from app.auth.dependencies import get_current_user
 from app.api.schemas.user import UserResponse, UserUpdate
 from app.db.crud.user import (
     add_user_skill,
