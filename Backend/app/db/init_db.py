@@ -31,7 +31,7 @@ async def init_db():
 
         # Log the tables that were created
         table_names = [table.name for table in Base.metadata.sorted_tables]
-        logger.info(f"Database tables created successfully: {', '.join(table_names)}")
+        logger.info(f"Database tables created successfully.")
 
     except Exception as e:
         logger.error(f"Error creating database tables: {e}", exc_info=True)

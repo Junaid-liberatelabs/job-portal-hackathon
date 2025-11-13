@@ -19,7 +19,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from app.db.seeds import seed_all, check_seed_status
+from app.db.seeded_data import seed_all, check_seed_status
 
 
 def main():
