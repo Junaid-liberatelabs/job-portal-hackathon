@@ -1,10 +1,10 @@
 # Stage 1: Build the application
-FROM node
+FROM node:latest AS builder
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json (or yarn.lock, etc.)
 COPY package*.json ./
 
 # Install dependencies
@@ -13,5 +13,29 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Set the production environment for the build
+ENV NODE_ENV=production
+
 # Build the Nuxt application
-CMD ["npm", "run", "dev"]
+RUN npm run build
+
+# Stage 2: Create the production image
+FROM node:latest
+
+# Set the working directory
+WORKDIR /app
+
+# Set the production environment
+ENV NODE_ENV=production
+
+# Copy the built application from the 'builder' stage
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Set the command to start the server
+# This will run the production server from the .output directory
+CMD ["node", ".output/server/index.mjs"]
