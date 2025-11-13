@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from app.api.schemas.job import JobCreate, JobResponse, JobUpdate
+from app.api.schemas.recommendation import JobRecommendation
 from app.db.crud.job import (
     create_job as crud_create_job,
     delete_job as crud_delete_job,
@@ -9,10 +11,9 @@ from app.db.crud.job import (
 )
 from app.db.model.job import ExperienceLevel, JobType
 from app.db.session import get_db
+from app.services.recommendation_service import recommendation_service
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-
-from app.api.schemas.job import JobCreate, JobResponse, JobUpdate
 
 router = APIRouter()
 
@@ -133,3 +134,50 @@ async def delete_job(job_id: str, db: Session = Depends(get_db)):
         )
     
     return {"message": "Job deleted successfully"}
+
+
+@router.get("/{job_id}/similar", response_model=List[JobRecommendation])
+async def get_similar_jobs(
+    job_id: str,
+    limit: int = Query(5, ge=1, le=20, description="Maximum number of similar jobs to return"),
+    db: Session = Depends(get_db),
+):
+    """
+    Get jobs similar to the specified job based on vector similarity.
+    
+    Returns jobs ranked by similarity to the specified job's content (title, description, skills, experience level).
+    Each result includes the job details and a similarity score (0-1).
+    
+    - **job_id**: The unique identifier of the job to find similar jobs for
+    - **limit**: Maximum number of similar jobs (default: 5, max: 20)
+    """
+    # Get the specified job
+    job = get_job_by_id(db, job_id)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
+    
+    # Check if job has an embedding
+    if job.embedding is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Job embedding not available",
+        )
+    
+    # Get similar jobs using cosine similarity
+    results = recommendation_service.get_similar_jobs(
+        db=db,
+        job_embedding=job.embedding,
+        exclude_job_id=job_id,
+        limit=limit
+    )
+    
+    # Format response with similarity scores
+    recommendations = [
+        JobRecommendation(job=similar_job, similarity_score=score)
+        for similar_job, score in results
+    ]
+    
+    return recommendations
