@@ -38,4 +38,7 @@ EXPOSE 3000
 
 # Set the command to start the server
 # This will run the production server from the .output directory
-CMD ["node", ".output/server/index.mjs"]
+# If using node directly
+CMD ["node", "--localstorage-file=/tmp/localstorage", ".output/server/index.mjs"]
+
+#
