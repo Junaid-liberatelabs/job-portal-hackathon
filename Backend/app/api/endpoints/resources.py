@@ -1,5 +1,11 @@
 from typing import List, Optional
 
+from app.api.schemas.recommendation import ResourceRecommendation
+from app.api.schemas.resources import (
+    ResourceCreate,
+    ResourceResponse,
+    ResourceUpdate,
+)
 from app.db.crud.resources import (
     create_resource as crud_create_resource,
     delete_resource as crud_delete_resource,
@@ -8,14 +14,9 @@ from app.db.crud.resources import (
     update_resource as crud_update_resource,
 )
 from app.db.session import get_db
+from app.services.recommendation_service import recommendation_service
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-
-from app.api.schemas.resources import (
-    ResourceCreate,
-    ResourceResponse,
-    ResourceUpdate,
-)
 
 router = APIRouter()
 
@@ -132,3 +133,50 @@ async def delete_resource(resource_id: str, db: Session = Depends(get_db)):
         )
     
     return {"message": "Resource deleted successfully"}
+
+
+@router.get("/{resource_id}/similar", response_model=List[ResourceRecommendation])
+async def get_similar_resources(
+    resource_id: str,
+    limit: int = Query(5, ge=1, le=20, description="Maximum number of similar resources to return"),
+    db: Session = Depends(get_db),
+):
+    """
+    Get learning resources similar to the specified resource based on vector similarity.
+    
+    Returns resources ranked by similarity to the specified resource's content (name, description, tags).
+    Each result includes the resource details and a similarity score (0-1).
+    
+    - **resource_id**: The unique identifier of the resource to find similar resources for
+    - **limit**: Maximum number of similar resources (default: 5, max: 20)
+    """
+    # Get the specified resource
+    resource = get_resource_by_id(db, resource_id)
+    if not resource:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resource not found",
+        )
+    
+    # Check if resource has an embedding
+    if resource.embedding is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Resource embedding not available",
+        )
+    
+    # Get similar resources using cosine similarity
+    results = recommendation_service.get_similar_resources(
+        db=db,
+        resource_embedding=resource.embedding,
+        exclude_resource_id=resource_id,
+        limit=limit
+    )
+    
+    # Format response with similarity scores
+    recommendations = [
+        ResourceRecommendation(resource=similar_resource, similarity_score=score)
+        for similar_resource, score in results
+    ]
+    
+    return recommendations
