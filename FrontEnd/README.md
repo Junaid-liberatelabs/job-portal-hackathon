@@ -1,22 +1,26 @@
 # CareerIn Frontend
 
-Nuxt-based experience layer for the CareerIn talent platform. The landing page pairs conversational copy with interactive 3D visuals and smooth scrolling inspired by [Careerly](https://www.careerlyny.com/).
+Nuxt-based experience layer for CareerIn, a youth employment and learning platform. The landing page blends immersive storytelling, Lenis-powered motion, and Three.js visuals with authenticated workspaces for dashboards, jobs, resources, and profiles.
 
-## Tech Stack
-- Nuxt 4 (Vue 3, server-aware meta via `defineNuxtConfig`)
-- Tailwind CSS through `@nuxtjs/tailwindcss`
-- Pinia for global state (planned for authenticated experiences)
-- Lenis for smooth scrolling and anchor handling
-- TypeScript across components and plugins
-- Google Fonts: Inter (body), Plus Jakarta Sans (display), IBM Plex Mono (code)
-- Three.js-powered hero scene for interactive motion
+## Tech Stack & Patterns
+- Nuxt 4 (Vue 3, file-based routing, `defineNuxtConfig` runtime config)
+- Tailwind CSS via `@nuxtjs/tailwindcss` with shared landing card tokens in `assets/css/tailwind.css`
+- Pinia for global state management (`app/stores/auth.ts`) with persisted auth tokens
+- Lenis smooth scrolling plugin (`app/plugins/lenis.client.ts`) + custom `useScrollAnimation` composable
+- Three.js particle scene + video-backed hero (`app/components/hero/ThreeDHero.vue`)
+- Typescript-first components, composables, and stores
+- API integration through OpenAPI-driven endpoints exposed at `endpoints_info.json`
 
-## Frontend Patterns
-- Layout-driven navigation in `app/layouts/default.vue` with responsive mobile menu
-- Reusable interactive hero module at `app/components/HeroOrbit.vue` using CSS 3D transforms and brand palette
-- 3D background renderer in `app/components/HeroScene.vue` driven by Three.js shaders
-- Section anchors (`#features`, `#process`, etc.) wired to Lenis for soft scroll
-- Tailwind utility-first styling with theme extensions defined in `tailwind.config.ts` and global tokens in `assets/css/tailwind.css`
+## Feature Map
+- Landing experience (`app/pages/index.vue`) updated to CareerIn youth employment narrative with reusable data-driven sections
+- Auth flows: `/login` and `/signup` (guest middleware) backed by Pinia store + backend tokens
+- Protected workspace routes (`middleware/auth.ts`):
+  - `/dashboard` – profile snapshot, recommended jobs/resources from rule-based matching
+  - `/jobs` & `/jobs/[id]` – filterable listing, job detail with related learning resources
+  - `/resources` – learning catalog with keyword, skill, and cost filters
+  - `/profile` – profile editing and realtime skill management
+- Shared API helper (`app/composables/useApi.ts`) attaches auth headers, handles 401s, and centralises fetch logic
+- Navigation awareness inside `app/layouts/default.vue` swaps between marketing anchors and workspace links based on auth state
 
 ## Commands
 

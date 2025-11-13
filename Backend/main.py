@@ -2,10 +2,17 @@
 Main application entry point for the saaslab AI system.
 """
 
+import asyncio
 import logging
 import os
+import sys
 from contextlib import asynccontextmanager
 
+from app.api.router import router as api_router
+from app.core.config import settings
+# from app.core.exceptions import register_exception_handlers
+from app.core.logging_config import get_logger, setup_logging
+from app.db.init_db import init_db
 # from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,10 +20,6 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.router import router as api_router
-from app.core.config import settings
-# from app.core.exceptions import register_exception_handlers
-from app.core.logging_config import get_logger, setup_logging
 # from langgraph.checkpoint.memory import MemorySaver
 # from saaslab.db.base import Base
 # from saaslab.db.session import sync_engine
@@ -25,9 +28,7 @@ from app.core.logging_config import get_logger, setup_logging
 # Load environment variables before importing settings
 # load_dotenv()
 
-import asyncio
-import sys
-#check if the os is windows with sys
+# check if the os is windows with sys
 
 
 logger = get_logger(__name__)
@@ -46,9 +47,7 @@ async def lifespan(app: FastAPI):
     # app.state.checkpointer = MemorySaver()
     logger.info("Starting up application...")
     # Example: Initialize database connections, load models, etc.
-    # await init_db()
-    
-    
+    await init_db()
 
     if settings.ENVIRONMENT in ["development", "staging", "production"]:
         logger.info("Creating database tables")
@@ -61,6 +60,7 @@ async def lifespan(app: FastAPI):
     # Example: Close database connections
     # await close_db()
 
+
 def create_application() -> FastAPI:
     """
     Create and configure the FastAPI application.
@@ -68,9 +68,10 @@ def create_application() -> FastAPI:
     Returns:
         Configured FastAPI application
     """
-    if sys.platform.startswith('win'):
+    if sys.platform.startswith("win"):
         logger.info("Setting Windows selector event loop policy")
         from asyncio import WindowsSelectorEventLoopPolicy
+
         asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
     # Create FastAPI app
     app = FastAPI(
@@ -85,14 +86,18 @@ def create_application() -> FastAPI:
     )
 
     # Set up CORS middleware
-    # if settings.BACKEND_CORS_ORIGINS:
-    #     app.add_middleware(
-    #         CORSMiddleware,
-    #         allow_origins=settings.BACKEND_CORS_ORIGINS,
-    #         allow_credentials=True,
-    #         allow_methods=["*"],
-    #         allow_headers=["*"],
-    #     )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:3000",
+            "http://localhost:3001", 
+            "http://localhost:3002",
+            "http://localhost:8000"
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     # Add security middleware
     # app.add_middleware(GZipMiddleware, minimum_size=1000)
