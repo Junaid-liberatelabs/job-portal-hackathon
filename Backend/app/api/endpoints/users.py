@@ -1,12 +1,8 @@
 from typing import Annotated
 
-from app.auth.dependencies import get_current_user
 from app.api.schemas.user import UserResponse, UserUpdate
-from app.db.crud.user import (
-    add_user_skill,
-    remove_user_skill,
-    update_user,
-)
+from app.auth.dependencies import get_current_user
+from app.db.crud.user import add_user_skill, remove_user_skill, update_user
 from app.db.model.user import User
 from app.db.session import get_db
 from fastapi import APIRouter, Depends, HTTPException, Path, status
@@ -16,9 +12,7 @@ router = APIRouter()
 
 
 @router.get("/me", response_model=UserResponse)
-def get_current_user_profile(
-    current_user: Annotated[User, Depends(get_current_user)]
-):
+def get_current_user_profile(current_user: Annotated[User, Depends(get_current_user)]):
     """
     Get the current authenticated user's profile.
     Returns all user information including skills, education, and career preferences.
@@ -69,7 +63,7 @@ def add_skill_to_profile(
     """
     Add a single skill to the current user's profile.
     The skill will only be added if it doesn't already exist.
-    
+
     - **skill**: The skill name to add (non-empty string, max 100 characters)
     """
     # Validate skill
@@ -106,7 +100,7 @@ def remove_skill_from_profile(
 ):
     """
     Remove a skill from the current user's profile.
-    
+
     - **skill**: The skill name to remove
     """
     updated_user = remove_user_skill(db, current_user.id, skill)

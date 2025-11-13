@@ -2,12 +2,12 @@
 
 from app.core.logging_config import get_logger
 from app.db.base import Base  # This import ensures all models are registered
-from app.db.session import engine
+from app.db.model.job import Job  # noqa: F401
+from app.db.model.resources import Resource  # noqa: F401
 
 # Import all models explicitly to ensure they're registered before table creation
 from app.db.model.user import User  # noqa: F401
-from app.db.model.job import Job  # noqa: F401
-from app.db.model.resources import Resource  # noqa: F401
+from app.db.session import engine
 
 logger = get_logger(__name__)
 
@@ -21,7 +21,7 @@ async def init_db():
     """
     try:
         logger.info("Starting database initialization...")
-        
+
         # Log registered models
         registered_models = [mapper.class_.__name__ for mapper in Base.registry.mappers]
         logger.info(f"Registered models: {', '.join(registered_models)}")

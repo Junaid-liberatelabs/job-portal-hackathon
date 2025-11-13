@@ -33,7 +33,7 @@ def create_user(db: Session, user: UserRegister):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    
+
     # Generate and store embedding
     try:
         embedding = embedding_service.generate_user_embedding(db_user)
@@ -44,7 +44,7 @@ def create_user(db: Session, user: UserRegister):
     except EmbeddingGenerationError as e:
         logger.error(f"Failed to generate embedding for user {db_user.id}: {e}")
         # Continue without embedding - user creation should not fail
-    
+
     return db_user
 
 
@@ -72,8 +72,20 @@ def update_user(db: Session, user_id: str, update_data: dict):
         return None
 
     # Check if embedding-relevant fields are being updated
-    embedding_fields = {"skills", "education_level", "preferred_career_track", "field_of_study", "cgpa", "location"}
-    should_regenerate_embedding = any(field in update_data for field in embedding_fields)
+    embedding_fields = {
+        "skills",
+        "education_level",
+        "preferred_career_track",
+        "field_of_study",
+        "cgpa",
+        "location",
+        "preferred_job_location",
+        "preferred_job_type",
+        "bio",
+    }
+    should_regenerate_embedding = any(
+        field in update_data for field in embedding_fields
+    )
 
     for key, value in update_data.items():
         if hasattr(user, key) and key not in ["id", "hashed_password", "created_at"]:
@@ -81,7 +93,7 @@ def update_user(db: Session, user_id: str, update_data: dict):
 
     db.commit()
     db.refresh(user)
-    
+
     # Regenerate embedding if relevant fields changed
     if should_regenerate_embedding:
         try:
@@ -93,7 +105,7 @@ def update_user(db: Session, user_id: str, update_data: dict):
         except EmbeddingGenerationError as e:
             logger.error(f"Failed to regenerate embedding for user {user.id}: {e}")
             # Continue without embedding update
-    
+
     return user
 
 
@@ -107,14 +119,16 @@ def add_user_skill(db: Session, user_id: str, skill: str):
         user.skills = user.skills + [skill]
         db.commit()
         db.refresh(user)
-        
+
         # Regenerate embedding since skills changed
         try:
             embedding = embedding_service.generate_user_embedding(user)
             user.embedding = embedding
             db.commit()
             db.refresh(user)
-            logger.info(f"Successfully regenerated embedding for user {user.id} after adding skill")
+            logger.info(
+                f"Successfully regenerated embedding for user {user.id} after adding skill"
+            )
         except EmbeddingGenerationError as e:
             logger.error(f"Failed to regenerate embedding for user {user.id}: {e}")
 
@@ -131,14 +145,16 @@ def remove_user_skill(db: Session, user_id: str, skill: str):
         user.skills = [s for s in user.skills if s != skill]
         db.commit()
         db.refresh(user)
-        
+
         # Regenerate embedding since skills changed
         try:
             embedding = embedding_service.generate_user_embedding(user)
             user.embedding = embedding
             db.commit()
             db.refresh(user)
-            logger.info(f"Successfully regenerated embedding for user {user.id} after removing skill")
+            logger.info(
+                f"Successfully regenerated embedding for user {user.id} after removing skill"
+            )
         except EmbeddingGenerationError as e:
             logger.error(f"Failed to regenerate embedding for user {user.id}: {e}")
 

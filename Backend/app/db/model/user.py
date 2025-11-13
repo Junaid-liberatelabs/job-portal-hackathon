@@ -1,8 +1,14 @@
 import uuid
 
+from app.api.schemas.user import (
+    ExperienceLevel,
+    PreferredJobLocation,
+    PreferredJobType,
+    Project,
+)
 from app.db.base import Base
-from sqlalchemy import ARRAY, Boolean, Column, DateTime, String, func, Integer, Float
 from pgvector.sqlalchemy import Vector
+from sqlalchemy import ARRAY, Boolean, Column, DateTime, Float, Integer, String, func
 
 
 class User(Base):
@@ -28,17 +34,21 @@ class User(Base):
     )
     embedding = Column(Vector(384), nullable=True)
 
-    #optional fields
+    # optional fields
     profile_picture = Column(String, nullable=True)
     bio = Column(String, nullable=True)
     location = Column(String, nullable=True)
+    preferred_job_location = Column(PreferredJobLocation, nullable=True)
+    experience_level = Column(ExperienceLevel, nullable=True)
+    preferred_job_type = Column(PreferredJobType, nullable=True)
     linkedin_url = Column(String, nullable=True)
     github_url = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
     field_of_study = Column(String, nullable=True)
     graduation_year = Column(Integer, nullable=True)
     cgpa = Column(Float, nullable=True)
-
+    brief_experience = Column(String, nullable=True)
+    project_description = Column(ARRAY[Project], nullable=True)
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, full_name={self.full_name}, skills={self.skills}, is_active={self.is_active})>"

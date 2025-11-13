@@ -9,43 +9,38 @@ Usage:
 """
 
 import argparse
-import sys
 import logging
+import sys
 
 # Simple logging setup for CLI
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-from app.db.seeded_data import seed_all, check_seed_status
+from app.db.seeded_data import check_seed_status, seed_all
 
 
 def main():
     parser = argparse.ArgumentParser(description="Seed the database with initial data")
     parser.add_argument(
-        "--check",
-        action="store_true",
-        help="Check seed status without seeding"
+        "--check", action="store_true", help="Check seed status without seeding"
     )
     parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Force seed without confirmation"
+        "--force", action="store_true", help="Force seed without confirmation"
     )
-    
+
     args = parser.parse_args()
-    
+
     # Check status
     status = check_seed_status()
     logger.info(f"Current database status:")
     logger.info(f"  - Jobs: {status['jobs_count']}")
     logger.info(f"  - Resources: {status['resources_count']}")
-    
+
     if args.check:
         return
-    
+
     # Confirm if database already has data
     if status["is_seeded"] and not args.force:
         print(
@@ -53,14 +48,14 @@ def main():
             f"{status['resources_count']} resources."
         )
         response = input("Do you want to add more seed data? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             logger.info("Seeding cancelled by user")
             return
-    
+
     # Run seeding
     logger.info("\nStarting database seeding...")
     results = seed_all()
-    
+
     if results["success"]:
         print("\n✓ Seeding completed successfully!")
         print(f"  - Jobs created: {results['jobs_created']}")

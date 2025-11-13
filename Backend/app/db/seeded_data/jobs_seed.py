@@ -3,7 +3,7 @@ Seed data for job listings.
 Provides diverse job opportunities across different types, experience levels, and skill requirements.
 """
 
-from app.db.model.job import Job, JobType, JobLocation, ExperienceLevel
+from app.db.model.job import ExperienceLevel, Job, JobLocation, JobType
 
 
 def get_jobs_seed_data():
@@ -52,7 +52,12 @@ def get_jobs_seed_data():
             "company": "MobileFirst Labs",
             "job_type": JobType.FULL_TIME,
             "job_location": JobLocation.ON_SITE,
-            "required_skills": ["React Native", "JavaScript", "TypeScript", "Mobile Development"],
+            "required_skills": [
+                "React Native",
+                "JavaScript",
+                "TypeScript",
+                "Mobile Development",
+            ],
             "recommended_experience_level": ExperienceLevel.JUNIOR,
             "salary_range_min": 60000.0,
             "salary_range_max": 75000.0,
@@ -75,7 +80,13 @@ def get_jobs_seed_data():
             "company": "AI Innovations",
             "job_type": JobType.FULL_TIME,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Python", "Machine Learning", "Pandas", "SQL", "Statistics"],
+            "required_skills": [
+                "Python",
+                "Machine Learning",
+                "Pandas",
+                "SQL",
+                "Statistics",
+            ],
             "recommended_experience_level": ExperienceLevel.JUNIOR,
             "salary_range_min": 65000.0,
             "salary_range_max": 80000.0,
@@ -143,7 +154,12 @@ def get_jobs_seed_data():
             "company": "Creative Minds Agency",
             "job_type": JobType.PART_TIME,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Adobe Photoshop", "Adobe Illustrator", "Graphic Design", "Branding"],
+            "required_skills": [
+                "Adobe Photoshop",
+                "Adobe Illustrator",
+                "Graphic Design",
+                "Branding",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 20.0,
             "salary_range_max": 30.0,
@@ -155,7 +171,12 @@ def get_jobs_seed_data():
             "company": "Quality First Software",
             "job_type": JobType.INTERNSHIP,
             "job_location": JobLocation.HYBRID,
-            "required_skills": ["Manual Testing", "Bug Reporting", "Test Cases", "Attention to Detail"],
+            "required_skills": [
+                "Manual Testing",
+                "Bug Reporting",
+                "Test Cases",
+                "Attention to Detail",
+            ],
             "recommended_experience_level": ExperienceLevel.STUDENT,
             "salary_range_min": 14.0,
             "salary_range_max": 18.0,
@@ -166,7 +187,13 @@ def get_jobs_seed_data():
             "company": "TestAutomation Inc",
             "job_type": JobType.FULL_TIME,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Selenium", "Python", "Test Automation", "CI/CD", "Git"],
+            "required_skills": [
+                "Selenium",
+                "Python",
+                "Test Automation",
+                "CI/CD",
+                "Git",
+            ],
             "recommended_experience_level": ExperienceLevel.JUNIOR,
             "salary_range_min": 50000.0,
             "salary_range_max": 65000.0,
@@ -178,7 +205,12 @@ def get_jobs_seed_data():
             "company": "Content Creators Network",
             "job_type": JobType.FREELANCE,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Technical Writing", "Content Creation", "SEO", "Research"],
+            "required_skills": [
+                "Technical Writing",
+                "Content Creation",
+                "SEO",
+                "Research",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 25.0,
             "salary_range_max": 50.0,
@@ -189,7 +221,13 @@ def get_jobs_seed_data():
             "company": "Freelance Hub",
             "job_type": JobType.FREELANCE,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["HTML", "CSS", "JavaScript", "WordPress", "Responsive Design"],
+            "required_skills": [
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "WordPress",
+                "Responsive Design",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 30.0,
             "salary_range_max": 60.0,
@@ -200,7 +238,12 @@ def get_jobs_seed_data():
             "company": "Social Growth Agency",
             "job_type": JobType.FREELANCE,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Social Media Marketing", "Content Creation", "Analytics", "Communication"],
+            "required_skills": [
+                "Social Media Marketing",
+                "Content Creation",
+                "Analytics",
+                "Communication",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 20.0,
             "salary_range_max": 40.0,
@@ -212,7 +255,12 @@ def get_jobs_seed_data():
             "company": "SecureNet Solutions",
             "job_type": JobType.INTERNSHIP,
             "job_location": JobLocation.HYBRID,
-            "required_skills": ["Network Security", "Linux", "Security Fundamentals", "Python"],
+            "required_skills": [
+                "Network Security",
+                "Linux",
+                "Security Fundamentals",
+                "Python",
+            ],
             "recommended_experience_level": ExperienceLevel.STUDENT,
             "salary_range_min": 18.0,
             "salary_range_max": 23.0,
@@ -223,7 +271,12 @@ def get_jobs_seed_data():
             "company": "CyberDefense Corp",
             "job_type": JobType.FULL_TIME,
             "job_location": JobLocation.ON_SITE,
-            "required_skills": ["Security Analysis", "SIEM", "Incident Response", "Network Security"],
+            "required_skills": [
+                "Security Analysis",
+                "SIEM",
+                "Incident Response",
+                "Network Security",
+            ],
             "recommended_experience_level": ExperienceLevel.JUNIOR,
             "salary_range_min": 55000.0,
             "salary_range_max": 70000.0,
@@ -235,7 +288,12 @@ def get_jobs_seed_data():
             "company": "Growth Marketing Co",
             "job_type": JobType.INTERNSHIP,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Digital Marketing", "Social Media", "Email Marketing", "Analytics"],
+            "required_skills": [
+                "Digital Marketing",
+                "Social Media",
+                "Email Marketing",
+                "Analytics",
+            ],
             "recommended_experience_level": ExperienceLevel.STUDENT,
             "salary_range_min": 14.0,
             "salary_range_max": 18.0,
@@ -246,7 +304,12 @@ def get_jobs_seed_data():
             "company": "SEO Experts",
             "job_type": JobType.PART_TIME,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["SEO", "Google Analytics", "Keyword Research", "Content Strategy"],
+            "required_skills": [
+                "SEO",
+                "Google Analytics",
+                "Keyword Research",
+                "Content Strategy",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 22.0,
             "salary_range_max": 32.0,
@@ -258,7 +321,12 @@ def get_jobs_seed_data():
             "company": "TechSupport Plus",
             "job_type": JobType.FULL_TIME,
             "job_location": JobLocation.ON_SITE,
-            "required_skills": ["Technical Support", "Windows", "Networking", "Troubleshooting"],
+            "required_skills": [
+                "Technical Support",
+                "Windows",
+                "Networking",
+                "Troubleshooting",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 40000.0,
             "salary_range_max": 50000.0,
@@ -269,7 +337,12 @@ def get_jobs_seed_data():
             "company": "Data Systems Inc",
             "job_type": JobType.INTERNSHIP,
             "job_location": JobLocation.HYBRID,
-            "required_skills": ["SQL", "PostgreSQL", "Database Management", "Data Backup"],
+            "required_skills": [
+                "SQL",
+                "PostgreSQL",
+                "Database Management",
+                "Data Backup",
+            ],
             "recommended_experience_level": ExperienceLevel.STUDENT,
             "salary_range_min": 17.0,
             "salary_range_max": 22.0,
@@ -291,7 +364,12 @@ def get_jobs_seed_data():
             "company": "SaaS Support Co",
             "job_type": JobType.FULL_TIME,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Customer Support", "Technical Troubleshooting", "Communication", "Problem Solving"],
+            "required_skills": [
+                "Customer Support",
+                "Technical Troubleshooting",
+                "Communication",
+                "Problem Solving",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 45000.0,
             "salary_range_max": 55000.0,
@@ -335,7 +413,12 @@ def get_jobs_seed_data():
             "company": "AI Research Lab",
             "job_type": JobType.INTERNSHIP,
             "job_location": JobLocation.HYBRID,
-            "required_skills": ["Python", "Machine Learning", "TensorFlow", "Mathematics"],
+            "required_skills": [
+                "Python",
+                "Machine Learning",
+                "TensorFlow",
+                "Mathematics",
+            ],
             "recommended_experience_level": ExperienceLevel.STUDENT,
             "salary_range_min": 20.0,
             "salary_range_max": 25.0,
@@ -346,7 +429,12 @@ def get_jobs_seed_data():
             "company": "Video Production House",
             "job_type": JobType.FREELANCE,
             "job_location": JobLocation.REMOTE,
-            "required_skills": ["Video Editing", "Adobe Premiere Pro", "After Effects", "Storytelling"],
+            "required_skills": [
+                "Video Editing",
+                "Adobe Premiere Pro",
+                "After Effects",
+                "Storytelling",
+            ],
             "recommended_experience_level": ExperienceLevel.ENTRY,
             "salary_range_min": 25.0,
             "salary_range_max": 50.0,
@@ -357,27 +445,28 @@ def get_jobs_seed_data():
 def seed_jobs(db_session):
     """
     Seeds the database with job listings.
-    
+
     Args:
         db_session: SQLAlchemy database session
-        
+
     Returns:
         int: Number of jobs created
     """
     jobs_data = get_jobs_seed_data()
     jobs_created = 0
-    
+
     for job_data in jobs_data:
         # Check if job already exists (by title and company)
-        existing_job = db_session.query(Job).filter(
-            Job.title == job_data["title"],
-            Job.company == job_data["company"]
-        ).first()
-        
+        existing_job = (
+            db_session.query(Job)
+            .filter(Job.title == job_data["title"], Job.company == job_data["company"])
+            .first()
+        )
+
         if not existing_job:
             job = Job(**job_data)
             db_session.add(job)
             jobs_created += 1
-    
+
     db_session.commit()
     return jobs_created
