@@ -72,7 +72,7 @@ def update_user(db: Session, user_id: str, update_data: dict):
         return None
 
     # Check if embedding-relevant fields are being updated
-    embedding_fields = {"skills", "education_level", "preferred_career_track"}
+    embedding_fields = {"skills", "education_level", "preferred_career_track", "field_of_study", "cgpa", "location"}
     should_regenerate_embedding = any(field in update_data for field in embedding_fields)
 
     for key, value in update_data.items():
