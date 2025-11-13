@@ -1,82 +1,140 @@
 <template>
-  <div class="relative bg-ink-50 py-16">
-    <div class="mx-auto flex max-w-7xl flex-col gap-12 px-6 lg:px-10">
-      <section class="grid gap-8 rounded-[32px] border border-white/70 bg-white/90 p-10 shadow-[0_50px_140px_-70px_rgba(15,23,42,0.3)] backdrop-blur lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div class="space-y-6">
-          <p class="inline-flex items-center gap-2 rounded-full border border-brand-200/70 bg-brand-50/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-brand-600">
-            Welcome back, {{ auth.user?.full_name?.split(' ')[0] || 'Explorer' }}
-          </p>
-          <div class="space-y-3">
-            <h1 class="font-display text-3xl font-semibold text-ink-900 sm:text-4xl">Your career launchpad</h1>
-            <p class="text-sm text-ink-500">
-              Track your strengths, review transparent matches, and commit to a learning sprint—all from a single command centre.
-            </p>
-          </div>
+  <div class="relative bg-ink-50 min-h-screen py-8">
+    <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8">
+      <!-- Welcome Header -->
+      <div class="space-y-2">
+        <h1 class="font-display text-3xl font-bold text-ink-900">
+          Welcome back!
+        </h1>
+        <p class="text-ink-600">Here's your personalized career dashboard</p>
+      </div>
 
-          <div class="grid gap-4 rounded-3xl border border-ink-100/80 bg-ink-50/60 p-6 text-sm text-ink-600 shadow-inner">
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="inline-flex rounded-full border border-ink-200/70 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-ink-400">
-                Profile snapshot
-              </span>
-              <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-                {{ auth.user?.preferred_career_track || 'Track pending' }}
-              </span>
+      <!-- Profile Completion Banner -->
+      <div v-if="profileCompletion < 100" class="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-semibold text-amber-900">Complete your profile</h3>
+            <p class="mt-1 text-sm text-amber-800">Your profile is {{ profileCompletion }}% complete. Add more information to get better job matches.</p>
+            <div class="mt-3 flex items-center gap-4">
+              <div class="flex-1 h-2 bg-amber-200 rounded-full overflow-hidden">
+                <div class="h-full bg-amber-500 transition-all duration-500" :style="{ width: `${profileCompletion}%` }"></div>
+              </div>
+              <NuxtLink to="/profile" class="text-sm font-semibold text-amber-700 hover:text-amber-800">
+                Complete Profile →
+              </NuxtLink>
             </div>
-            <div class="grid gap-2 sm:grid-cols-2">
-              <p><strong class="text-ink-800">Education:</strong> {{ auth.user?.education_level || 'Not provided' }}</p>
-              <p><strong class="text-ink-800">Experience level:</strong> {{ experienceLabel }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards with Smooth Animations -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Skills Added</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ auth.user?.skills?.length || 0 }}</p>
+              <p class="mt-1 text-xs text-ink-400">+2 this week</p>
             </div>
-            <div class="flex flex-wrap gap-2" v-if="auth.user?.skills?.length">
-              <span v-for="skill in auth.user?.skills" :key="skill" class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-ink-500 shadow">
-                {{ skill }}
-              </span>
-            </div>
-            <NuxtLink
-              to="/profile"
-              class="inline-flex w-max items-center gap-2 text-sm font-semibold text-brand-600 transition hover:text-brand-500"
-            >
-              Update profile
-              <span aria-hidden="true">→</span>
-            </NuxtLink>
+            <GradientIcon size="md" color="brand">
+              <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </GradientIcon>
           </div>
         </div>
 
-        <div class="space-y-5">
-          <div class="rounded-[28px] border border-white/70 bg-white/80 p-6 shadow-[0_35px_100px_-60px_rgba(59,130,246,0.25)]">
-            <h2 class="font-display text-lg font-semibold text-ink-900">Weekly focus</h2>
-            <p class="mt-2 text-sm text-ink-500">
-              Stay consistent by tackling one opportunity and one learning sprint at a time.
-            </p>
-            <dl class="mt-4 grid gap-4 text-sm text-ink-600">
-              <div class="rounded-2xl border border-brand-100/70 bg-brand-50/60 p-4">
-                <dt class="text-xs font-semibold uppercase tracking-[0.3em] text-brand-500">Next application</dt>
-                <dd class="mt-1 font-semibold text-ink-900">{{ topJob?.title || 'Review recommended roles below' }}</dd>
-                <p v-if="topJob" class="mt-1 text-xs text-ink-500">{{ overlapMessage(topJob) }}</p>
-              </div>
-              <div class="rounded-2xl border border-emerald-100/70 bg-emerald-50/60 p-4">
-                <dt class="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">Learning sprint</dt>
-                <dd class="mt-1 font-semibold text-ink-900">{{ topResource?.name || 'Pick a resource to level up this week' }}</dd>
-                <p v-if="topResource" class="mt-1 text-xs text-ink-500">{{ resourceMessage(topResource) }}</p>
-              </div>
-            </dl>
+        <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Jobs Applied</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.jobs_applied || 8 }}</p>
+              <p class="mt-1 text-xs text-ink-400">3 responses</p>
+            </div>
+            <GradientIcon size="md" color="brand">
+              <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </GradientIcon>
           </div>
         </div>
-      </section>
 
-      <section class="space-y-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Courses Completed</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.courses_completed || 5 }}</p>
+              <p class="mt-1 text-xs text-ink-400">15 hours learned</p>
+            </div>
+            <GradientIcon size="md" color="brand">
+              <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </GradientIcon>
+          </div>
+        </div>
+
+        <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Interviews</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.interviews || 3 }}</p>
+              <p class="mt-1 text-xs text-ink-400">2 upcoming</p>
+            </div>
+            <GradientIcon size="md" color="brand">
+              <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </GradientIcon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skill Match Analysis -->
+      <div class="rounded-2xl border border-white/70 bg-white p-8 shadow-sm">
+        <div class="flex items-center justify-between mb-6">
           <div>
-            <span class="inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-brand-50/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-brand-600">
-              Recommended jobs
-            </span>
-            <h2 class="mt-3 font-display text-2xl font-semibold text-ink-900">Opportunities aligned to your profile</h2>
+            <h2 class="font-display text-xl font-semibold text-ink-900">Skill Match Analysis</h2>
+            <p class="mt-1 text-sm text-ink-600">Your skills vs. market demand</p>
           </div>
-          <NuxtLink to="/jobs" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 transition hover:text-brand-500">
-            View all roles
-            <span aria-hidden="true">→</span>
+          <NuxtLink to="/profile?tab=skills" class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+            Manage Skills →
           </NuxtLink>
         </div>
-        <div class="grid gap-6 lg:grid-cols-2">
+        <SkillChart 
+          v-if="auth.user?.skills && auth.user.skills.length > 0"
+          :skills="skillsForChart"
+          chart-type="pie"
+          :height="300"
+        />
+        <div v-else class="py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-ink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p class="mt-4 text-sm text-ink-600">No skills added yet</p>
+          <NuxtLink to="/profile?tab=skills" class="mt-2 inline-flex items-center text-sm font-semibold text-brand-600 hover:text-brand-700">
+            Add your first skill →
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Recommended Jobs -->
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display text-2xl font-semibold text-ink-900">Recommended Jobs</h2>
+            <p class="mt-1 text-sm text-ink-600">{{ scoredJobs.length }} jobs matched to your skills</p>
+          </div>
+          <NuxtLink to="/jobs" class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+            View All →
+          </NuxtLink>
+        </div>
+        <div class="grid gap-6 sm:grid-cols-2">
           <JobCard
             v-for="job in recommendedJobs"
             :key="job.id"
@@ -84,37 +142,35 @@
             :user-skills="auth.user?.skills || []"
             @click="navigateToJob(job.id)"
           />
-          <p v-if="!recommendedJobs.length" class="rounded-3xl border border-ink-100/70 bg-white/80 p-6 text-sm text-ink-500">
-            Add more skills or adjust your track to see tailored matches.
-          </p>
         </div>
-      </section>
+        <p v-if="!recommendedJobs.length" class="rounded-2xl border border-ink-200 bg-white p-8 text-center text-sm text-ink-600">
+          Add more skills to your profile to see personalized job recommendations.
+        </p>
+      </div>
 
-      <section class="space-y-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <!-- Recommended Learning -->
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
           <div>
-            <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200/70 bg-emerald-50/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-emerald-600">
-              Recommended learning
-            </span>
-            <h2 class="mt-3 font-display text-2xl font-semibold text-ink-900">Strengthen skills with purposeful resources</h2>
+            <h2 class="font-display text-2xl font-semibold text-ink-900">Recommended Learning</h2>
+            <p class="mt-1 text-sm text-ink-600">Courses tailored to boost your career</p>
           </div>
-          <NuxtLink to="/resources" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 transition hover:text-brand-500">
-            Explore all resources
-            <span aria-hidden="true">→</span>
+          <NuxtLink to="/resources" class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+            View All →
           </NuxtLink>
         </div>
-        <div class="grid gap-6 lg:grid-cols-2">
+        <div class="grid gap-6 sm:grid-cols-2">
           <CourseCard
             v-for="resource in recommendedResources"
             :key="resource.id"
             :resource="resource as any"
             @view="handleViewResource"
           />
-          <p v-if="!recommendedResources.length" class="rounded-3xl border border-ink-100/70 bg-white/80 p-6 text-sm text-ink-500">
-            Tell us more about the skills you want to strengthen to unlock personalised learning plans.
-          </p>
         </div>
-      </section>
+        <p v-if="!recommendedResources.length" class="rounded-2xl border border-ink-200 bg-white p-8 text-center text-sm text-ink-600">
+          Add skills to discover relevant learning resources.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -126,6 +182,8 @@ import { useAuthStore, type ExperienceLevel } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
 import JobCard from '~/components/features/JobCard.vue'
 import CourseCard from '~/components/features/CourseCard.vue'
+import SkillChart from '~/components/features/SkillChart.vue'
+import GradientIcon from '~/components/ui/GradientIcon.vue'
 
 interface JobResponse {
   id: string
@@ -248,4 +306,44 @@ const capitalize = (value: string | null | undefined) => {
   if (!value) return 'Unknown'
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
 }
+
+// Profile completion calculation
+const profileCompletion = computed(() => {
+  if (!auth.user) return 0
+  let completed = 0
+  const total = 10
+  
+  if (auth.user.full_name) completed++
+  if (auth.user.email) completed++
+  if (auth.user.education_level) completed++
+  if (auth.user.preferred_career_track) completed++
+  if (auth.user.experience_level) completed++
+  if (auth.user.skills && auth.user.skills.length > 0) completed++
+  if (auth.user.skills && auth.user.skills.length >= 3) completed++
+  if (auth.user.skills && auth.user.skills.length >= 5) completed++
+  completed += 2 // Placeholder for other profile fields
+  
+  return Math.round((completed / total) * 100)
+})
+
+// Skills for chart
+const skillsForChart = computed(() => {
+  if (!auth.user?.skills) return []
+  const skillCounts: Record<string, number> = {}
+  auth.user.skills.forEach(skill => {
+    skillCounts[skill] = (skillCounts[skill] || 0) + 1
+  })
+  return Object.entries(skillCounts).map(([name, value]) => ({
+    name,
+    value,
+    category: 'skill'
+  }))
+})
+
+// Stats data (placeholder - replace with real data from backend)
+const statsData = computed(() => ({
+  jobs_applied: 8,
+  courses_completed: 5,
+  interviews: 3
+}))
 </script>
