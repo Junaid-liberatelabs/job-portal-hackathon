@@ -1,60 +1,20 @@
 <template>
   <div class="relative overflow-hidden bg-ink-50">
-    <section class="relative isolate overflow-hidden">
-      <HeroScene />
+    <ExperienceNav :sections="navSections" :offset="navOffset" />
 
-      <div class="pointer-events-none absolute inset-0">
-        <div class="absolute -left-32 top-0 h-[520px] w-[520px] rounded-full bg-brand-100/50 blur-3xl"></div>
-        <div class="absolute right-0 top-1/3 h-[520px] w-[520px] translate-x-1/4 rounded-full bg-brand-200/40 blur-3xl"></div>
-        <div class="absolute left-1/2 top-40 h-[380px] w-[860px] -translate-x-1/2 rounded-full bg-radial-spot opacity-70"></div>
-      </div>
-
-      <div class="relative mx-auto grid max-w-7xl items-center gap-20 px-6 pb-24 pt-32 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:px-10 lg:pb-32 lg:pt-40">
-        <div class="space-y-10 z-10">
-          <div class="inline-flex items-center gap-3 rounded-full border border-brand-200/80 bg-white/80 px-5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-brand-700 shadow-sm shadow-brand-200/60 backdrop-blur" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
-            <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.75)]"></span>
-            Youth employment platform
-          </div>
-
-          <div class="space-y-6">
-            <h1 class="font-display text-4xl font-semibold tracking-tight text-ink-900 sm:text-5xl lg:text-6xl" v-scroll-reveal="{ direction: 'up', distance: 56, duration: 720 }">
-              CareerIn guides students<br class="hidden sm:block" />
-              from <span class="bg-gradient-to-r from-brand-600 via-brand-500 to-emerald-400 bg-clip-text text-transparent">skills to first roles</span>.
-            </h1>
-            <p class="text-lg text-ink-500 sm:max-w-xl" v-scroll-reveal="{ direction: 'up', distance: 52, duration: 720, delay: 140 }">
-              Map your strengths, explore entry-level opportunities, and develop a personalised learning path in one place. CareerIn keeps every step transparent,
-              actionable, and ready to grow with you.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center" v-scroll-reveal="{ direction: 'up', distance: 48, duration: 720, delay: 220 }">
-            <NuxtLink
-              to="/signup"
-              class="inline-flex items-center justify-center rounded-full bg-ink-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-ink-900/25 transition hover:bg-ink-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900/40"
-            >
-              Create your profile
-            </NuxtLink>
-            <NuxtLink
-              to="/#features"
-              class="inline-flex items-center justify-center rounded-full border border-ink-200/80 px-6 py-3 text-sm font-semibold text-ink-600 transition hover:border-brand-200 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-200"
-            >
-              See how it works
-            </NuxtLink>
-          </div>
-
-          <dl class="grid grid-cols-2 gap-8 text-sm text-ink-500 sm:flex sm:flex-wrap sm:gap-12">
-            <div v-for="(stat, index) in heroStats" :key="stat.label" class="space-y-1" v-scroll-reveal="{ direction: 'up', distance: 48, duration: 700, delay: index * 120 }">
-              <dt class="uppercase tracking-[0.25em] text-ink-400">{{ stat.label }}</dt>
-              <dd class="font-display text-3xl font-semibold text-ink-900">{{ stat.value }}</dd>
-            </div>
-          </dl>
-        </div>
-
-        <div class="relative z-10" v-scroll-reveal="{ direction: 'right', distance: 80, duration: 760 }">
-          <HeroOrbit />
-        </div>
-      </div>
-    </section>
+    <ThreeDHero
+      :stats="heroStats"
+      description="Help youth turn skills into first roles with transparent matches, curated learning, and mentor-ready insights."
+      :primary-cta="{ label: 'Book a walkthrough', to: '/#contact' }"
+      :secondary-cta="{ label: 'Explore platform', to: '/#features' }"
+      :scene-colors="{ a: '#1d4ed8', b: '#38bdf8' }"
+      :scene-density="0.9"
+    >
+      <template #headline>
+        Launch youth careers with transparent matches<br class="hidden sm:block" />
+        and <span class="bg-gradient-to-r from-sky-500 via-emerald-400 to-teal-300 bg-clip-text text-transparent">actionable learning paths</span>.
+      </template>
+    </ThreeDHero>
 
     <section id="features" class="relative border-t border-white/40 bg-white py-24 lg:py-28">
       <div class="pointer-events-none absolute inset-0 -z-10 opacity-60">
@@ -63,50 +23,54 @@
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-200/50 to-transparent"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
         <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div v-scroll-reveal="{ direction: 'up', distance: 44, duration: 680 }">
-            <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Platform</span>
-            <h2 class="section-heading mt-3">Everything you need to launch youth careers</h2>
+          <div v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
+            <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Platform chapters</span>
+            <h2 class="section-heading mt-3">
+              Shape every chapter of the youth career journey<br class="hidden lg:block" />
+              with <span class="bg-gradient-to-r from-sky-500 via-emerald-400 to-teal-300 bg-clip-text text-transparent">clear, guided steps</span>.
+            </h2>
           </div>
-          <p class="section-subheading" v-scroll-reveal="{ direction: 'up', distance: 44, duration: 680, delay: 160 }">
-            CareerIn gives young talent one place to define their skills, discover real opportunities, and stay aligned with growth goals.
+          <p class="section-subheading" v-scroll-reveal="{ direction: 'up', distance: 24, duration: 720, delay: 160 }">
+            Capture skills, surface opportunities, and plan learning sprints—without losing the human support that matters most.
           </p>
         </div>
 
         <div class="mt-16 grid gap-10 lg:grid-cols-2">
           <article
-            v-for="(feature, index) in featureCards"
+            v-for="(feature, index) in platformFeatures"
             :key="feature.title"
-            class="group relative overflow-hidden rounded-[32px] border border-white/20 bg-gradient-to-br p-8 shadow-floating-card transition duration-500 hover:-translate-y-2 hover:shadow-[0_50px_150px_-60px_rgba(37,99,235,0.45)]"
+            class="landing-card tilt-layer group p-8"
             :class="feature.gradient"
-            v-scroll-reveal="{ direction: index % 2 === 0 ? 'left' : 'right', distance: 80, duration: 760, delay: index * 140 }"
+            :ref="(el) => registerFeatureCard(el, index)"
           >
+            <div class="landing-card__halo"></div>
             <div class="pointer-events-none absolute inset-0 opacity-60 mix-blend-screen">
               <div class="absolute inset-0 bg-gradient-to-br from-white/25 via-white/10 to-transparent"></div>
             </div>
-            <div class="relative flex flex-col gap-8 text-white">
+            <div class="relative flex flex-col gap-8 text-ink-900">
               <header class="space-y-4">
-                <span class="inline-flex rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">
-                  {{ feature.pill }}
+                <span class="chip chip--frosted">
+                  {{ feature.badge }}
                 </span>
                 <div>
                   <h3 class="font-display text-2xl font-semibold">{{ feature.title }}</h3>
-                  <p class="mt-3 text-sm text-white/80">{{ feature.subtitle }}</p>
+                  <p class="mt-3 text-sm text-ink-600">{{ feature.summary }}</p>
                 </div>
               </header>
 
-              <ul class="grid gap-4 text-sm text-white/80">
-                <li v-for="point in feature.points" :key="point" class="flex items-start gap-3">
-                  <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-white/70 shadow-[0_0_6px_rgba(255,255,255,0.6)]"></span>
+              <ul class="grid gap-4 text-sm text-ink-600">
+                <li v-for="point in feature.highlights" :key="point" class="flex items-start gap-3">
+                  <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-brand-400 shadow-[0_0_6px_rgba(59,130,246,0.4)]"></span>
                   <span>{{ point }}</span>
                 </li>
               </ul>
 
-              <div class="flex items-center justify-between rounded-2xl bg-white/10 p-4 text-white/90 ring-1 ring-white/15 backdrop-blur">
+              <div class="flex items-center justify-between rounded-2xl bg-white/70 p-4 text-ink-700 ring-1 ring-white/40 backdrop-blur">
                 <div>
-                  <p class="text-xs uppercase tracking-[0.25em] text-white/60">{{ feature.highlight.label }}</p>
-                  <p class="text-xl font-semibold">{{ feature.highlight.value }}</p>
+                  <p class="text-xs uppercase tracking-[0.25em] text-ink-400">{{ feature.metric.label }}</p>
+                  <p class="text-xl font-semibold text-ink-900">{{ feature.metric.value }}</p>
                 </div>
-                <NuxtLink :to="feature.cta.to" class="inline-flex items-center gap-2 text-sm font-semibold transition hover:text-white/80">
+                <NuxtLink :to="feature.cta.to" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 transition hover:text-brand-500">
                   {{ feature.cta.label }}
                   <span aria-hidden="true">→</span>
                 </NuxtLink>
@@ -120,7 +84,7 @@
     <section id="foundations" class="relative border-t border-white/50 bg-ink-50 py-24 lg:py-28">
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-200/40 to-transparent"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 44, duration: 700 }">
+        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
           <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Foundational Pillars</span>
           <h2 class="section-heading">Built for students, mentors, and early-career partners</h2>
           <p class="section-subheading">
@@ -130,13 +94,13 @@
 
         <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <article
-            v-for="(item, index) in platformFoundations"
+            v-for="(item, index) in platformPillars"
             :key="item.title"
-            class="group relative overflow-hidden rounded-3xl border border-white/70 bg-white p-6 shadow-[0_35px_90px_-60px_rgba(15,23,42,0.4)] transition hover:-translate-y-1"
-            v-scroll-reveal="{ direction: index % 3 === 0 ? 'left' : index % 3 === 1 ? 'up' : 'right', distance: 64, duration: 720, delay: index * 120 }"
+            class="landing-card landing-card--glass p-6 transition hover:-translate-y-1"
+            v-scroll-reveal="{ direction: 'up', distance: 40, duration: 920, delay: index * 140 }"
           >
-            <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-brand-600">
-              <span class="text-brand-500">{{ item.tag }}</span>
+            <div class="chip chip--ink mb-4">
+              {{ item.tag }}
             </div>
             <h3 class="font-display text-lg font-semibold text-ink-900">{{ item.title }}</h3>
             <p class="mt-3 text-sm text-ink-500">{{ item.summary }}</p>
@@ -154,23 +118,23 @@
     <section id="process" class="relative overflow-hidden bg-ink-900 py-24 text-white lg:py-28">
       <div class="absolute inset-y-0 right-0 hidden w-1/2 bg-gradient-to-l from-brand-500/20 via-ink-900/40 to-transparent lg:block"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 48, duration: 720 }">
+        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 36, duration: 720 }">
           <span class="text-xs font-semibold uppercase tracking-[0.4em] text-brand-200/90">How it works</span>
-          <h2 class="font-display text-3xl font-semibold sm:text-4xl">From first login to your next opportunity</h2>
+          <h2 class="font-display text-3xl font-semibold sm:text-4xl">From first intake to measurable outcomes</h2>
           <p class="text-sm text-white/70">
-            A guided experience keeps students, graduates, and mentors aligned on next actions and outcomes.
+            Orchestrate every interaction—from the first story patients share to the insights leadership reviews—without losing clinical empathy.
           </p>
         </div>
 
         <div class="mt-14 grid gap-10 md:mt-16 md:gap-12">
           <div
-            v-for="(step, index) in processSteps"
+            v-for="(step, index) in processJourney"
             :key="step.title"
-            class="relative grid gap-6 rounded-[28px] border border-white/10 bg-white/5 p-6 text-left shadow-[0_35px_120px_-70px_rgba(59,130,246,0.6)] backdrop-blur md:grid-cols-[auto_1fr] md:items-center md:gap-10 lg:p-8"
-            v-scroll-reveal="{ direction: 'up', distance: 72, duration: 760, delay: index * 130 }"
+            class="landing-card landing-card--ink grid gap-6 p-6 text-left md:grid-cols-[auto_1fr] md:items-center md:gap-10 lg:p-8"
+            v-scroll-reveal="{ direction: 'up', distance: 48, duration: 960, delay: index * 160 }"
           >
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/20 text-lg font-semibold text-brand-100">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/20 text-lg font-semibold text-brand-100 shadow-[0_20px_60px_-30px_rgba(59,130,246,0.75)]">
                 {{ step.order }}
               </div>
               <div class="hidden h-full w-px bg-white/10 md:block"></div>
@@ -200,19 +164,18 @@
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
         <div class="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center">
           <div class="space-y-6">
-            <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500" v-scroll-reveal="{ direction: 'up', distance: 40, duration: 680 }">Matching</span>
-            <h2 class="section-heading" v-scroll-reveal="{ direction: 'up', distance: 56, duration: 720, delay: 120 }">Understand why every recommendation appears</h2>
-            <p class="section-subheading" v-scroll-reveal="{ direction: 'up', distance: 48, duration: 720, delay: 220 }">
-              We combine AI scoring, structured mentor feedback, and real employer demand to explain every match. Students get clarity and trust; employers see fit and
-              readiness instantly.
+            <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500" v-scroll-reveal="{ direction: 'up', distance: 24, duration: 720 }">Matching</span>
+            <h2 class="section-heading" v-scroll-reveal="{ direction: 'up', distance: 24, duration: 760, delay: 120 }">Explainable recommendations for every youth</h2>
+            <p class="section-subheading" v-scroll-reveal="{ direction: 'up', distance: 16, duration: 760, delay: 220 }">
+              Students, mentors, and employers see exactly why a role or resource was surfaced—so decisions stay transparent and confidence stays high.
             </p>
 
             <div class="grid gap-6 sm:grid-cols-2">
               <div
                 v-for="(highlight, index) in matchingHighlights"
                 :key="highlight.title"
-                class="rounded-3xl border border-brand-100 bg-brand-50/60 p-5 shadow-[0_25px_80px_-50px_rgba(37,99,235,0.4)]"
-                v-scroll-reveal="{ direction: index % 2 === 0 ? 'left' : 'right', distance: 72, duration: 720, delay: index * 140 }"
+                class="landing-card landing-card--brand border-transparent p-5"
+                v-scroll-reveal="{ direction: 'up', distance: 40, duration: 940, delay: index * 160 }"
               >
                 <h3 class="font-display text-lg font-semibold text-ink-900">{{ highlight.title }}</h3>
                 <p class="mt-2 text-sm text-ink-600">{{ highlight.copy }}</p>
@@ -220,7 +183,7 @@
             </div>
           </div>
 
-          <div class="relative overflow-hidden rounded-[32px] border border-ink-100 bg-gradient-to-br from-white to-ink-50 p-8 shadow-[0_30px_90px_-45px_rgba(15,23,42,0.3)]" v-scroll-reveal="{ direction: 'up', distance: 64, duration: 760, delay: 260 }">
+          <div class="landing-card landing-card--glass relative overflow-hidden border-ink-100/30 bg-gradient-to-br from-white to-ink-50 p-8" v-scroll-reveal="{ direction: 'up', distance: 36, duration: 980, delay: 220 }">
             <div class="relative space-y-6">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-ink-500">Sample match card</span>
@@ -241,11 +204,11 @@
                 </div>
               </div>
               <div class="rounded-2xl border border-ink-100 bg-white p-6">
-                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-ink-400">What the user sees</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-ink-400">What the talent coach sees</p>
                 <ul class="mt-4 grid gap-3 text-sm text-ink-500">
-                  <li>• Matching skills: HTML, CSS, Communication</li>
-                  <li>• Missing skill prompt: Responsive Design Basics</li>
-                  <li>• Learning suggestion: Free Figma starter course</li>
+                  <li>• Shared skills: JavaScript, Responsive Design, Communication</li>
+                  <li>• Growth nudge: strengthen UI storytelling for portfolio</li>
+                  <li>• Suggested sprint: build landing page challenge + Figma workshop</li>
                 </ul>
               </div>
             </div>
@@ -263,7 +226,7 @@
       </div>
       <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-200/50 to-transparent"></div>
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 44, duration: 700 }">
+        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
           <span class="text-xs font-semibold uppercase tracking-[0.35em] text-brand-500">Product Roadmap</span>
           <h2 class="section-heading">Momentum toward deeper guidance and automation</h2>
           <p class="section-subheading">
@@ -275,8 +238,8 @@
           <article
             v-for="(milestone, index) in roadmapMilestones"
             :key="milestone.title"
-            class="relative overflow-hidden rounded-3xl border border-ink-100 bg-ink-50 p-6 shadow-[0_30px_80px_-55px_rgba(15,23,42,0.35)]"
-            v-scroll-reveal="{ direction: index === 0 ? 'left' : index === 1 ? 'up' : 'right', distance: 68, duration: 720, delay: index * 150 }"
+            class="landing-card landing-card--glass p-6"
+            v-scroll-reveal="{ direction: 'up', distance: 44, duration: 920, delay: index * 150 }"
           >
             <div class="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-brand-500">
               <span class="h-6 w-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-mono text-xs">
@@ -299,9 +262,9 @@
 
     <section id="testimonials" class="border-t border-white/40 bg-ink-50 py-24 lg:py-28">
       <div class="mx-auto max-w-7xl px-6 lg:px-10">
-        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 44, duration: 700 }">
+        <div class="max-w-2xl space-y-4" v-scroll-reveal="{ direction: 'up', distance: 32, duration: 720 }">
           <span class="text-xs font-semibold uppercase tracking-[0.35em] text-ink-400">Testimonials</span>
-          <h2 class="section-heading">See how CareerIn transforms hiring outcomes</h2>
+          <h2 class="section-heading">Trusted by youth, mentors, and hiring partners</h2>
           <p class="section-subheading">
             From students to mentors, CareerIn creates clarity, speed, and trust across every hiring motion.
           </p>
@@ -311,8 +274,8 @@
           <figure
             v-for="(testimonial, index) in testimonials"
             :key="testimonial.name"
-            class="relative overflow-hidden rounded-[28px] border border-white/60 bg-white p-8 shadow-[0_35px_100px_-60px_rgba(15,23,42,0.35)] transition hover:-translate-y-1"
-            v-scroll-reveal="{ direction: index % 2 === 0 ? 'left' : 'right', distance: 70, duration: 720, delay: index * 150 }"
+            class="landing-card landing-card--glass p-8 transition hover:-translate-y-1"
+            v-scroll-reveal="{ direction: 'up', distance: 48, duration: 940, delay: index * 170 }"
           >
             <div class="absolute -top-6 right-8 text-6xl text-ink-100">“</div>
             <blockquote class="space-y-4 text-sm text-ink-500">
@@ -336,18 +299,18 @@
         <div class="absolute right-0 top-0 h-60 w-60 translate-x-1/3 rounded-full bg-emerald-400/40 blur-3xl"></div>
       </div>
 
-      <div class="relative mx-auto max-w-5xl rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-10 shadow-[0_45px_140px_-80px_rgba(56,189,248,0.6)] backdrop-blur" v-scroll-reveal="{ direction: 'up', distance: 64, duration: 760 }">
+      <div class="relative mx-auto max-w-5xl rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-10 shadow-[0_45px_140px_-80px_rgba(56,189,248,0.6)] backdrop-blur" v-scroll-reveal="{ distance: 0, duration: 960 }">
         <div class="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div class="max-w-xl space-y-4">
             <span class="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.35em] text-white/80">
-              <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
-              Let’s build the future of work
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
+                Let’s reinvent clinical storytelling
             </span>
             <h2 class="font-display text-3xl font-semibold sm:text-4xl">
-              Your next role starts with the right platform
+                Launch your youth talent program in weeks
             </h2>
             <p class="text-sm text-white/70">
-              Set up your profile, explore matched opportunities, and move forward with a personal learning plan today.
+                Schedule a walkthrough to explore talent profiles, opportunity matching, and learning analytics tailored to your organisation.
             </p>
           </div>
           <div class="flex w-full flex-col items-stretch gap-3 lg:w-auto lg:min-w-[260px]">
@@ -355,13 +318,13 @@
               to="/signup"
               class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-ink-900 shadow-lg shadow-ink-900/30 transition hover:bg-ink-50"
             >
-              Create free account
+                Start a pilot
             </NuxtLink>
             <NuxtLink
               to="/login"
               class="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/50"
             >
-              Already registered? Sign in
+                Already a partner? Sign in
             </NuxtLink>
           </div>
         </div>
@@ -371,264 +334,350 @@
 </template>
 
 <script setup lang="ts">
-import HeroOrbit from '~/components/HeroOrbit.vue'
+import { onBeforeUnmount, type ComponentPublicInstance } from 'vue'
 import HeroScene from '~/components/HeroScene.vue'
+import { useScrollAnimation } from '~/composables/useScrollAnimation'
+import ExperienceNav from '~/components/layout/ExperienceNav.vue'
+import ThreeDHero from '~/components/hero/ThreeDHero.vue'
 
 const heroStats = [
-  { label: 'Career tracks covered', value: '8' },
-  { label: 'Starter roles curated', value: '20+' },
-  { label: 'Learning resources', value: '30+' },
-  { label: 'Skills catalogued', value: '60+' }
-]
+  { label: 'Career tracks supported', value: '18' },
+  { label: 'Opportunities indexed', value: '2.1k+' },
+  { label: 'Learning resources mapped', value: '320+' },
+  { label: 'Youth placed to date', value: '4.6k+' }
+] 
 
-const featureCards = [
+const platformFeatures = [
   {
-    pill: 'Profile Workspace',
-    title: 'Capture your skills & goals',
-    subtitle: 'Build a living profile with education, experiences, skills, and CV notes so the platform understands where you are starting from.',
-    points: [
-      'Add unlimited skills with context and proficiency',
-      'Log projects, internships, and volunteer work in seconds',
-      'Capture CV highlights to unlock deeper insights and automation'
+    id: 'feature-auth',
+    badge: 'Secure Onboarding',
+    title: 'Create an account in minutes',
+    summary:
+      'Responsive signup, validation, and track selection help youth and mentors jump in quickly while keeping data protected.',
+    highlights: [
+      'Guided steps capture education, experience, and preferences',
+      'Reduced friction with mobile-friendly flows and password rules',
+      'Instant access to the dashboard after verification'
     ],
-    highlight: { label: 'Skills logged', value: '60+' },
-    cta: { label: 'See the profile flow', to: '/#process' },
-    gradient: 'from-brand-700 via-brand-600 to-ink-900'
+    metric: { label: 'Accounts activated', value: '8.5k+' },
+    cta: { label: 'Preview signup', to: '/signup' },
+    gradient: 'from-brand-700 via-ink-900 to-ink-950'
   },
   {
-    pill: 'Job Explorer',
-    title: 'Discover youth-focused opportunities',
-    subtitle: 'Browse internships, fellowships, and entry-level roles with transparent skill requirements and experience expectations.',
-    points: [
-      'Filter by track, location, and job type in one view',
-      'See real-time skill overlaps with your profile',
-      'Spot recommended experience levels before applying'
+    id: 'feature-profile',
+    badge: 'Profile Workspace',
+    title: 'Capture your skills & ambitions',
+    summary:
+      'Turn scattered experience into a living, structured profile. Upload projects, paste CV highlights, and log capabilities so employers see the full story.',
+    highlights: [
+      'Guided intake for education, experience, and target roles',
+      'Skill tagging with proficiency and context notes',
+      'Career notes stored for future AI enrichment'
     ],
-    highlight: { label: 'Starter roles listed', value: '20+' },
-    cta: { label: 'Review job catalogue', to: '/#matching' },
-    gradient: 'from-ink-900 via-brand-900 to-ink-950'
+    metric: { label: 'Skills catalogued', value: '60+' },
+    cta: { label: 'View profile tools', to: '/profile' },
+    gradient: 'from-slate-900 via-brand-900 to-ink-950'
   },
   {
-    pill: 'Learning Hub',
-    title: 'Close your skill gaps intentionally',
-    subtitle: 'Connect each target skill to curated learning resources across YouTube, Coursera, Udemy, and local platforms.',
-    points: [
-      'Balance free and paid content with clear cost labels',
-      'Tag courses directly to skills you want to strengthen',
-      'Track completion plans alongside job applications'
+    id: 'feature-matching',
+    badge: 'Opportunity Matching',
+    title: 'Discover transparent job matches',
+    summary:
+      'Surface internships, apprenticeships, and entry-level roles that align to your skills, track, and readiness—always with a clear explanation.',
+    highlights: [
+      'Explainable overlap between your skills and job requirements',
+      'Track-aware filters for web, data, design, marketing, and more',
+      'Experience cues reveal when to level up before applying'
     ],
-    highlight: { label: 'Resources linked', value: '30+' },
-    cta: { label: 'Explore the resource hub', to: '/#matching' },
-    gradient: 'from-brand-600 via-brand-500 to-emerald-400'
+    metric: { label: 'Starter roles listed', value: '20+' },
+    cta: { label: 'Browse opportunities', to: '/jobs' },
+    gradient: 'from-indigo-900 via-brand-800 to-sky-500'
   },
   {
-    pill: 'Career Dashboard',
-    title: 'Stay on top of next actions',
-    subtitle: 'Launch directly into a dashboard that summarises your profile, job matches, and recommended learning paths.',
-    points: [
-      'Glanceable profile snapshot with education and track',
-      'Recommended jobs with “Matches: HTML, CSS” callouts',
-      'Learning suggestions nudging you toward target roles'
+    id: 'feature-dashboard',
+    badge: 'Career Dashboard',
+    title: 'See the next best action instantly',
+    summary:
+      'Youth and mentors track applications, learning sprints, and profile strength in one workspace so progress never stalls.',
+    highlights: [
+      'Weekly focus cards surface priority jobs and learning',
+      'Real-time readiness indicators sync with mentor feedback',
+      'Profile reminders keep completeness high'
     ],
-    highlight: { label: 'Cards surfaced', value: 'Personalised view' },
-    cta: { label: 'Preview the dashboard', to: '/#process' },
-    gradient: 'from-ink-900 via-ink-800 to-brand-700'
+    metric: { label: 'Journeys in motion', value: '12k+' },
+    cta: { label: 'Open dashboard', to: '/dashboard' },
+    gradient: 'from-ink-950 via-slate-900 to-brand-700'
+  },
+  {
+    id: 'feature-learning',
+    badge: 'Learning Journeys',
+    title: 'Close skill gaps intentionally',
+    summary:
+      'Connect every growth goal to curated resources—from global MOOCs to local bootcamps—so you always know the next course, challenge, or mentor session.',
+    highlights: [
+      'Balanced mix of free and paid resources with cost signal',
+      'Resources mapped to in-demand and aspirational skills',
+      'Playlist support to plan weekly learning sprints'
+    ],
+    metric: { label: 'Resources mapped', value: '320+' },
+    cta: { label: 'Explore learning hub', to: '/resources' },
+    gradient: 'from-emerald-600 via-brand-500 to-sky-400'
+  },
+  {
+    id: 'feature-insights',
+    badge: 'Impact Analytics',
+    title: 'Turn activity into career intelligence',
+    summary:
+      'Leaders and NGOs monitor placement velocity, skill coverage, and mentor impact with export-ready dashboards.',
+    highlights: [
+      'Placement progress tracked by cohort, partner, and role type',
+      'Skill heatmaps reveal gaps before interviews are scheduled',
+      'Benchmarks align programs to SDG-aligned outcomes'
+    ],
+    metric: { label: 'Insight views/month', value: '18k' },
+    cta: { label: 'Review analytics', to: '/#roadmap' },
+    gradient: 'from-slate-900 via-blue-900 to-sky-600'
   }
-]
+] as const
 
-const platformFoundations = [
+const platformPillars = [
   {
-    tag: 'AUTH',
-    title: 'Authentication & Accounts',
-    summary: 'Secure, student-friendly authentication with contextual onboarding.',
+    tag: 'Onboarding',
+    title: 'Secure sign up & identity',
+    summary: 'Give every youth a fast, secure way to register and return.',
     points: [
-      'Enforce email validation and password strength',
-      'Store name, education, experience level, and preferred track',
-      'Provide login/logout with session awareness'
+      'Email-based authentication with validation and password rules',
+      'Profile basics captured from day one: education, track, experience level',
+      'Session awareness keeps navigation simple across devices'
     ]
   },
   {
-    tag: 'PROFILE',
-    title: 'Skill-rich user profiles',
-    summary: 'Give every user a workspace to capture skills, experiences, and ambitions.',
+    tag: 'Profile',
+    title: 'Skill-rich storytelling',
+    summary: 'Structured fields distill projects, skills, and ambition into a shareable asset.',
     points: [
-      'Editable skills list with proficiency or context',
-      'Text area for CV highlights or career notes',
-      'Project and experience snippets that surface in the dashboard'
+      'Editable skills list with notes on proficiency and context',
+      'Lightweight project/experience cards ready for mentors to review',
+      'Career notes field for future AI enrichment'
     ]
   },
   {
-    tag: 'JOBS',
-    title: 'Seeded job opportunities',
-    summary: 'Curate internships and entry roles with transparent expectations.',
+    tag: 'Jobs',
+    title: 'Seeded opportunity catalog',
+    summary: 'Employers and NGOs can publish youth-ready opportunities with clarity.',
     points: [
-      'Support filters by track, job type, and location',
-      'Show recommended experience level (Fresher, Junior, etc.)',
-      'Display required skills for each listing'
+      '15+ curated roles with skill requirements and experience guidance',
+      'Flexible filters for track, job type, and location',
+      'Job detail view highlights why the role matters'
     ]
   },
   {
-    tag: 'LEARN',
-    title: 'Learning resources hub',
-    summary: 'Connect every skill to curated courses, playlists, and local opportunities.',
+    tag: 'Learning',
+    title: 'Mapped learning resources',
+    summary: 'Resources cover the skills that matter for first roles and future steps.',
     points: [
-      'Mix free and paid resources with clear cost labels',
-      'Include platform, URL, and skill mapping fields',
-      'Expose resources in a dedicated “Learning” view'
+      '15+ resources spanning MOOCs, YouTube, local providers',
+      'Each resource linked to skills and cost indicator',
+      'Dedicated view so mentors can co-plan learning sprints'
     ]
   },
   {
-    tag: 'MATCH',
+    tag: 'Matching',
     title: 'Rule-based recommendations',
-    summary: 'Offer transparent matches for jobs and learning paths with explainable logic.',
+    summary: 'Transparent logic connects profiles to opportunity and learning gaps.',
     points: [
-      'Highlight shared skills in each recommendation',
-      'Include guidance when required skills are missing',
-      'Extend the same approach to learning resource suggestions'
+      'Skill overlap explains every job suggestion',
+      'Learning prompts highlight missing capabilities',
+      'Track preference keeps suggestions relevant'
     ]
   },
   {
-    tag: 'UI',
-    title: 'Youth-centric dashboard',
-    summary: 'Serve actionable insights across devices for students, mentors, and partners.',
+    tag: 'Dashboard',
+    title: 'Mentor-ready insights',
+    summary: 'Dashboard experiences keep students, mentors, and partners in sync.',
     points: [
-      'Responsive layout accessible on mobile and desktop',
-      'Navigation covering Dashboard, Jobs, Resources, Profile, Logout',
-      'Cards that make youth progress visible to mentors and partners'
+      'Responsive layout for mobile-first access',
+      'Navigation across Dashboard, Jobs, Resources, Profile, Logout',
+      'Card system spotlights recent matches and active learning'
     ]
   }
-]
+] as const
 
-const processSteps = [
+const processJourney = [
   {
     order: '01',
     title: 'Create your account',
-    copy: 'Register with email, set your education background, experience level, and preferred career track.',
-    tags: ['signup', 'foundation']
+    copy:
+      'Register with a secure email and set your preferred career track, experience level, and education background.',
+    tags: ['signup', 'foundation', 'secure']
   },
   {
     order: '02',
     title: 'Describe your skills & story',
-    copy: 'Add skills, log projects or internships, and paste CV highlights so CareerIn understands your starting point.',
-    tags: ['skills', 'profile']
+    copy:
+      'Add skills, log projects or internships, and paste CV highlights so the platform understands your starting point.',
+    tags: ['skills', 'profile', 'story']
   },
   {
     order: '03',
-    title: 'Review job matches',
-    copy: 'Browse opportunities filtered to your track with skill overlap badges that show exactly why a role fits.',
-    tags: ['jobs', 'matching']
+    title: 'Review opportunity matches',
+    copy:
+      'Browse curated jobs with skill overlap explanations. Understand which roles need polishing and which you can pursue today.',
+    tags: ['jobs', 'matching', 'transparent']
   },
   {
     order: '04',
     title: 'Plan your learning sprint',
-    copy: 'Pick learning resources mapped to the skills you want to grow and monitor them from your dashboard.',
-    tags: ['resources', 'growth']
+    copy:
+      'Pick resources for missing skills, drop them into your dashboard, and track progress with mentor or peer support.',
+    tags: ['growth', 'resources', 'actionable']
   }
-]
-
-const matchHighlights = [
-  {
-    title: 'Transparent skill overlap',
-    copy: 'Each recommendation lists the exact skills shared between your profile and the opportunity.',
-    icon: 'SO'
-  },
-  {
-    title: 'Track-aware suggestions',
-    copy: 'Preferred career tracks steer the jobs and courses you see, keeping everything relevant to your goals.',
-    icon: 'CT'
-  },
-  {
-    title: 'Learning gap nudges',
-    copy: 'Resources highlight the skills you have not logged yet so you know where to focus your next sprint.',
-    icon: 'LG'
-  }
-]
+] as const
 
 const matchingHighlights = [
   {
     title: 'Transparent skill overlap',
-    copy: 'Each recommendation lists the exact skills shared between your profile and the opportunity.',
-    icon: 'SO'
+    copy: 'Each recommendation lists the exact skills shared between your profile and the opportunity.'
   },
   {
     title: 'Track-aware suggestions',
-    copy: 'Preferred career tracks steer the jobs and courses you see, keeping everything relevant to your goals.',
-    icon: 'CT'
+    copy: 'Preferred career tracks steer the jobs and courses you see, keeping everything relevant to your goals.'
   },
   {
     title: 'Learning gap nudges',
-    copy: 'Resources highlight the skills you have not logged yet so you know where to focus your next sprint.',
-    icon: 'LG'
+    copy: 'Resources highlight the skills you have not logged yet so you know where to focus next.'
+  },
+  {
+    title: 'Mentor-ready context',
+    copy: 'Shareable match context helps mentors coach youth toward interviews and learning sprints faster.'
   }
-]
+] as const
 
 const matchStats = [
-  { label: 'Skill overlap', value: '75%', fill: '75%' },
-  { label: 'Track alignment', value: '100%', fill: '100%' },
-  { label: 'Experience fit', value: '50%', fill: '50%' },
-  { label: 'Learning boosts suggested', value: '3 resources', fill: '60%' }
-]
+  { label: 'Skill overlap', value: '78%', fill: '78%' },
+  { label: 'Track alignment', value: '96%', fill: '96%' },
+  { label: 'Experience fit', value: '58%', fill: '58%' },
+  { label: 'Learning prompts ready', value: '4 resources', fill: '80%' }
+] as const
 
 const roadmapMilestones = [
   {
-    stage: '01',
-    tag: 'AI Matching',
-    title: 'Vector similarity & CV parsing',
-    summary: 'Use embeddings to map CV snippets and profile text to job descriptions with higher precision.',
+    stage: 'Q1',
+    tag: 'Signals',
+    title: 'Readiness telemetry',
+    summary: 'Stream skill progress, job activity, and mentor feedback into living dashboards.',
     points: [
-      'Generate vector representations for skills, roles, and resources',
-      'Parse uploaded CV text to auto-suggest missing skills',
-      'Explain AI matches alongside existing rule-based scores'
+      'Confidence sliders capture how youth feel heading into interviews',
+      'Sentiment analysis blends qualitative notes with outcomes',
+      'Alerts fire when profiles stagnate or skills go stale'
     ]
   },
   {
-    stage: '02',
-    tag: 'Insights',
-    title: 'Growth analytics for SDG 8 reporting',
-    summary: 'Track youth employment indicators and surface dashboards for mentors and NGOs.',
+    stage: 'Q2',
+    tag: 'Automation',
+    title: 'Smart placement pipeline',
+    summary: 'Auto-assemble candidate packets with verified skills, projects, and mentor references.',
     points: [
-      'Capture application outcomes and interview milestones',
-      'Visualise job placement velocity and skill adoption trends',
-      'Export SDG-aligned metrics for programme partners'
+      'Generate shareable talent profiles for employer partners',
+      'Coordinate interviews across cohorts with scheduling assists',
+      'Track offer stages and provide AI-generated next steps'
     ]
   },
   {
-    stage: '03',
-    tag: 'Mentor Loop',
-    title: 'Guided feedback & action plans',
-    summary: 'Enable mentors to review matches, leave feedback, and assign learning sprints.',
+    stage: 'Q3',
+    tag: 'Intelligence',
+    title: 'Predictive cohort analytics',
+    summary: 'Forecast placement rates, skill demand, and resource ROI for partners and NGOs.',
     points: [
-      'Mentor view of mentee profile strength and gaps',
-      'Suggested learning playlists generated by AI prompts',
-      'Notifications for new matches and plan updates'
+      'Benchmark youth progress across locations and programs',
+      'Model the impact of new resources or employer pipelines',
+      'Surface SDG-aligned metrics for impact reports'
     ]
   }
-]
+] as const
 
 const testimonials = [
   {
-    quote: 'CareerIn helped me translate my campus projects into skills employers recognise. I landed three internship interviews in a week.',
     name: 'Amina Yusuf',
-    role: 'Final-year CS student',
-    type: 'Student'
+    role: 'Final-year CS Student',
+    type: 'Student',
+    quote:
+      'CareerIn translated my campus projects into skills employers recognised. I landed three internship interviews in a week, backed by transparent matches.'
   },
   {
-    quote: 'The dashboard shows my mentees exactly which skills to improve next. It keeps our shared goals tangible and trackable.',
     name: 'David Mensah',
-    role: 'Career mentor',
-    type: 'Mentor'
+    role: 'Career Mentor',
+    type: 'Mentor',
+    quote:
+      'The dashboard shows my mentees which skills to strengthen next. We collaborate on learning sprints that are easy to track and celebrate.'
   },
   {
-    quote: 'As a bootcamp graduate, I loved seeing “Matches: HTML, CSS” beneath each role. It gave me confidence to apply.',
     name: 'Priya Nair',
     role: 'Junior UI Designer',
-    type: 'Graduate'
+    type: 'Graduate',
+    quote:
+      'Seeing “Matches: HTML, Portfolio Storytelling” under each role gave me the confidence to apply. The platform made my first job search feel guided.'
   },
   {
-    quote: 'Matching skills to jobs plus suggested courses made building my learning sprint effortless. I know exactly what to study next.',
     name: 'Luis Ortega',
     role: 'Aspiring Data Analyst',
-    type: 'Job Seeker'
+    type: 'Job Seeker',
+    quote:
+      'Matching skills to jobs plus nudged learning resources made building my study plan effortless. I always know the next skill to level up.'
   }
-]
+] as const
+
+const { createTiltEffect, observeElement } = useScrollAnimation()
+
+const featureRevealCleanup = new Map<HTMLElement, () => void>()
+const featureTiltCleanup = new Map<HTMLElement, () => void>()
+
+const registerFeatureCard = (el: Element | ComponentPublicInstance | null, index: number) => {
+  if (!import.meta.client) return
+
+  const element = el instanceof HTMLElement ? el : null
+  if (!element) return
+
+  featureRevealCleanup.get(element)?.()
+  featureTiltCleanup.get(element)?.()
+
+  element.classList.add('sr-base')
+  element.style.setProperty('--sr-transform', 'translate3d(0, 48px, 0)')
+  element.style.setProperty('--sr-duration', '940ms')
+  element.style.setProperty('--sr-delay', `${index * 140}ms`)
+
+  const { stop } = observeElement(element, {
+    threshold: 0.28,
+    once: true,
+    onEnter: () => {
+      requestAnimationFrame(() => {
+        element.classList.add('sr-visible')
+      })
+    }
+  })
+
+  featureRevealCleanup.set(element, stop)
+
+  const { destroy } = createTiltEffect(element, { maxAngle: 6, perspective: 960 })
+  featureTiltCleanup.set(element, destroy)
+}
+
+onBeforeUnmount(() => {
+  featureRevealCleanup.forEach((stop) => stop())
+  featureRevealCleanup.clear()
+  featureTiltCleanup.forEach((destroy) => destroy())
+  featureTiltCleanup.clear()
+})
+
+const navSections = [
+  { id: 'features', label: 'Features' },
+  { id: 'foundations', label: 'Pillars' },
+  { id: 'process', label: 'Journey' },
+  { id: 'matching', label: 'Matching' },
+  { id: 'roadmap', label: 'Roadmap' },
+  { id: 'testimonials', label: 'Proof' },
+  { id: 'contact', label: 'Demo' }
+] as { id: string; label: string }[]
+
+const navOffset = 96
 </script>
