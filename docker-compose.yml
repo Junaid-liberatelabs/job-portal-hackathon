@@ -1,0 +1,33 @@
+services:
+  api:
+    build:
+      context: ./Backend
+      dockerfile: DockerFile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./FrontEnd
+      dockerfile: DockerFile
+    environment:
+      - ENABLE_VUE_DEVTOOLS=false
+    ports:
+      - "3000:3000"
+
+  database:
+    image: pgvector/pgvector:pg18-trixie
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+
