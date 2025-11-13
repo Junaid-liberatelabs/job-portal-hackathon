@@ -96,43 +96,6 @@ async def cancel_application(
     }
 
 
-@router.get("/job/{job_id}/applicants", response_model=List[ApplicantInfo])
-async def get_job_applicants(
-    job_id: str,
-    db: Session = Depends(get_db),
-):
-    """
-    Get all users who applied for a specific job.
-    This endpoint is for admins to see the list of applicants.
-    
-    - **job_id**: The ID of the job
-    
-    Returns a list of applicants with their user information.
-    """
-    job = get_job_by_id(db, job_id)
-    if not job:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Job not found",
-        )
-    
-    applications = get_applications_by_job(db, job_id)
-    
-    applicants = []
-    for application in applications:
-        user = get_user_by_id(db, application.user_id)
-        if user:
-            applicants.append(
-                ApplicantInfo(
-                    application_id=application.id,
-                    user_id=application.user_id,
-                    applied_at=application.created_at,
-                    user=UserResponse.model_validate(user),
-                )
-            )
-    
-    return applicants
-
 
 @router.get("/job/{job_id}/check", response_model=dict)
 async def check_application_status(
@@ -181,3 +144,40 @@ async def get_jobs_with_applicants_dashboard(
     
     return jobs_with_counts
 
+
+@router.get("/job/{job_id}/applicants", response_model=List[ApplicantInfo])
+async def get_job_applicants(
+    job_id: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Get all users who applied for a specific job.
+    This endpoint is for admins to see the list of applicants.
+    
+    - **job_id**: The ID of the job
+    
+    Returns a list of applicants with their user information.
+    """
+    job = get_job_by_id(db, job_id)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found",
+        )
+    
+    applications = get_applications_by_job(db, job_id)
+    
+    applicants = []
+    for application in applications:
+        user = get_user_by_id(db, application.user_id)
+        if user:
+            applicants.append(
+                ApplicantInfo(
+                    application_id=application.id,
+                    user_id=application.user_id,
+                    applied_at=application.created_at,
+                    user=UserResponse.model_validate(user),
+                )
+            )
+    
+    return applicants
