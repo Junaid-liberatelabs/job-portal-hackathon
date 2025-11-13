@@ -25,7 +25,6 @@ async def init_db():
         # Log registered models
         registered_models = [mapper.class_.__name__ for mapper in Base.registry.mappers]
         logger.info(f"Registered models: {', '.join(registered_models)}")
-
         # Create all tables
         Base.metadata.create_all(bind=engine)
 
