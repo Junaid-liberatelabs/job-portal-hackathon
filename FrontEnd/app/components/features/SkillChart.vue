@@ -1,17 +1,15 @@
 <template>
-  <div class="relative w-full overflow-hidden">
-    <div ref="chartContainer" class="w-full" :style="{ height: height + 'px', minHeight: height + 'px' }"></div>
-    <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-white/80 rounded-xl">
-      <div class="animate-spin h-8 w-8 border-4 border-brand-500 border-t-transparent rounded-full"></div>
-    </div>
-    <div v-if="!loading && (!$echarts || !chartContainer)" class="absolute inset-0 flex items-center justify-center text-ink-400">
-      <p class="text-sm">Chart loading...</p>
-    </div>
+  <div class="relative w-full h-full flex items-center justify-center">
+    <div 
+      ref="chartContainer" 
+      class="w-full h-full" 
+      :style="{ height: height + 'px', minHeight: height + 'px', width: '100%' }"
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 
 interface SkillData {
   name: string
@@ -22,34 +20,53 @@ interface SkillData {
 interface Props {
   skills: SkillData[]
   title?: string
-  chartType?: 'pie' | 'radar' | 'bar'
+  chartType?: 'pie'
   height?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: 'Skill Analysis',
+  title: 'Skill Visualization',
   chartType: 'pie',
-  height: 300
+  height: 400
 })
 
 const { $echarts } = useNuxtApp()
 const chartContainer = ref<HTMLElement | null>(null)
-const loading = ref(false)
 let chartInstance: any = null
 
 const initChart = () => {
-  if (!chartContainer.value || !$echarts) {
-    console.warn('Chart container or ECharts not available')
+  if (!chartContainer.value) {
+    console.warn('Chart container not available')
+    return
+  }
+
+  if (!$echarts) {
+    console.error('ECharts not loaded! Make sure echarts.client.ts plugin is working')
+    return
+  }
+
+  // Check if skills data is available
+  if (!props.skills || props.skills.length === 0) {
+    console.warn('No skills data available for chart')
     return
   }
 
   try {
+    console.log('Initializing chart with', props.skills.length, 'skills, type:', props.chartType)
+    
+    // Dispose existing instance if any
+    if (chartInstance) {
+      chartInstance.dispose()
+    }
+    
     chartInstance = $echarts.init(chartContainer.value)
-
+    
     const option = getChartOption()
-    chartInstance.setOption(option)
+    console.log('Chart option generated for', props.chartType)
+    chartInstance.setOption(option, true)
 
     window.addEventListener('resize', handleResize)
+    console.log('Chart initialized successfully')
   } catch (error) {
     console.error('Error initializing chart:', error)
   }
@@ -64,57 +81,57 @@ const getChartOption = () => {
       color: colors,
       tooltip: {
         trigger: 'item',
-        formatter: '{b}: {c} ({d}%)',
+        formatter: '{b}',
         confine: true
-      },
-      legend: {
-        orient: 'vertical',
-        left: '5%',
-        top: 'center',
-        textStyle: {
-          fontSize: 11,
-          color: '#4b5563'
-        },
-        itemGap: 8,
-        itemWidth: 14,
-        itemHeight: 14,
-        formatter: (name: string) => {
-          // Truncate long names
-          return name.length > 15 ? name.substring(0, 15) + '...' : name
-        }
       },
       series: [{
         name: 'Skills',
         type: 'pie',
-        radius: ['45%', '70%'],
-        center: ['60%', '50%'],
+        radius: ['35%', '60%'],
+        center: ['50%', '50%'],
         avoidLabelOverlap: true,
         itemStyle: {
-          borderRadius: 8,
+          borderRadius: 10,
           borderColor: '#fff',
-          borderWidth: 2
+          borderWidth: 3
         },
         label: {
-          show: false,
-          position: 'center'
+          show: true,
+          position: 'outside',
+          formatter: '{b}',
+          fontSize: 13,
+          color: '#4b5563',
+          fontWeight: 500,
+          distanceToLabelLine: 5,
+          alignTo: 'none'
+        },
+        labelLine: {
+          show: true,
+          length: 25,
+          length2: 20,
+          smooth: 0.3,
+          lineStyle: {
+            width: 2,
+            color: '#d1d5db'
+          }
         },
         emphasis: {
           label: {
             show: true,
-            fontSize: 14,
-            fontWeight: 'bold'
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: '#1e293b'
           },
           itemStyle: {
-            shadowBlur: 10,
+            shadowBlur: 15,
             shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        },
-        labelLine: {
-          show: false
+            shadowColor: 'rgba(0, 0, 0, 0.3)'
+          },
+          scale: true,
+          scaleSize: 10
         },
         data: props.skills.map((skill, index) => ({
-          value: skill.value,
+          value: 1,  // Equal slices for all skills
           name: skill.name,
           itemStyle: {
             color: colors[index % colors.length]
@@ -123,147 +140,68 @@ const getChartOption = () => {
       }]
     }
   }
-
-  if (props.chartType === 'radar') {
-    return {
-      color: colors,
-      tooltip: {
-        trigger: 'item',
-        confine: true
-      },
-      radar: {
-        indicator: props.skills.map(skill => ({
-          name: skill.name.length > 12 ? skill.name.substring(0, 12) + '...' : skill.name,
-          max: 100
-        })),
-        shape: 'polygon',
-        splitNumber: 5,
-        radius: '65%',
-        center: ['50%', '50%'],
-        axisName: {
-          color: '#4b5563',
-          fontSize: 10,
-          fontWeight: 500
-        },
-        splitLine: {
-          lineStyle: {
-            color: '#e5e7eb'
-          }
-        },
-        splitArea: {
-          show: true,
-          areaStyle: {
-            color: ['rgba(59, 130, 246, 0.05)', 'rgba(59, 130, 246, 0.1)']
-          }
-        },
-        axisLine: {
-          lineStyle: {
-            color: '#d1d5db'
-          }
-        }
-      },
-      series: [{
-        name: 'Skill Level',
-        type: 'radar',
-        symbol: 'circle',
-        symbolSize: 6,
-        data: [{
-          value: props.skills.map(skill => skill.value),
-          name: 'Your Skills',
-          areaStyle: {
-            color: 'rgba(59, 130, 246, 0.25)'
-          },
-          lineStyle: {
-            color: '#3b82f6',
-            width: 2
-          },
-          itemStyle: {
-            color: '#3b82f6',
-            borderColor: '#fff',
-            borderWidth: 2
-          }
-        }]
-      }]
-    }
-  }
-
-  // Bar chart
+  
+  // Default to pie chart
   return {
     color: colors,
     tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: '{b}: {c}%',
+      trigger: 'item',
+      formatter: '{b}',
       confine: true
     },
-    grid: {
-      left: '15px',
-      right: '20px',
-      bottom: '15px',
-      top: '15px',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value',
-      max: 100,
-      min: 0,
-      axisLabel: {
-        formatter: '{value}%',
-        fontSize: 10,
-        color: '#6b7280'
-      },
-      splitLine: {
-        lineStyle: {
-          color: '#e5e7eb',
-          type: 'dashed'
-        }
-      },
-      axisLine: {
-        lineStyle: {
-          color: '#d1d5db'
-        }
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: props.skills.map(skill => 
-        skill.name.length > 15 ? skill.name.substring(0, 15) + '...' : skill.name
-      ),
-      axisLabel: {
-        fontSize: 11,
-        color: '#4b5563',
-        fontWeight: 500
-      },
-      axisLine: {
-        lineStyle: {
-          color: '#d1d5db'
-        }
-      }
-    },
     series: [{
-      name: 'Proficiency',
-      type: 'bar',
-      data: props.skills.map((skill, index) => ({
-        value: skill.value,
-        itemStyle: {
-          color: colors[index % colors.length],
-          borderRadius: [0, 4, 4, 0]
-        }
-      })),
-      barWidth: '60%',
-      barMaxWidth: 40,
+      name: 'Skills',
+      type: 'pie',
+      radius: ['35%', '60%'],
+      center: ['50%', '50%'],
+      avoidLabelOverlap: true,
+      itemStyle: {
+        borderRadius: 10,
+        borderColor: '#fff',
+        borderWidth: 3
+      },
       label: {
-        show: false
+        show: true,
+        position: 'outside',
+        formatter: '{b}',
+        fontSize: 13,
+        color: '#4b5563',
+        fontWeight: 500,
+        distanceToLabelLine: 5,
+        alignTo: 'none'
+      },
+      labelLine: {
+        show: true,
+        length: 25,
+        length2: 20,
+        smooth: 0.3,
+        lineStyle: {
+          width: 2,
+          color: '#d1d5db'
+        }
       },
       emphasis: {
+        label: {
+          show: true,
+          fontSize: 16,
+          fontWeight: 'bold',
+          color: '#1e293b'
+        },
         itemStyle: {
-          shadowBlur: 10,
+          shadowBlur: 15,
           shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
+          shadowColor: 'rgba(0, 0, 0, 0.3)'
+        },
+        scale: true,
+        scaleSize: 10
+      },
+      data: props.skills.map((skill, index) => ({
+        value: 1,
+        name: skill.name,
+        itemStyle: {
+          color: colors[index % colors.length]
         }
-      }
+      }))
     }]
   }
 }
@@ -274,19 +212,68 @@ const handleResize = () => {
   }
 }
 
+// Watch for skills changes
 watch(() => props.skills, () => {
   if (chartInstance) {
     const option = getChartOption()
     chartInstance.setOption(option, true)
+  } else {
+    // If chart instance doesn't exist, try to initialize
+    setTimeout(() => initChart(), 150)
   }
 }, { deep: true })
 
-onMounted(() => {
-  // Add a small delay to ensure DOM and ECharts are fully loaded
-  setTimeout(() => {
-    initChart()
-  }, 100)
+// Chart type watcher removed - only pie chart supported now
+
+onMounted(async () => {
+  // Initialize chart immediately when component mounts
+  if (typeof window !== 'undefined') {
+    // Wait for DOM to be fully ready
+    await nextTick()
+    
+    // Use requestAnimationFrame to ensure layout is calculated
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        initChart()
+        
+        // Force resize after initialization to ensure proper dimensions
+        setTimeout(() => {
+          if (chartInstance) {
+            chartInstance.resize()
+          }
+        }, 100)
+        
+        // Fallback attempt if first initialization failed
+        setTimeout(() => {
+          if (!chartInstance && chartContainer.value) {
+            initChart()
+            setTimeout(() => {
+              if (chartInstance) {
+                chartInstance.resize()
+              }
+            }, 100)
+          }
+        }, 500)
+      })
+    })
+  }
 })
+
+// Add visibility change watcher to handle tab switching
+if (typeof window !== 'undefined') {
+  watch(() => chartContainer.value, (newVal) => {
+    if (newVal && !chartInstance) {
+      setTimeout(() => {
+        initChart()
+        setTimeout(() => {
+          if (chartInstance) {
+            chartInstance.resize()
+          }
+        }, 100)
+      }, 250)
+    }
+  })
+}
 
 onUnmounted(() => {
   if (chartInstance) {

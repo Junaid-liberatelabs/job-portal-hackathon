@@ -29,10 +29,10 @@
             </a>
           </nav>
           
-          <!-- Company Dropdown -->
+          <!-- Platform Dropdown -->
           <div class="relative group">
             <button class="flex items-center gap-1 px-4 py-2 text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-50 rounded-lg transition-all">
-              <span>Company</span>
+              <span>Platform</span>
               <svg class="h-4 w-4 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -110,9 +110,9 @@
             {{ item.label }}
           </a>
           
-          <!-- Company Section -->
+          <!-- Platform Section -->
           <div class="pt-2">
-            <p class="px-4 py-2 text-xs font-semibold text-ink-400 uppercase tracking-wider">Company</p>
+            <p class="px-4 py-2 text-xs font-semibold text-ink-400 uppercase tracking-wider">Platform</p>
             <a
               v-for="link in companyLinks"
               :key="link.href"
@@ -164,7 +164,6 @@ const navItems = [
 ]
 
 const companyLinks = [
-  { label: 'Company', href: '/#company' },
   { label: 'Privacy', href: '/privacy' },
   { label: 'Terms', href: '/terms' },
   { label: 'Contact', href: '/#contact' }

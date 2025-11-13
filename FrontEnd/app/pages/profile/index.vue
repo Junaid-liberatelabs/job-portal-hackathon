@@ -246,43 +246,35 @@
           <p class="text-sm text-ink-500">Add skills to improve job matches and resource recommendations.</p>
         </div>
 
-        <Card variant="glass" class="p-6">
-          <div class="space-y-4">
-            <!-- Chart Type Selector -->
-            <div class="flex items-center justify-between border-b border-ink-100 pb-4">
-              <h3 class="text-lg font-semibold text-ink-900">Skill Analysis</h3>
-              <div class="flex gap-2">
-                <Button
-                  v-for="type in ['pie', 'radar', 'bar']"
-                  :key="type"
-                  :variant="chartType === type ? 'primary' : 'outline'"
-                  size="sm"
-                  @click="chartType = type as 'pie' | 'radar' | 'bar'"
-                  class="min-w-[80px]"
-                >
-                  {{ type.charAt(0).toUpperCase() + type.slice(1) }}
-                </Button>
-              </div>
-            </div>
-            
-            <!-- Chart Container -->
-            <div class="relative">
-              <SkillChart
-                v-if="auth.user?.skills && auth.user.skills.length > 0"
-                :skills="skillsForChart"
-                :chart-type="chartType"
-                :height="400"
-              />
-              <div v-else class="py-20 text-center">
-                <svg class="mx-auto h-16 w-16 text-ink-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <p class="text-sm font-medium text-ink-600 mb-2">No skills added yet</p>
-                <p class="text-xs text-ink-500">Add skills below to visualize your skill profile</p>
-              </div>
+        <div class="rounded-2xl border border-white/70 bg-white shadow-sm overflow-hidden">
+          <div class="p-8 pb-0">
+            <div class="mb-8">
+              <h3 class="font-display text-xl font-semibold text-ink-900">Skill Visualization</h3>
+              <p class="mt-1 text-sm text-ink-600">Your skills overview</p>
             </div>
           </div>
-        </Card>
+          
+          <div v-if="auth.user?.skills && auth.user.skills.length > 0" class="px-8 pb-8">
+            <!-- Chart Container -->
+            <div class="w-full bg-white" style="height: 600px; min-height: 600px;">
+              <SkillChart
+                v-if="activeTab === 'skills'"
+                :key="`skill-chart-${auth.user.skills.length}-${activeTab}`"
+                :skills="skillsForChart"
+                chart-type="pie"
+                :height="600"
+              />
+            </div>
+          </div>
+
+          <div v-else class="py-12 text-center px-8 pb-8">
+            <svg class="mx-auto h-12 w-12 text-ink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <p class="mt-4 text-sm text-ink-600">No skills added yet</p>
+            <p class="mt-2 text-xs text-ink-500">Add skills below to visualize your skill profile</p>
+          </div>
+        </div>
 
         <div class="space-y-4">
           <h3 class="text-sm font-semibold text-ink-700">Manage skills</h3>
@@ -361,7 +353,14 @@
                     :value="level.value"
                     class="sr-only"
                   />
-                  <div class="text-4xl">{{ level.icon }}</div>
+                  <div :class="[
+                    'text-5xl transition-colors',
+                    form.experience_level === level.value ? 'text-brand-600' : 'text-ink-400'
+                  ]">
+                    <span class="material-symbols-outlined" style="font-size: 48px; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+                      {{ level.icon }}
+                    </span>
+                  </div>
                   <div class="text-center">
                     <p class="font-semibold text-ink-900">{{ level.label }}</p>
                     <p class="text-xs text-ink-500 mt-1">{{ level.description }}</p>
@@ -371,8 +370,15 @@
             </div>
 
             <Button type="submit" :disabled="auth.loading" class="w-full">
-              Save Experience Level
+              <span v-if="auth.loading" class="flex items-center justify-center gap-2">
+                <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent"></span>
+                Saving...
+              </span>
+              <span v-else>Save Experience Level</span>
             </Button>
+            <p v-if="statusMessage" class="text-sm text-emerald-600 text-center font-semibold animate-fade-in">
+              ✓ {{ statusMessage }}
+            </p>
           </form>
         </Card>
       </section>
@@ -407,8 +413,15 @@
             </div>
 
             <Button type="submit" :disabled="auth.loading" class="w-full">
-              Save Career Preferences
+              <span v-if="auth.loading" class="flex items-center justify-center gap-2">
+                <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent"></span>
+                Saving...
+              </span>
+              <span v-else>Save Career Preferences</span>
             </Button>
+            <p v-if="statusMessage" class="text-sm text-emerald-600 text-center font-semibold animate-fade-in">
+              ✓ {{ statusMessage }}
+            </p>
           </form>
         </Card>
       </section>
@@ -497,7 +510,7 @@ const api = useApi()
 await auth.fetchProfile()
 
 const activeTab = ref('personal')
-const chartType = ref<'pie' | 'radar' | 'bar'>('pie')
+// const chartType = ref<'pie' | 'radar' | 'bar'>('pie')
 
 // Parse full name into first and last
 const parseFullName = (fullName: string) => {
@@ -544,22 +557,25 @@ const memberSince = computed(() => {
   return new Date().getFullYear()
 })
 
-// Profile completion calculation
+// Profile completion calculation (matches dashboard)
 const profileCompletion = computed(() => {
   if (!auth.user) return 0
-  let completed = 0
-  const total = 10
   
-  if (auth.user.full_name) completed++
-  if (auth.user.email) completed++
-  if (auth.user.education_level) completed++
-  if (auth.user.preferred_career_track) completed++
+  let completed = 0
+  const total = 7 // Total profile fields to complete
+  
+  // Core fields (always present after registration)
+  if (auth.user.full_name && auth.user.full_name.trim().length > 0) completed++
+  if (auth.user.email && auth.user.email.trim().length > 0) completed++
+  
+  // Profile fields
+  if (auth.user.education_level && auth.user.education_level.trim().length > 0) completed++
+  if (auth.user.preferred_career_track && auth.user.preferred_career_track.trim().length > 0) completed++
   if (auth.user.experience_level) completed++
-  if (auth.user.skills && auth.user.skills.length > 0) completed++
-  if (auth.user.skills && auth.user.skills.length >= 5) completed++
-  if (form.phone) completed++
-  if (form.location) completed++
-  if (form.university) completed++
+  
+  // Skills-based completion
+  if (auth.user.skills && auth.user.skills.length >= 1) completed++
+  if (auth.user.skills && auth.user.skills.length >= 5) completed++ // Bonus for having 5+ skills
   
   return Math.round((completed / total) * 100)
 })
@@ -644,9 +660,9 @@ const handleUpdateCareer = async () => {
 }
 
 const experienceLevels = [
-  { value: 'entry', label: 'Entry Level', icon: '🌱', description: 'Starting your career' },
-  { value: 'junior', label: 'Junior', icon: '🚀', description: '1-3 years experience' },
-  { value: 'mid', label: 'Mid Level', icon: '⭐', description: '3-7 years experience' }
+  { value: 'entry', label: 'Entry Level', icon: 'school', description: 'Starting your career' },
+  { value: 'junior', label: 'Junior', icon: 'rocket_launch', description: '1-3 years experience' },
+  { value: 'mid', label: 'Mid Level', icon: 'star', description: '3-7 years experience' }
 ]
 
 const skillInput = ref('')

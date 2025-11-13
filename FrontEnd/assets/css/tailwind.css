@@ -32,6 +32,30 @@ html.lenis body {
   padding-bottom: 0.1em;
 }
 
+/* Card Hover Effects */
+.card-hover-effect {
+  transform-style: preserve-3d;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-8px) perspective(1000px) rotateX(1deg);
+}
+
+@supports (backdrop-filter: blur(10px)) {
+  .card-hover-effect:hover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  .card-hover-effect:hover::before {
+    opacity: 1;
+  }
+}
+
 /* Custom Animations for Landing Page */
 @keyframes fade-in {
   from {

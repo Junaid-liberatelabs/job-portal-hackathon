@@ -31,7 +31,7 @@
             <NuxtLink to="/#roadmap" class="block transition hover:text-ink-700">Roadmap</NuxtLink>
           </div>
           <div class="space-y-2">
-            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-ink-400">Company</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-ink-400">Platform</p>
             <NuxtLink to="/privacy" class="block transition hover:text-ink-700">Privacy</NuxtLink>
             <NuxtLink to="/terms" class="block transition hover:text-ink-700">Terms</NuxtLink>
             <NuxtLink to="/#contact" class="block transition hover:text-ink-700">Contact</NuxtLink>
