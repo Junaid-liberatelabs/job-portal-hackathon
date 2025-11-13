@@ -1,0 +1,1612 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "CareerIN",
+        "description": "Multi-Agent AI System for Culture, Brand, and CX Report Generation",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register User",
+                "description": "Register a new user with:\n- *full_name: User's full name\n- **email: Valid email address (must be unique)\n- **education_level: User's education level\n- **preferred_career_track: User's preferred career path\n- **password: Secure password (will be hashed)\n- **skills: Optional list of skills (defaults to empty list)",
+                "operationId": "register_user_auth_register_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRegister"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "description": "OAuth2 compatible token login.\nUse email as username in the form.",
+                "operationId": "login_auth_login_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_login_auth_login_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get Current User Profile",
+                "description": "Get the current authenticated user's profile.\nReturns all user information including skills, education, and career preferences.",
+                "operationId": "get_current_user_profile_users_me_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update User Profile",
+                "description": "Update the current user's profile.\nCan update:\n- **full_name: User's full name\n- **education_level: User's education level\n- **preferred_career_track: User's preferred career path\n- **skills: Complete list of skills (replaces existing)",
+                "operationId": "update_user_profile_users_me_put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": []
+                    }
+                ]
+            }
+        },
+        "/users/me/skills": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Add Skill To Profile",
+                "description": "Add a single skill to the current user's profile.\nThe skill will only be added if it doesn't already exist.\n\n- **skill: The skill name to add (non-empty string, max 100 characters)",
+                "operationId": "add_skill_to_profile_users_me_skills_post",
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "skill",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Skill"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/skills/{skill}": {
+            "delete": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Remove Skill From Profile",
+                "description": "Remove a skill from the current user's profile.\n\n- **skill: The skill name to remove",
+                "operationId": "remove_skill_from_profile_users_me_skills_skill_delete",
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "skill",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "The skill to remove from the user's profile",
+                            "title": "Skill"
+                        },
+                        "description": "The skill to remove from the user's profile"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/": {
+            "post": {
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Create Job",
+                "description": "Create a new job listing.\n\n- **title: Job title (required)\n- **description: Job description (required)\n- **company: Company name (required)\n- **job_type: Type of job (INTERNSHIP, PART_TIME, FULL_TIME, FREELANCE)\n- **job_location: Location type (REMOTE, HYBRID, ON_SITE) - optional\n- **required_skills: List of required skills (at least 1)\n- **recommended_experience_level: Experience level (STUDENT, ENTRY, JUNIOR)\n- **salary_range_min: Minimum salary - optional\n- **salary_range_max: Maximum salary - optional",
+                "operationId": "create_job_jobs__post",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JobCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JobResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "List Jobs",
+                "description": "Get a list of jobs with optional filtering.\n\n- **skip: Number of records to skip (for pagination)\n- **limit: Maximum number of records to return (default: 100, max: 1000)\n- **job_type: Filter by job type (INTERNSHIP, PART_TIME, FULL_TIME, FREELANCE)\n- **experience_level: Filter by experience level (STUDENT, ENTRY, JUNIOR)\n- **skills: Comma-separated list of skills (e.g., \"Python,JavaScript\")",
+                "operationId": "list_jobs_jobs__get",
+                "parameters": [
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Number of records to skip",
+                            "default": 0,
+                            "title": "Skip"
+                        },
+                        "description": "Number of records to skip"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 1000,
+                            "minimum": 1,
+                            "description": "Maximum number of records to return",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "Maximum number of records to return"
+                    },
+                    {
+                        "name": "job_type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/JobType"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "Filter by job type",
+                            "title": "Job Type"
+                        },
+                        "description": "Filter by job type"
+                    },
+                    {
+                        "name": "experience_level",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/ExperienceLevel"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "Filter by experience level",
+                            "title": "Experience Level"
+                        },
+                        "description": "Filter by experience level"
+                    },
+                    {
+                        "name": "skills",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "Comma-separated list of skills to filter by",
+                            "title": "Skills"
+                        },
+                        "description": "Comma-separated list of skills to filter by"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/JobResponse"
+                                    },
+                                    "title": "Response List Jobs Jobs  Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/{job_id}": {
+            "get": {
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Get Job",
+                "description": "Get a specific job by ID.\n\n- **job_id: The unique identifier of the job",
+                "operationId": "get_job_jobs_job_id_get",
+                "parameters": [
+                    {
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Job Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JobResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Update Job",
+                "description": "Update an existing job listing.\n\n- **job_id: The unique identifier of the job to update\n- All fields are optional - only provided fields will be updated",
+                "operationId": "update_job_jobs_job_id_put",
+                "parameters": [
+                    {
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Job Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JobUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JobResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "jobs"
+                ],
+                "summary": "Delete Job",
+                "description": "Delete a job listing.\n\n- **job_id: The unique identifier of the job to delete",
+                "operationId": "delete_job_jobs_job_id_delete",
+                "parameters": [
+                    {
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Job Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/": {
+            "post": {
+                "tags": [
+                    "resources"
+                ],
+                "summary": "Create Resource",
+                "description": "Create a new learning resource.\n\n- **name: Resource name (required)\n- **description: Resource description (required)\n- **url: Resource URL (required, must be valid URL)\n- **tags: List of tags for categorization (optional)",
+                "operationId": "create_resource_resources__post",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResourceCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "summary": "List Resources",
+                "description": "Get a list of learning resources with optional filtering.\n\n- **skip: Number of records to skip (for pagination)\n- **limit: Maximum number of records to return (default: 100, max: 1000)\n- **tags: Comma-separated list of tags (e.g., \"Python,Web Development\")",
+                "operationId": "list_resources_resources__get",
+                "parameters": [
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Number of records to skip",
+                            "default": 0,
+                            "title": "Skip"
+                        },
+                        "description": "Number of records to skip"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 1000,
+                            "minimum": 1,
+                            "description": "Maximum number of records to return",
+                            "default": 100,
+                            "title": "Limit"
+                        },
+                        "description": "Maximum number of records to return"
+                    },
+                    {
+                        "name": "tags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "Comma-separated list of tags to filter by",
+                            "title": "Tags"
+                        },
+                        "description": "Comma-separated list of tags to filter by"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ResourceResponse"
+                                    },
+                                    "title": "Response List Resources Resources  Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/{resource_id}": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "summary": "Get Resource",
+                "description": "Get a specific learning resource by ID.\n\n- **resource_id: The unique identifier of the resource",
+                "operationId": "get_resource_resources_resource_id_get",
+                "parameters": [
+                    {
+                        "name": "resource_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Resource Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "resources"
+                ],
+                "summary": "Update Resource",
+                "description": "Update an existing learning resource.\n\n- **resource_id: The unique identifier of the resource to update\n- All fields are optional - only provided fields will be updated",
+                "operationId": "update_resource_resources_resource_id_put",
+                "parameters": [
+                    {
+                        "name": "resource_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Resource Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResourceUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "resources"
+                ],
+                "summary": "Delete Resource",
+                "description": "Delete a learning resource.\n\n- **resource_id*: The unique identifier of the resource to delete",
+                "operationId": "delete_resource_resources_resource_iddelete",
+                "parameters": [
+                    {
+                        "name": "resource_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Resource Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "summary": "Health Check",
+                "description": "Health check endpoint.",
+                "operationId": "health_check_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "tags": [
+                    "root"
+                ],
+                "summary": "Read Root",
+                "operationId": "read_root_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Body_login_auth_login_post": {
+                "properties": {
+                    "grant_type": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^password$"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Grant Type"
+                    },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "title": "Password"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "title": "Scope",
+                        "default": ""
+                    },
+                    "client_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "format": "password",
+                        "title": "Client Secret"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "title": "Body_login_auth_login_post"
+            },
+            "ExperienceLevel": {
+                "type": "string",
+                "enum": [
+                    "student",
+                    "entry",
+                    "junior"
+                ],
+                "title": "ExperienceLevel"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "JobCreate": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Description"
+                    },
+                    "company": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Company"
+                    },
+                    "job_type": {
+                        "$ref": "#/components/schemas/JobType"
+                    },
+                    "job_location": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/JobLocation"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "required_skills": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "minItems": 1,
+                        "title": "Required Skills"
+                    },
+                    "recommended_experience_level": {
+                        "$ref": "#/components/schemas/ExperienceLevel"
+                    },
+                    "salary_range_min": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "minimum": 0.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Salary Range Min"
+                    },
+                    "salary_range_max": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "minimum": 0.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Salary Range Max"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "title",
+                    "description",
+                    "company",
+                    "job_type",
+                    "required_skills",
+                    "recommended_experience_level"
+                ],
+                "title": "JobCreate"
+            },
+            "JobLocation": {
+                "type": "string",
+                "enum": [
+                    "remote",
+                    "hybrid",
+                    "on_site"
+                ],
+                "title": "JobLocation"
+            },
+            "JobResponse": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "company": {
+                        "type": "string",
+                        "title": "Company"
+                    },
+                    "job_type": {
+                        "$ref": "#/components/schemas/JobType"
+                    },
+                    "job_location": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/JobLocation"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "required_skills": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Required Skills"
+                    },
+                    "recommended_experience_level": {
+                        "$ref": "#/components/schemas/ExperienceLevel"
+                    },
+                    "salary_range_min": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Salary Range Min"
+                    },
+                    "salary_range_max": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Salary Range Max"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Updated At"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "title",
+                    "description",
+                    "company",
+                    "job_type",
+                    "job_location",
+                    "required_skills",
+                    "recommended_experience_level",
+                    "salary_range_min",
+                    "salary_range_max",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "JobResponse"
+            },
+            "JobType": {
+                "type": "string",
+                "enum": [
+                    "internship",
+                    "part_time",
+                    "full_time",
+                    "freelance"
+                ],
+                "title": "JobType"
+            },
+            "JobUpdate": {
+                "properties": {
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Title"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "company": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Company"
+                    },
+                    "job_type": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/JobType"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "job_location": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/JobLocation"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "required_skills": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array",
+                                "minItems": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Required Skills"
+                    },
+                    "recommended_experience_level": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ExperienceLevel"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "salary_range_min": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "minimum": 0.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Salary Range Min"
+                    },
+                    "salary_range_max": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "minimum": 0.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Salary Range Max"
+                    }
+                },
+                "type": "object",
+                "title": "JobUpdate"
+            },
+            "ResourceCreate": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Description"
+                    },
+                    "url": {
+                        "type": "string",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "format": "uri",
+                        "title": "Url"
+                    },
+                    "tags": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Tags"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "description",
+                    "url"
+                ],
+                "title": "ResourceCreate"
+            },
+            "ResourceResponse": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "url": {
+                        "type": "string",
+                        "title": "Url"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Updated At"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "url",
+                    "tags",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ResourceResponse"
+            },
+            "ResourceUpdate": {
+                "properties": {
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "url": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "format": "uri"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Url"
+                    },
+                    "tags": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Tags"
+                    }
+                },
+                "type": "object",
+                "title": "ResourceUpdate"
+            },
+            "Token": {
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "title": "Token Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "access_token",
+                    "token_type"
+                ],
+                "title": "Token"
+            },
+            "UserRegister": {
+                "properties": {
+                    "full_name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Full Name"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email"
+                    },
+                    "education_level": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Education Level"
+                    },
+                    "preferred_career_track": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Preferred Career Track"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "title": "Password"
+                    },
+                    "skills": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Skills"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "full_name",
+                    "email",
+                    "education_level",
+                    "preferred_career_track",
+                    "password"
+                ],
+                "title": "UserRegister"
+            },
+            "UserResponse": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "full_name": {
+                        "type": "string",
+                        "title": "Full Name"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "education_level": {
+                        "type": "string",
+                        "title": "Education Level"
+                    },
+                    "preferred_career_track": {
+                        "type": "string",
+                        "title": "Preferred Career Track"
+                    },
+                    "skills": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Skills"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "title": "Is Active"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Updated At"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "full_name",
+                    "email",
+                    "education_level",
+                    "preferred_career_track",
+                    "skills",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "UserResponse"
+            },
+            "UserUpdate": {
+                "properties": {
+                    "full_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Full Name"
+                    },
+                    "education_level": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Education Level"
+                    },
+                    "preferred_career_track": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Preferred Career Track"
+                    },
+                    "skills": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Skills"
+                    }
+                },
+                "type": "object",
+                "title": "UserUpdate"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        },
+        "securitySchemes": {
+            "OAuth2PasswordBearer": {
+                "type": "oauth2",
+                "flows": {
+                    "password": {
+                        "scopes": {},
+                        "tokenUrl": "/auth/login"
+                    }
+                }
+            }
+        }
+    }
+}

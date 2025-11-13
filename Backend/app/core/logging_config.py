@@ -84,8 +84,8 @@ def setup_logging(log_file: Optional[Path] = None) -> None:
     logging.config.dictConfig(logging_config)
 
     # Configure SQL echo if debug is enabled
-    if settings.DEBUG:
-        logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+    # if settings.DEBUG:
+    #     logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
     # Log startup message
     logger = logging.getLogger("app")

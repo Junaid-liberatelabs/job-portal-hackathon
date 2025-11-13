@@ -14,7 +14,7 @@
 
         <div class="hidden items-center gap-6 text-sm font-medium text-ink-500 md:flex">
           <div
-            v-for="group in navGroups"
+            v-for="group in computedNavGroups"
             :key="group.label"
             class="relative"
             @mouseenter="handleMouseEnter(group.label)"
@@ -59,18 +59,35 @@
         </div>
 
         <div class="hidden items-center gap-3 md:flex">
-          <NuxtLink
-            to="/login"
-            class="inline-flex items-center justify-center rounded-full border border-ink-200/80 px-4 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-200 hover:text-ink-900"
-          >
-            Sign In
-          </NuxtLink>
-          <NuxtLink
-            to="/signup"
-            class="inline-flex items-center justify-center rounded-full bg-ink-900 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-ink-900/20 transition hover:bg-ink-800"
-          >
-            Create Profile
-          </NuxtLink>
+          <template v-if="auth.isAuthenticated">
+            <NuxtLink
+              to="/dashboard"
+              class="inline-flex items-center justify-center rounded-full border border-ink-200/80 px-4 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-200 hover:text-ink-900"
+            >
+              Dashboard
+            </NuxtLink>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full bg-ink-900 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-ink-900/20 transition hover:bg-ink-800"
+              @click="handleLogout"
+            >
+              Sign Out
+            </button>
+          </template>
+          <template v-else>
+            <NuxtLink
+              to="/login"
+              class="inline-flex items-center justify-center rounded-full border border-ink-200/80 px-4 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-200 hover:text-ink-900"
+            >
+              Sign In
+            </NuxtLink>
+            <NuxtLink
+              to="/signup"
+              class="inline-flex items-center justify-center rounded-full bg-ink-900 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-ink-900/20 transition hover:bg-ink-800"
+            >
+              Create Profile
+            </NuxtLink>
+          </template>
         </div>
 
         <button
@@ -92,7 +109,7 @@
         >
           <div class="space-y-5 text-sm text-ink-600">
             <div
-              v-for="group in navGroups"
+              v-for="group in computedNavGroups"
               :key="`mobile-${group.label}`"
               class="space-y-2"
             >
@@ -111,18 +128,38 @@
             </div>
           </div>
           <div class="mt-6 flex flex-col gap-3">
-            <NuxtLink
-              to="/login"
-              class="w-full rounded-full border border-ink-200/70 px-4 py-2 text-center text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:text-ink-900"
-            >
-              Sign In
-            </NuxtLink>
-            <NuxtLink
-              to="/signup"
-              class="w-full rounded-full bg-ink-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-ink-800"
-            >
-              Create Profile
-            </NuxtLink>
+            <template v-if="auth.isAuthenticated">
+              <NuxtLink
+                to="/dashboard"
+                class="w-full rounded-full border border-ink-200/70 px-4 py-2 text-center text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:text-ink-900"
+                @click="mobileNavOpen = false"
+              >
+                Dashboard
+              </NuxtLink>
+              <button
+                type="button"
+                class="w-full rounded-full bg-ink-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-ink-800"
+                @click="handleMobileLogout"
+              >
+                Sign Out
+              </button>
+            </template>
+            <template v-else>
+              <NuxtLink
+                to="/login"
+                class="w-full rounded-full border border-ink-200/70 px-4 py-2 text-center text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:text-ink-900"
+                @click="mobileNavOpen = false"
+              >
+                Sign In
+              </NuxtLink>
+              <NuxtLink
+                to="/signup"
+                class="w-full rounded-full bg-ink-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-ink-800"
+                @click="mobileNavOpen = false"
+              >
+                Create Profile
+              </NuxtLink>
+            </template>
           </div>
         </div>
       </Transition>
@@ -190,10 +227,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useRoute } from '#imports'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from '#imports'
+import { useAuthStore } from '~/stores/auth'
 
-const navGroups = [
+const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
+
+if (process.client && auth.token && !auth.user) {
+  auth.fetchProfile()
+}
+
+const publicNavGroups = [
   {
     label: 'Platform',
     items: [
@@ -216,10 +262,23 @@ const navGroups = [
   }
 ]
 
+const workspaceGroup = {
+  label: 'Workspace',
+  items: [
+    { label: 'Dashboard', to: '/dashboard' },
+    { label: 'Jobs', to: '/jobs' },
+    { label: 'Resources', to: '/resources' },
+    { label: 'Profile', to: '/profile' }
+  ]
+}
+
+const computedNavGroups = computed(() =>
+  auth.isAuthenticated ? [workspaceGroup, ...publicNavGroups] : publicNavGroups
+)
+
 const mobileNavOpen = ref(false)
 const openGroup = ref<string | null>(null)
 const closeTimer = ref<ReturnType<typeof setTimeout> | null>(null)
-const route = useRoute()
 
 const toggleGroup = (label: string) => {
   openGroup.value = openGroup.value === label ? null : label
@@ -256,6 +315,18 @@ watch(
 )
 
 const currentYear = new Date().getFullYear()
+
+const handleLogout = async () => {
+  auth.logout()
+  if (route.path !== '/') {
+    await router.push('/')
+  }
+}
+
+const handleMobileLogout = async () => {
+  await handleLogout()
+  mobileNavOpen.value = false
+}
 </script>
 
 <style scoped>
