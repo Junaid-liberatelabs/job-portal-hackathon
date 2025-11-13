@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, DateTime, ARRAY, func
+from pgvector.sqlalchemy import Vector
 from app.db.base import Base
 import uuid
 
@@ -24,6 +25,8 @@ class Resource(Base):
         onupdate=func.now(),
         server_default=func.now(),
     )
+    embedding = Column(Vector(384), nullable=True)
+
 
     def __repr__(self):
         return f"<Resource(id={self.id}, name={self.name}, url={self.url}, tags={self.tags})>"

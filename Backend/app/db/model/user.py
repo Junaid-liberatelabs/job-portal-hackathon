@@ -2,6 +2,7 @@ import uuid
 
 from app.db.base import Base
 from sqlalchemy import ARRAY, Boolean, Column, DateTime, String, func
+from pgvector.sqlalchemy import Vector
 
 
 class User(Base):
@@ -25,6 +26,8 @@ class User(Base):
         onupdate=func.now(),
         server_default=func.now(),
     )
+    embedding = Column(Vector(384), nullable=True)
+
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, full_name={self.full_name}, skills={self.skills}, is_active={self.is_active})>"
