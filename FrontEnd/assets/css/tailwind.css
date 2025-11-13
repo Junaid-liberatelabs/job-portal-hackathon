@@ -1,0 +1,248 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* CareerConnect Design System - Custom Utilities */
+:root {
+  /* Colors */
+  --color-primary: #1a2332;
+  --color-secondary: #ff6b6b;
+  --color-accent: #4ecdc4;
+  --color-neutral: #f8f9fa;
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, var(--color-accent), #44a08d);
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, var(--color-accent), #44a08d);
+}
+
+html {
+  scroll-behavior: initial;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: #f7f8fb;
+    color: #1f2136;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings:
+      'case' on,
+      'liga' on,
+      'kern' on;
+    letter-spacing: -0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.025em;
+    color: #1f2136;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #30324c;
+  }
+
+  ::selection {
+    background-color: rgba(56, 141, 224, 0.9);
+    color: #ffffff;
+  }
+
+  a {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer components {
+  .section-heading {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: #1f2136;
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .section-heading {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+  }
+
+  .section-subheading {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6f7698;
+  }
+
+  @media (min-width: 640px) {
+    .section-subheading {
+      max-width: 36rem;
+    }
+  }
+
+  .landing-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 30px 90px -45px rgba(15, 23, 42, 0.25);
+    backdrop-filter: blur(18px);
+    transform: translate3d(0, 0, 0);
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .landing-card:hover {
+    transform: translate3d(0, -12px, 0);
+    box-shadow: 0 40px 120px -60px rgba(30, 41, 59, 0.35);
+  }
+
+  .landing-card--glass {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .landing-card--ink {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(17, 24, 39, 0.55);
+    color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 35px 120px -70px rgba(59, 130, 246, 0.55);
+  }
+
+  .landing-card--brand {
+    border-color: rgba(191, 219, 254, 0.35);
+    background: linear-gradient(135deg, rgba(191, 219, 254, 0.65), rgba(255, 255, 255, 0.28) 55%, transparent 100%);
+  }
+
+  .landing-card__halo {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.18), transparent 55%);
+    mix-blend-mode: screen;
+    opacity: 0.45;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    transition: color 300ms ease, background-color 300ms ease, border-color 300ms ease;
+  }
+
+  .chip--frosted {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+  }
+
+  .chip--ink {
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    background: rgba(15, 23, 42, 0.08);
+    color: rgba(51, 65, 85, 0.85);
+  }
+
+  .tilt-layer {
+    transform: var(--tilt-transform, perspective(900px) rotateX(0deg) rotateY(0deg));
+    will-change: transform;
+    transition: transform 120ms ease-out;
+  }
+
+  .parallax-layer {
+    transform: translate3d(var(--parallax-offset-x, 0px), var(--parallax-offset-y, 0px), 0);
+    will-change: transform;
+  }
+}
+
+.sr-base {
+  opacity: 0;
+  transform: var(--sr-transform, translate3d(0, 48px, 0));
+  transition:
+    opacity var(--sr-duration, 0.6s) ease,
+    transform var(--sr-duration, 0.6s) cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--sr-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.sr-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.motion-fade-up {
+  opacity: 0;
+  transform: translate3d(0, var(--motion-y, 24px), 0);
+  animation: fade-up-soft var(--motion-duration, 720ms) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+@keyframes fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--motion-y, 24px), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-card,
+  .landing-card:hover {
+    transform: none !important;
+    transition-duration: 0ms !important;
+    box-shadow: 0 18px 40px -24px rgba(15, 23, 42, 0.2);
+  }
+
+  .motion-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
