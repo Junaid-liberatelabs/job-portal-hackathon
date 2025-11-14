@@ -1,5 +1,7 @@
 """Database initialization module."""
 
+from sqlalchemy import text
+
 from app.core.logging_config import get_logger
 from app.db.base import Base  # This import ensures all models are registered
 from app.db.model.job import Job  # noqa: F401
@@ -10,6 +12,18 @@ from app.db.model.user import User  # noqa: F401
 from app.db.session import engine
 
 logger = get_logger(__name__)
+
+
+def ensure_vector_extension():
+    """
+    Ensure the pgvector extension exists before creating tables.
+
+    Some environments (like fresh local Docker containers) do not
+    have the extension enabled by default, so we attempt to create it.
+    """
+    with engine.connect() as connection:
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        connection.commit()
 
 
 async def init_db():
@@ -25,6 +39,9 @@ async def init_db():
         # Log registered models
         registered_models = [mapper.class_.__name__ for mapper in Base.registry.mappers]
         logger.info(f"Registered models: {', '.join(registered_models)}")
+        # Ensure pgvector extension exists before creating any tables.
+        ensure_vector_extension()
+
         # Create all tables
         Base.metadata.create_all(bind=engine)
 
