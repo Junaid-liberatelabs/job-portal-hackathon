@@ -1,7 +1,8 @@
-from sqlalchemy import Column, String, DateTime, ARRAY, func
-from pgvector.sqlalchemy import Vector
-from app.db.base import Base
 import uuid
+
+from app.db.base import Base
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import ARRAY, Column, DateTime, String, func
 
 
 class Resource(Base):
@@ -26,7 +27,6 @@ class Resource(Base):
         server_default=func.now(),
     )
     embedding = Column(Vector(384), nullable=True)
-
 
     def __repr__(self):
         return f"<Resource(id={self.id}, name={self.name}, url={self.url}, tags={self.tags})>"

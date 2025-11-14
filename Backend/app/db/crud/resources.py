@@ -17,7 +17,7 @@ def create_resource(db: Session, resource_data: dict):
     db.add(db_resource)
     db.commit()
     db.refresh(db_resource)
-    
+
     # Generate and store embedding
     try:
         embedding = embedding_service.generate_resource_embedding(db_resource)
@@ -28,7 +28,7 @@ def create_resource(db: Session, resource_data: dict):
     except EmbeddingGenerationError as e:
         logger.error(f"Failed to generate embedding for resource {db_resource.id}: {e}")
         # Continue without embedding - resource creation should not fail
-    
+
     return db_resource
 
 
@@ -57,7 +57,9 @@ def update_resource(db: Session, resource_id: str, update_data: dict):
 
     # Check if embedding-relevant fields are being updated
     embedding_fields = {"name", "description", "tags"}
-    should_regenerate_embedding = any(field in update_data for field in embedding_fields)
+    should_regenerate_embedding = any(
+        field in update_data for field in embedding_fields
+    )
 
     for key, value in update_data.items():
         if hasattr(resource, key) and key not in ["id", "created_at"]:
@@ -65,7 +67,7 @@ def update_resource(db: Session, resource_id: str, update_data: dict):
 
     db.commit()
     db.refresh(resource)
-    
+
     # Regenerate embedding if relevant fields changed
     if should_regenerate_embedding:
         try:
@@ -73,11 +75,15 @@ def update_resource(db: Session, resource_id: str, update_data: dict):
             resource.embedding = embedding
             db.commit()
             db.refresh(resource)
-            logger.info(f"Successfully regenerated embedding for resource {resource.id}")
+            logger.info(
+                f"Successfully regenerated embedding for resource {resource.id}"
+            )
         except EmbeddingGenerationError as e:
-            logger.error(f"Failed to regenerate embedding for resource {resource.id}: {e}")
+            logger.error(
+                f"Failed to regenerate embedding for resource {resource.id}: {e}"
+            )
             # Continue without embedding update
-    
+
     return resource
 
 

@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     # POSTGRES_PASSWORD:str
     # POSTGRES_PORT:str
     # POSTGRES_DB:str
-    DATABASE_URL: str = "postgresql://postgres:mysecretpassword@localhost:5432/postgres"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/postgres"
 
     class Config:
         env_file = ".env"

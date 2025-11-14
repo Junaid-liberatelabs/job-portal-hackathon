@@ -194,3 +194,6 @@ coverage.xml
 .cursor/*
 .qodana/*
 .qodo
+pgdata/
+.pgdata
+.pgdata/*

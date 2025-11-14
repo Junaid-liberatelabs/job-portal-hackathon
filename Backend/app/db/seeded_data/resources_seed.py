@@ -17,7 +17,14 @@ def get_resources_seed_data():
             "name": "The Odin Project - Full Stack JavaScript",
             "description": "A free, open-source curriculum for learning web development. Covers HTML, CSS, JavaScript, Node.js, and React with hands-on projects.",
             "url": "https://www.theodinproject.com/paths/full-stack-javascript",
-            "tags": ["Web Development", "JavaScript", "React", "Node.js", "Free", "Full Stack"],
+            "tags": [
+                "Web Development",
+                "JavaScript",
+                "React",
+                "Node.js",
+                "Free",
+                "Full Stack",
+            ],
         },
         {
             "name": "freeCodeCamp - Responsive Web Design",
@@ -67,7 +74,13 @@ def get_resources_seed_data():
             "name": "Google Machine Learning Crash Course",
             "description": "Fast-paced introduction to machine learning with TensorFlow. Includes video lectures and hands-on exercises.",
             "url": "https://developers.google.com/machine-learning/crash-course",
-            "tags": ["Machine Learning", "TensorFlow", "Python", "Data Science", "Free"],
+            "tags": [
+                "Machine Learning",
+                "TensorFlow",
+                "Python",
+                "Data Science",
+                "Free",
+            ],
         },
         {
             "name": "SQL for Data Analysis - Mode Analytics",
@@ -152,26 +165,28 @@ def get_resources_seed_data():
 def seed_resources(db_session):
     """
     Seeds the database with learning resources.
-    
+
     Args:
         db_session: SQLAlchemy database session
-        
+
     Returns:
         int: Number of resources created
     """
     resources_data = get_resources_seed_data()
     resources_created = 0
-    
+
     for resource_data in resources_data:
         # Check if resource already exists (by URL)
-        existing_resource = db_session.query(Resource).filter(
-            Resource.url == resource_data["url"]
-        ).first()
-        
+        existing_resource = (
+            db_session.query(Resource)
+            .filter(Resource.url == resource_data["url"])
+            .first()
+        )
+
         if not existing_resource:
             resource = Resource(**resource_data)
             db_session.add(resource)
             resources_created += 1
-    
+
     db_session.commit()
     return resources_created
