@@ -21,14 +21,21 @@
           </p>
         </div>
         
-        <button
-          @click.stop="$emit('bookmark', resource)"
-          class="text-ink-400 hover:text-accent transition-all duration-300 p-2 rounded-xl hover:bg-accent/5 shrink-0 group/bookmark"
-          :aria-label="isBookmarked ? 'Remove bookmark' : 'Bookmark resource'"
-        >
-          <BookmarkIcon v-if="!isBookmarked" class="h-5 w-5 group-hover/bookmark:scale-110 transition-transform" />
-          <BookmarkSolidIcon v-else class="h-5 w-5 text-accent group-hover/bookmark:scale-110 transition-transform" />
-        </button>
+        <!-- Match Badge and Bookmark -->
+        <div class="flex flex-col items-end gap-2 shrink-0">
+          <div v-if="matchPercentage !== null && matchPercentage > 0" :class="matchBadgeClasses">
+            <span class="text-sm font-bold">{{ matchPercentage }}%</span>
+            <span class="text-[10px] font-semibold opacity-90">MATCH</span>
+          </div>
+          <button
+            @click.stop="$emit('bookmark', resource)"
+            class="text-ink-400 hover:text-accent transition-all duration-300 p-2 rounded-xl hover:bg-accent/5 group/bookmark"
+            :aria-label="isBookmarked ? 'Remove bookmark' : 'Bookmark resource'"
+          >
+            <BookmarkIcon v-if="!isBookmarked" class="h-5 w-5 group-hover/bookmark:scale-110 transition-transform" />
+            <BookmarkSolidIcon v-else class="h-5 w-5 text-accent group-hover/bookmark:scale-110 transition-transform" />
+          </button>
+        </div>
       </div>
       
       <!-- Tags Section -->
@@ -69,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BookmarkIcon, LinkIcon } from '@heroicons/vue/24/outline'
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/vue/24/solid'
 import type { Resource } from '~/composables/useResources'
@@ -76,10 +84,12 @@ import type { Resource } from '~/composables/useResources'
 interface Props {
   resource: Resource
   isBookmarked?: boolean
+  similarityScore?: number | null // Backend similarity score (0-1)
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isBookmarked: false
+  isBookmarked: false,
+  similarityScore: null
 })
 
 const emit = defineEmits<{
@@ -87,6 +97,24 @@ const emit = defineEmits<{
   bookmark: [resource: Resource]
   view: [resource: Resource]
 }>()
+
+const matchPercentage = computed(() => {
+  // Use backend similarity score if available
+  if (props.similarityScore !== null && props.similarityScore !== undefined) {
+    return Math.round(props.similarityScore * 100)
+  }
+  return null
+})
+
+const matchBadgeClasses = computed(() => {
+  const base = 'flex flex-col items-center justify-center px-4 py-2 rounded-xl text-white shadow-lg transition-all duration-300 group-hover:scale-110'
+  
+  if (matchPercentage.value === null) return `${base} bg-gradient-to-br from-ink-400 to-ink-500`
+  
+  if (matchPercentage.value >= 70) return `${base} bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/30`
+  if (matchPercentage.value >= 40) return `${base} bg-gradient-to-br from-emerald-500 to-green-600 shadow-emerald-500/30`
+  return `${base} bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/30`
+})
 
 const extractDomain = (url: string): string => {
   try {

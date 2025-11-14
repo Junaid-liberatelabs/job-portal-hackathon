@@ -13,9 +13,9 @@ class Resource(Base):
     description = Column(String, nullable=False)
     url = Column(String, nullable=False)
     tags = Column(ARRAY(String), nullable=True, default=list, server_default="{}")
-    # pricing_tag = Column(
-    #     ENUM("Free", "Paid"), nullable=False, default="Free", server_default="Free"
-    # # )
+    pricing = Column(String, nullable=True,default="Free")
+    platform = Column(String, nullable=True)
+    duration = Column(String, nullable=True)
     created_at = Column(
         DateTime, nullable=False, default=func.now(), server_default=func.now()
     )

@@ -523,16 +523,30 @@ const parseFullName = (fullName: string) => {
 
 const nameParts = auth.user?.full_name ? parseFullName(auth.user.full_name) : { first_name: '', last_name: '' }
 
-const form = reactive({
+type ProfileForm = {
+  first_name: string
+  last_name: string
+  phone: string
+  location: string
+  education_level: string
+  field_of_study: string
+  university: string
+  graduation_year: number | string | null
+  gpa: string
+  experience_level: ExperienceLevel
+  preferred_career_track: string
+}
+
+const form = reactive<ProfileForm>({
   first_name: nameParts.first_name,
   last_name: nameParts.last_name,
-  phone: '',
-  location: '',
+  phone: auth.user?.phone_number ?? '',
+  location: auth.user?.location ?? '',
   education_level: auth.user?.education_level ?? '',
-  field_of_study: '',
-  university: '',
-  graduation_year: null as number | null,
-  gpa: '',
+  field_of_study: auth.user?.field_of_study ?? '',
+  university: auth.user?.institution ?? '',
+  graduation_year: (auth.user?.graduation_year ?? null) as number | string | null,
+  gpa: auth.user?.cgpa != null ? String(auth.user.cgpa) : '',
   experience_level: (auth.user?.experience_level || 'student') as ExperienceLevel,
   preferred_career_track: auth.user?.preferred_career_track ?? tracks[0]
 })
@@ -543,6 +557,12 @@ watchEffect(() => {
   form.first_name = nameParts.first_name
   form.last_name = nameParts.last_name
   form.education_level = auth.user.education_level
+  form.field_of_study = auth.user.field_of_study ?? ''
+  form.university = auth.user.institution ?? ''
+  form.phone = auth.user.phone_number ?? ''
+  form.location = auth.user.location ?? ''
+  form.graduation_year = auth.user.graduation_year ?? null
+  form.gpa = auth.user.cgpa != null ? String(auth.user.cgpa) : ''
   form.experience_level = (auth.user.experience_level || 'student') as ExperienceLevel
   form.preferred_career_track = auth.user.preferred_career_track
 })
@@ -554,7 +574,9 @@ const userInitials = computed(() => {
 })
 
 const memberSince = computed(() => {
-  return new Date().getFullYear()
+  if (!auth.user?.created_at) return '—'
+  const date = new Date(auth.user.created_at)
+  return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
 })
 
 // Profile completion calculation (matches dashboard)
@@ -587,83 +609,67 @@ const progressOffset = computed(() => {
 
 const statusMessage = ref('')
 
-const handleUpdateBasic = async () => {
-  const full_name = `${form.first_name} ${form.last_name}`.trim()
-  const payload: UpdateProfilePayload = {
-    full_name,
-    education_level: form.education_level,
-    experience_level: form.experience_level,
-    preferred_career_track: form.preferred_career_track
-  }
+const toNullableString = (value: string | null | undefined) => {
+  if (value == null) return null
+  const trimmed = value.trim()
+  return trimmed.length ? trimmed : null
+}
 
-  const result = await auth.updateProfile(payload)
-  statusMessage.value = result ? 'Profile updated successfully.' : ''
+const toNumberOrNull = (value: number | string | null) => {
+  if (value === null || value === '') return null
+  const parsed = Number(value)
+  return Number.isNaN(parsed) ? null : parsed
+}
+
+const buildUpdatePayload = (): UpdateProfilePayload => {
+  const fullName = `${form.first_name} ${form.last_name}`.trim()
+  const preferredTrack = toNullableString(form.preferred_career_track)
+
+  return {
+    full_name: fullName || null,
+    education_level: toNullableString(form.education_level),
+    field_of_study: toNullableString(form.field_of_study),
+    institution: toNullableString(form.university),
+    experience_level: form.experience_level,
+    preferred_career_track: preferredTrack,
+    phone_number: toNullableString(form.phone),
+    location: toNullableString(form.location),
+    graduation_year: toNumberOrNull(form.graduation_year),
+    cgpa: toNumberOrNull(form.gpa)
+  }
+}
+
+const submitProfileUpdate = async (successMessage: string) => {
+  const result = await auth.updateProfile(buildUpdatePayload())
+  statusMessage.value = result ? successMessage : ''
   if (result) {
     setTimeout(() => {
       statusMessage.value = ''
     }, 3000)
   }
+}
+
+const handleUpdateBasic = async () => {
+  await submitProfileUpdate('Profile updated successfully.')
 }
 
 const handleUpdateEducation = async () => {
-  const full_name = `${form.first_name} ${form.last_name}`.trim()
-  const payload: UpdateProfilePayload = {
-    full_name,
-    education_level: form.education_level,
-    experience_level: form.experience_level,
-    preferred_career_track: form.preferred_career_track
-  }
-
-  const result = await auth.updateProfile(payload)
-  statusMessage.value = result ? 'Education updated successfully.' : ''
-  if (result) {
-    setTimeout(() => {
-      statusMessage.value = ''
-    }, 3000)
-  }
+  await submitProfileUpdate('Education updated successfully.')
 }
 
 const handleUpdateExperience = async () => {
-  const full_name = `${form.first_name} ${form.last_name}`.trim()
-  const payload: UpdateProfilePayload = {
-    full_name,
-    education_level: form.education_level,
-    experience_level: form.experience_level,
-    preferred_career_track: form.preferred_career_track
-  }
-
-  const result = await auth.updateProfile(payload)
-  if (result) {
-    statusMessage.value = 'Experience level updated successfully.'
-    setTimeout(() => {
-      statusMessage.value = ''
-    }, 3000)
-  }
+  await submitProfileUpdate('Experience level updated successfully.')
 }
 
 const handleUpdateCareer = async () => {
-  const full_name = `${form.first_name} ${form.last_name}`.trim()
-  const payload: UpdateProfilePayload = {
-    full_name,
-    education_level: form.education_level,
-    experience_level: form.experience_level,
-    preferred_career_track: form.preferred_career_track
-  }
-
-  const result = await auth.updateProfile(payload)
-  if (result) {
-    statusMessage.value = 'Career preferences updated successfully.'
-    setTimeout(() => {
-      statusMessage.value = ''
-    }, 3000)
-  }
+  await submitProfileUpdate('Career preferences updated successfully.')
 }
 
 const experienceLevels = [
-  { value: 'entry', label: 'Entry Level', icon: 'school', description: 'Starting your career' },
-  { value: 'junior', label: 'Junior', icon: 'rocket_launch', description: '1-3 years experience' },
-  { value: 'mid', label: 'Mid Level', icon: 'star', description: '3-7 years experience' }
-]
+  { value: 'student', label: 'Student', icon: 'school', description: 'Learning and exploring' },
+  { value: 'entry', label: 'Entry Level', icon: 'rocket_launch', description: '0-2 years experience' },
+  { value: 'junior', label: 'Junior', icon: 'star', description: '2-4 years experience' }
+] as const
 
 const skillInput = ref('')
 

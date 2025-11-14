@@ -4,6 +4,13 @@ import { useApi } from '~/composables/useApi'
 
 export type ExperienceLevel = 'student' | 'entry' | 'junior'
 export type JobType = 'internship' | 'part_time' | 'full_time' | 'freelance'
+export type PreferredJobLocation = 'remote' | 'hybrid' | 'on_site'
+
+export type ProjectDescription = {
+  title: string
+  description: string
+  url: string
+}
 
 export type UserProfile = {
   id: string
@@ -14,6 +21,20 @@ export type UserProfile = {
   skills: string[]
   experience_level?: ExperienceLevel | null
   is_active: boolean
+  field_of_study?: string | null
+  cgpa?: number | null
+  location?: string | null
+  linkedin_url?: string | null
+  github_url?: string | null
+  phone_number?: string | null
+  graduation_year?: number | null
+  institution?: string | null
+  profile_picture?: string | null
+  bio?: string | null
+  preferred_job_location?: PreferredJobLocation | null
+  preferred_job_type?: JobType | null
+  brief_experience?: string | null
+  project_description?: ProjectDescription[] | null
   created_at: string
   updated_at: string
 }
@@ -33,6 +54,20 @@ export type UpdateProfilePayload = {
   preferred_career_track?: string | null
   experience_level?: ExperienceLevel | null
   skills?: string[] | null
+  field_of_study?: string | null
+  cgpa?: number | null
+  location?: string | null
+  linkedin_url?: string | null
+  github_url?: string | null
+  phone_number?: string | null
+  graduation_year?: number | null
+  institution?: string | null
+  profile_picture?: string | null
+  bio?: string | null
+  preferred_job_location?: PreferredJobLocation | null
+  preferred_job_type?: JobType | null
+  brief_experience?: string | null
+  project_description?: ProjectDescription[] | null
 }
 
 export const useAuthStore = defineStore('auth', () => {

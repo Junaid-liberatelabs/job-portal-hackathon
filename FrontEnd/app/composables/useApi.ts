@@ -44,13 +44,16 @@ export const useApi = () => {
       headers['Authorization'] = `${auth.tokenType ?? 'Bearer'} ${auth.token}`
     }
 
-    console.log(`API Request: ${options.method || 'GET'} ${path}`, {
+    // Build full API URL: apiBase (http://localhost:8000) + path (/jobs/, /users/me, etc.)
+    const fullUrl = `${config.public.apiBase}${path}`
+    
+    console.log(`API Request: ${options.method || 'GET'} ${fullUrl}`, {
       headers,
       body: fetchOptions.body
     })
 
     try {
-      const response = await $fetch<T>(`${config.public.apiBase}${path}`, {
+      const response = await $fetch<T>(fullUrl, {
         ...fetchOptions,
         headers,
         onResponseError: ({ response }: any) => {

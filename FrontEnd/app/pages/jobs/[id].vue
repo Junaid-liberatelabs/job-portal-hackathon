@@ -144,8 +144,9 @@ interface JobResponse {
   description: string
   company: string
   job_type: JobType
-  job_location?: string | null
+  job_location?: 'remote' | 'hybrid' | 'on_site' | null
   required_skills: string[]
+  url?: string | null
   recommended_experience_level: ExperienceLevel
   salary_range_min?: number | null
   salary_range_max?: number | null
@@ -169,9 +170,14 @@ const { data: job, pending } = await useAsyncData(
   { server: false }
 )
 
-const { data: allJobs } = await useAsyncData(
-  'similar-jobs',
-  () => api<JobResponse[]>('/jobs/', { query: { limit: 50 } }),
+interface JobRecommendation {
+  job: JobResponse
+  similarity_score: number
+}
+
+const { data: similarJobsData } = await useAsyncData(
+  `similar-jobs-${jobId.value}`,
+  () => api<JobRecommendation[]>(`/jobs/${jobId.value}/similar`, { query: { limit: 4 } }),
   { server: false }
 )
 
@@ -197,20 +203,8 @@ const missingSkills = computed(() => {
 })
 
 const similarJobs = computed(() => {
-  if (!job.value || !allJobs.value) return []
-  
-  return allJobs.value
-    .filter(j => j.id !== job.value!.id)
-    .map(j => {
-      const overlap = j.required_skills.filter(skill => 
-        job.value!.required_skills.some(js => js.toLowerCase() === skill.toLowerCase())
-      )
-      return { job: j, overlap: overlap.length }
-    })
-    .filter(({ overlap }) => overlap > 0)
-    .sort((a, b) => b.overlap - a.overlap)
-    .slice(0, 4)
-    .map(({ job }) => job)
+  if (!similarJobsData.value) return []
+  return similarJobsData.value.map(item => item.job)
 })
 
 const navigateToJob = (id: string) => {
