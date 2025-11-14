@@ -62,5 +62,5 @@ def get_career_roadmap(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    report = get_most_recent_career_roadmap_report(db)
+    report = get_most_recent_career_roadmap_report(db, current_user.id)
     return CareerRoadmapResponse(career_roadmap_report=report.career_roadmap_report, graph_data=CareerRoadmapGraphData.model_validate_json(report.graph_data))  
