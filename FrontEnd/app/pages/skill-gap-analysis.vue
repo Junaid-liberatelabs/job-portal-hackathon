@@ -10,45 +10,47 @@
       </div>
 
       <!-- Main Content -->
-      <div class="space-y-6 rounded-[32px] border border-white/70 bg-white/80 p-10 shadow-[0_45px_140px_-80px_rgba(168,85,247,0.22)] backdrop-blur">
-        <div class="flex flex-col gap-4">
-          <Button 
-            @click="handleRunSkillGapAnalysis" 
-            :disabled="skillGapAnalysisLoading"
-            variant="gradient"
-            class="w-full"
-            size="lg"
-          >
-            <span v-if="skillGapAnalysisLoading" class="flex items-center justify-center gap-2">
-              <span class="h-5 w-5 animate-spin rounded-full border-2 border-white/80 border-t-transparent"></span>
-              Analyzing...
-            </span>
-            <span v-else class="flex items-center justify-center gap-2">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-              Run Skill Gap Analysis
-            </span>
-          </Button>
-          <Button 
-            v-if="skillGapReport" 
-            @click="handleRefreshReport" 
-            :disabled="skillGapReportLoading"
-            variant="outline"
-            class="w-full"
-            size="lg"
-          >
-            <span v-if="skillGapReportLoading" class="flex items-center justify-center gap-2">
-              <span class="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
-              Refreshing...
-            </span>
-            <span v-else class="flex items-center justify-center gap-2">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Refresh Report
-            </span>
-          </Button>
+      <div class="space-y-6">
+        <div class="mx-auto max-w-md rounded-[32px] border border-white/70 bg-white/80 p-10 shadow-[0_45px_140px_-80px_rgba(168,85,247,0.22)] backdrop-blur">
+          <div class="flex flex-col gap-4">
+            <Button 
+              @click="handleRunSkillGapAnalysis" 
+              :disabled="skillGapAnalysisLoading"
+              variant="gradient"
+              class="w-full"
+              size="lg"
+            >
+              <span v-if="skillGapAnalysisLoading" class="flex items-center justify-center gap-2">
+                <span class="h-5 w-5 animate-spin rounded-full border-2 border-white/80 border-t-transparent"></span>
+                Analyzing...
+              </span>
+              <span v-else class="flex items-center justify-center gap-2">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                Run Skill Gap Analysis
+              </span>
+            </Button>
+            <Button 
+              v-if="skillGapReport" 
+              @click="handleRefreshReport" 
+              :disabled="skillGapReportLoading"
+              variant="outline"
+              class="w-full"
+              size="lg"
+            >
+              <span v-if="skillGapReportLoading" class="flex items-center justify-center gap-2">
+                <span class="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
+                Refreshing...
+              </span>
+              <span v-else class="flex items-center justify-center gap-2">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh Report
+              </span>
+            </Button>
+          </div>
         </div>
 
         <div v-if="skillGapError" class="rounded-xl border border-red-200 bg-red-50 p-4">

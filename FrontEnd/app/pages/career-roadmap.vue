@@ -10,7 +10,7 @@
       </div>
 
       <!-- Form Section -->
-      <div v-if="!roadmap" class="rounded-[32px] border border-white/70 bg-white/80 p-10 shadow-[0_45px_140px_-80px_rgba(168,85,247,0.22)] backdrop-blur">
+      <div v-if="!roadmap" class="mx-auto max-w-md rounded-[32px] border border-white/70 bg-white/80 p-10 shadow-[0_45px_140px_-80px_rgba(168,85,247,0.22)] backdrop-blur">
         <form @submit.prevent="handleGenerateRoadmap" class="space-y-6">
           <div class="space-y-4">
             <div>
@@ -88,36 +88,40 @@
         </div>
 
         <!-- Regenerate Button -->
-        <div class="flex gap-4">
-          <Button 
-            @click="handleRegenerate"
-            variant="outline"
-            class="flex-1"
-            size="lg"
-          >
-            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Regenerate Roadmap
-          </Button>
-          <Button 
-            @click="handleRefresh"
-            :disabled="loading"
-            variant="outline"
-            class="flex-1"
-            size="lg"
-          >
-            <span v-if="loading" class="flex items-center justify-center gap-2">
-              <span class="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
-              Refreshing...
-            </span>
-            <span v-else class="flex items-center justify-center gap-2">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Refresh
-            </span>
-          </Button>
+        <div class="mx-auto max-w-md">
+          <div class="flex flex-col gap-4">
+            <Button 
+              @click="handleRegenerate"
+              variant="outline"
+              class="w-full"
+              size="lg"
+            >
+              <span class="flex items-center justify-center gap-2">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Regenerate Roadmap
+              </span>
+            </Button>
+            <Button 
+              @click="handleRefresh"
+              :disabled="loading"
+              variant="outline"
+              class="w-full"
+              size="lg"
+            >
+              <span v-if="loading" class="flex items-center justify-center gap-2">
+                <span class="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
+                Refreshing...
+              </span>
+              <span v-else class="flex items-center justify-center gap-2">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh Report
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -201,7 +205,12 @@ const initializeNetwork = () => {
       color: '#FFFFFF',
       size: 14
     },
-    margin: 10,
+    margin: {
+      top: 10,
+      bottom: 10,
+      left: 10,
+      right: 10
+    },
     widthConstraint: {
       minimum: 100,
       maximum: 200
@@ -246,6 +255,7 @@ const initializeNetwork = () => {
         }
       },
       smooth: {
+        enabled: true,
         type: 'cubicBezier',
         forceDirection: 'horizontal',
         roundness: 0.4

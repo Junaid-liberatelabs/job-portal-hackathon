@@ -64,6 +64,76 @@
         />
       </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatsCard
+          title="Avg Applications"
+          :value="stats.avgApplicationsPerJob"
+          subtitle="Per job posting"
+          :icon="ArrowTrendingUpIcon"
+          icon-bg-class="bg-blue-100"
+          icon-color-class="text-blue-600"
+        />
+        <StatsCard
+          title="Recent Jobs"
+          :value="stats.recentJobs"
+          subtitle="Last 7 days"
+          :icon="CalendarIcon"
+          icon-bg-class="bg-indigo-100"
+          icon-color-class="text-indigo-600"
+        />
+        <StatsCard
+          title="Top Job"
+          :value="stats.topJobApplications"
+          subtitle="Most applications"
+          :icon="ChartBarIcon"
+          icon-bg-class="bg-emerald-100"
+          icon-color-class="text-emerald-600"
+        />
+        <StatsCard
+          title="Free Resources"
+          :value="stats.freeResources"
+          subtitle="Out of total resources"
+          :icon="CurrencyDollarIcon"
+          icon-bg-class="bg-teal-100"
+          icon-color-class="text-teal-600"
+        />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatsCard
+          title="Recent Resources"
+          :value="stats.recentResources"
+          subtitle="Last 7 days"
+          :icon="ClockIcon"
+          icon-bg-class="bg-pink-100"
+          icon-color-class="text-pink-600"
+        />
+        <StatsCard
+          title="Top Tag"
+          :value="stats.topResourceTag"
+          subtitle="Most used tag"
+          :icon="TagIcon"
+          icon-bg-class="bg-amber-100"
+          icon-color-class="text-amber-600"
+        />
+        <StatsCard
+          title="Paid Resources"
+          :value="stats.paidResources"
+          subtitle="Premium content"
+          :icon="CurrencyDollarIcon"
+          icon-bg-class="bg-rose-100"
+          icon-color-class="text-rose-600"
+        />
+        <StatsCard
+          title="Job Types"
+          :value="stats.jobTypesCount"
+          subtitle="Unique categories"
+          :icon="BriefcaseIcon"
+          icon-bg-class="bg-cyan-100"
+          icon-color-class="text-cyan-600"
+        />
+      </div>
+
       <div v-if="error" class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
         <div class="flex items-center gap-2">
           <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,13 +166,52 @@
         </div>
       </div>
 
-      <JobsTable
-        v-else
-        :jobs="jobsWithApplicants"
-        @view-applicants="openApplicantsModal"
-        @edit-job="openEditModal"
-        @delete-job="handleDeleteJob"
-      />
+      <div v-else>
+        <JobsTable
+          :jobs="paginatedJobs"
+          @view-applicants="openApplicantsModal"
+          @edit-job="openEditModal"
+          @delete-job="handleDeleteJob"
+        />
+        
+        <!-- Jobs Pagination -->
+        <div v-if="totalJobsPages > 1" class="flex items-center justify-between mt-6 px-4 py-3 bg-white border border-ink-200 rounded-lg">
+          <div class="text-sm text-ink-600">
+            Showing {{ (jobsPage - 1) * itemsPerPage + 1 }} to {{ Math.min(jobsPage * itemsPerPage, jobsWithApplicants.length) }} of {{ jobsWithApplicants.length }} jobs
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              @click="jobsPage = Math.max(1, jobsPage - 1)"
+              :disabled="!hasJobsPrevPage"
+              class="px-3 py-2 text-sm font-medium text-ink-700 bg-white border border-ink-300 rounded-lg hover:bg-ink-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <div class="flex items-center gap-1">
+              <button
+                v-for="page in totalJobsPages"
+                :key="page"
+                @click="jobsPage = page"
+                :class="[
+                  'px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                  page === jobsPage
+                    ? 'bg-admin-600 text-white'
+                    : 'text-ink-700 bg-white border border-ink-300 hover:bg-ink-50'
+                ]"
+              >
+                {{ page }}
+              </button>
+            </div>
+            <button
+              @click="jobsPage = Math.min(totalJobsPages, jobsPage + 1)"
+              :disabled="!hasJobsNextPage"
+              class="px-3 py-2 text-sm font-medium text-ink-700 bg-white border border-ink-300 rounded-lg hover:bg-ink-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div class="flex items-center justify-between mb-6 mt-12">
         <div>
@@ -127,12 +236,51 @@
         </div>
       </div>
 
-      <ResourcesTable
-        v-else
-        :resources="resources"
-        @edit-resource="openEditResourceModal"
-        @delete-resource="handleDeleteResource"
-      />
+      <div v-else>
+        <ResourcesTable
+          :resources="paginatedResources"
+          @edit-resource="openEditResourceModal"
+          @delete-resource="handleDeleteResource"
+        />
+        
+        <!-- Resources Pagination -->
+        <div v-if="totalResourcesPages > 1" class="flex items-center justify-between mt-6 px-4 py-3 bg-white border border-ink-200 rounded-lg">
+          <div class="text-sm text-ink-600">
+            Showing {{ (resourcesPage - 1) * itemsPerPage + 1 }} to {{ Math.min(resourcesPage * itemsPerPage, resources.length) }} of {{ resources.length }} resources
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              @click="resourcesPage = Math.max(1, resourcesPage - 1)"
+              :disabled="!hasResourcesPrevPage"
+              class="px-3 py-2 text-sm font-medium text-ink-700 bg-white border border-ink-300 rounded-lg hover:bg-ink-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <div class="flex items-center gap-1">
+              <button
+                v-for="page in totalResourcesPages"
+                :key="page"
+                @click="resourcesPage = page"
+                :class="[
+                  'px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                  page === resourcesPage
+                    ? 'bg-purple-600 text-white'
+                    : 'text-ink-700 bg-white border border-ink-300 hover:bg-ink-50'
+                ]"
+              >
+                {{ page }}
+              </button>
+            </div>
+            <button
+              @click="resourcesPage = Math.min(totalResourcesPages, resourcesPage + 1)"
+              :disabled="!hasResourcesNextPage"
+              class="px-3 py-2 text-sm font-medium text-ink-700 bg-white border border-ink-300 rounded-lg hover:bg-ink-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <CreateJobModal
@@ -215,7 +363,12 @@ import {
   UsersIcon,
   ChartBarIcon,
   FireIcon,
-  BookOpenIcon
+  BookOpenIcon,
+  ClockIcon,
+  TagIcon,
+  CurrencyDollarIcon,
+  ArrowTrendingUpIcon,
+  CalendarIcon
 } from '@heroicons/vue/24/outline'
 
 interface Job {
@@ -264,27 +417,108 @@ const deleteJobId = ref<string | null>(null)
 const deleteResourceId = ref<string | null>(null)
 const deleteType = ref<'job' | 'resource'>('job')
 
+// Pagination state
+const jobsPage = ref(1)
+const resourcesPage = ref(1)
+const itemsPerPage = 5
+
+// Paginated data
+const paginatedJobs = computed(() => {
+  const start = (jobsPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return jobsWithApplicants.value.slice(start, end)
+})
+
+const paginatedResources = computed(() => {
+  const start = (resourcesPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return resources.value.slice(start, end)
+})
+
+// Pagination helpers
+const totalJobsPages = computed(() => Math.ceil(jobsWithApplicants.value.length / itemsPerPage))
+const totalResourcesPages = computed(() => Math.ceil(resources.value.length / itemsPerPage))
+
+const hasJobsPrevPage = computed(() => jobsPage.value > 1)
+const hasJobsNextPage = computed(() => jobsPage.value < totalJobsPages.value)
+const hasResourcesPrevPage = computed(() => resourcesPage.value > 1)
+const hasResourcesNextPage = computed(() => resourcesPage.value < totalResourcesPages.value)
+
 const stats = computed(() => {
   const totalJobs = jobsWithApplicants.value.length
   const totalApplications = jobsWithApplicants.value.reduce((sum, item) => sum + item.applicants_count, 0)
   const totalResources = resources.value.length
   
+  // Average applications per job
+  const avgApplicationsPerJob = totalJobs > 0 
+    ? (totalApplications / totalJobs).toFixed(1)
+    : '0'
+  
+  // Recent jobs (last 7 days)
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  const recentJobs = jobsWithApplicants.value.filter(item => {
+    const createdDate = new Date(item.job.created_at)
+    return createdDate >= sevenDaysAgo
+  }).length
+  
+  // Top job by applications
+  const topJob = jobsWithApplicants.value.reduce((max, item) => 
+    item.applicants_count > (max?.applicants_count || 0) ? item : max, 
+    null as typeof jobsWithApplicants.value[0] | null
+  )
+  const topJobApplications = topJob?.applicants_count || 0
+  
+  // Job types count
   const typeCount: Record<string, number> = {}
   jobsWithApplicants.value.forEach(item => {
     const type = item.job.job_type
     typeCount[type] = (typeCount[type] || 0) + 1
   })
+  const jobTypesCount = Object.keys(typeCount).length
   
   const mostPopularType = Object.entries(typeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A'
   const formattedType = mostPopularType !== 'N/A' 
     ? mostPopularType.replace('_', ' ').split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ')
     : 'N/A'
   
+  // Resources analytics
+  const freeResources = resources.value.filter(r => 
+    !r.pricing || r.pricing.toLowerCase().includes('free') || r.pricing === '0'
+  ).length
+  
+  const paidResources = resources.value.filter(r => 
+    r.pricing && !r.pricing.toLowerCase().includes('free') && r.pricing !== '0'
+  ).length
+  
+  // Recent resources (last 7 days)
+  const recentResources = resources.value.filter(r => {
+    const createdDate = new Date(r.created_at)
+    return createdDate >= sevenDaysAgo
+  }).length
+  
+  // Most popular resource tag
+  const tagCount: Record<string, number> = {}
+  resources.value.forEach(resource => {
+    resource.tags.forEach(tag => {
+      tagCount[tag] = (tagCount[tag] || 0) + 1
+    })
+  })
+  const topResourceTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A'
+  
   return {
     totalJobs,
     totalApplications,
     totalResources,
-    mostPopularType: formattedType
+    mostPopularType: formattedType,
+    avgApplicationsPerJob,
+    recentJobs,
+    topJobApplications,
+    freeResources,
+    paidResources,
+    recentResources,
+    topResourceTag,
+    jobTypesCount
   }
 })
 
@@ -319,7 +553,12 @@ const closeApplicantsModal = () => {
 }
 
 const handleJobCreated = () => {
-  fetchJobsWithApplicants()
+  fetchJobsWithApplicants().then(() => {
+    // Reset to first page if needed
+    if (jobsPage.value > totalJobsPages.value) {
+      jobsPage.value = 1
+    }
+  })
 }
 
 const handleJobUpdated = () => {
@@ -348,7 +587,12 @@ const closeCreateResourceModal = () => {
 }
 
 const handleResourceCreated = () => {
-  fetchResources()
+  fetchResources().then(() => {
+    // Reset to first page if needed
+    if (resourcesPage.value > totalResourcesPages.value) {
+      resourcesPage.value = 1
+    }
+  })
 }
 
 const handleResourceUpdated = () => {
@@ -367,6 +611,11 @@ const confirmDelete = async () => {
       await deleteJob(deleteJobId.value)
       showDeleteConfirm.value = false
       deleteJobId.value = null
+      // Adjust page if current page becomes empty after delete
+      await nextTick()
+      if (paginatedJobs.value.length === 0 && jobsPage.value > 1) {
+        jobsPage.value = Math.max(1, jobsPage.value - 1)
+      }
     } catch (e) {
       console.error('Failed to delete job:', e)
     }
@@ -375,6 +624,11 @@ const confirmDelete = async () => {
       await deleteResource(deleteResourceId.value)
       showDeleteConfirm.value = false
       deleteResourceId.value = null
+      // Adjust page if current page becomes empty after delete
+      await nextTick()
+      if (paginatedResources.value.length === 0 && resourcesPage.value > 1) {
+        resourcesPage.value = Math.max(1, resourcesPage.value - 1)
+      }
     } catch (e) {
       console.error('Failed to delete resource:', e)
     }

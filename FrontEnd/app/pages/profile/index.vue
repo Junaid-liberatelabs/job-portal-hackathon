@@ -157,7 +157,9 @@
                 </span>
                 <span v-else>Save Changes</span>
               </Button>
-              <p v-if="statusMessage" class="text-sm text-emerald-600 text-center">{{ statusMessage }}</p>
+              <p v-if="basicInfoStatusMessage" class="text-sm text-emerald-600 text-center font-semibold animate-fade-in">
+                ✓ {{ basicInfoStatusMessage }}
+              </p>
             </form>
           </Card>
 
@@ -235,6 +237,9 @@
                 </span>
                 <span v-else>Save Education</span>
               </Button>
+              <p v-if="educationStatusMessage" class="text-sm text-emerald-600 text-center font-semibold animate-fade-in">
+                ✓ {{ educationStatusMessage }}
+              </p>
             </form>
           </Card>
         </div>
@@ -341,9 +346,11 @@
               <NuxtLink to="/skill-gap-analysis">
                 <Button variant="accent" size="sm">
                   View Skill Gap Analysis
-                  <svg class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
+                  <template #icon-right>
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </template>
                 </Button>
               </NuxtLink>
             </div>
@@ -505,7 +512,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watchEffect, computed } from 'vue'
+import { reactive, ref, watchEffect, computed, type Ref } from 'vue'
 import { definePageMeta, useAsyncData } from '#imports'
 import { useAuthStore, type ExperienceLevel, type UpdateProfilePayload } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
@@ -629,6 +636,8 @@ const progressOffset = computed(() => {
   return circumference - (profileCompletion.value / 100) * circumference
 })
 
+const basicInfoStatusMessage = ref('')
+const educationStatusMessage = ref('')
 const statusMessage = ref('')
 
 const toNullableString = (value: string | null | undefined) => {
@@ -661,30 +670,30 @@ const buildUpdatePayload = (): UpdateProfilePayload => {
   }
 }
 
-const submitProfileUpdate = async (successMessage: string) => {
+const submitProfileUpdate = async (successMessage: string, statusRef: Ref<string>) => {
   const result = await auth.updateProfile(buildUpdatePayload())
-  statusMessage.value = result ? successMessage : ''
+  statusRef.value = result ? successMessage : ''
   if (result) {
     setTimeout(() => {
-      statusMessage.value = ''
+      statusRef.value = ''
     }, 3000)
   }
 }
 
 const handleUpdateBasic = async () => {
-  await submitProfileUpdate('Profile updated successfully.')
+  await submitProfileUpdate('Profile updated successfully.', basicInfoStatusMessage)
 }
 
 const handleUpdateEducation = async () => {
-  await submitProfileUpdate('Education updated successfully.')
+  await submitProfileUpdate('Education updated successfully.', educationStatusMessage)
 }
 
 const handleUpdateExperience = async () => {
-  await submitProfileUpdate('Experience level updated successfully.')
+  await submitProfileUpdate('Experience level updated successfully.', statusMessage)
 }
 
 const handleUpdateCareer = async () => {
-  await submitProfileUpdate('Career preferences updated successfully.')
+  await submitProfileUpdate('Career preferences updated successfully.', statusMessage)
 }
 
 const experienceLevels = [

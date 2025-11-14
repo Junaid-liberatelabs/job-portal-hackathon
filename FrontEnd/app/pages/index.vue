@@ -42,18 +42,22 @@
         <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in-delay-2">
           <NuxtLink to="/signup">
             <Button variant="gradient" size="lg" class="min-w-[200px] text-lg shadow-2xl shadow-white/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <template #icon-left>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </template>
               Get Started Free
             </Button>
           </NuxtLink>
           <NuxtLink to="/login">
             <Button variant="outline" size="lg" class="min-w-[200px] text-lg border-white text-white hover:bg-white hover:text-brand-600">
               Sign In
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              <template #icon-right>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </template>
             </Button>
           </NuxtLink>
         </div>
@@ -136,11 +140,13 @@
                   <p class="text-3xl font-bold text-brand-600 mt-1">{{ feature.metric.value }}</p>
                 </div>
                 <NuxtLink :to="feature.cta.to">
-                  <Button variant="gradient" size="sm" class="gap-2">
+                  <Button variant="gradient" size="sm">
                     {{ feature.cta.label }}
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
+                    <template #icon-right>
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </template>
                   </Button>
                 </NuxtLink>
               </div>
