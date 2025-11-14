@@ -204,8 +204,30 @@
 
       <!-- Jobs Grid -->
       <section class="space-y-4">
+        <!-- Error State -->
+        <div v-if="fetchError" class="flex flex-col items-center justify-center py-16 px-6">
+          <div class="h-24 w-24 rounded-full bg-red-100 flex items-center justify-center mb-6">
+            <svg class="h-12 w-12 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-ink-900 mb-2">Failed to load jobs</h3>
+          <p class="text-sm text-ink-500 text-center max-w-md mb-6">
+            There was an error loading job listings. Please check your connection and try again.
+          </p>
+          <button
+            @click="refresh()"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors"
+          >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Try Again
+          </button>
+        </div>
+        
         <!-- Loading State -->
-        <div v-if="pending" class="grid gap-4 lg:grid-cols-2">
+        <div v-else-if="pending" class="grid gap-4 lg:grid-cols-2">
           <div v-for="i in 6" :key="i" class="bg-white rounded-2xl border border-ink-100 p-6 animate-pulse">
             <div class="flex items-start gap-4">
               <div class="h-14 w-14 bg-ink-200 rounded-xl"></div>
@@ -304,23 +326,33 @@ const filters = reactive({
 
 const sortBy = ref<'relevance' | 'recent' | 'title' | 'company'>('relevance')
 
-const fetchJobs = () => {
-  const query: Record<string, any> = { limit: 50 }
-  if (filters.job_type) query.job_type = filters.job_type
-  if (filters.experience_level) query.experience_level = filters.experience_level
+const fetchJobs = async () => {
+  try {
+    const query: Record<string, any> = { limit: 50 }
+    
+    if (filters.job_type) query.job_type = filters.job_type
+    if (filters.experience_level) query.experience_level = filters.experience_level
 
-  const skillsInput = filters.skills.trim()
-  if (skillsInput) {
-    query.skills = skillsInput
-  } else if (auth.user?.skills?.length) {
-    query.skills = auth.user.skills.join(',')
+    const skillsInput = filters.skills.trim()
+    if (skillsInput) {
+      query.skills = skillsInput
+    } else if (auth.user?.skills?.length) {
+      query.skills = auth.user.skills.join(',')
+    }
+
+    console.log('Fetching jobs with query:', query)
+    const response = await api<JobResponse[]>('/jobs/', { query })
+    console.log('Jobs fetched:', response?.length || 0)
+    return response || []
+  } catch (error) {
+    console.error('Error fetching jobs:', error)
+    return []
   }
-
-  return api<JobResponse[]>('/jobs/', { query })
 }
 
-const { data, pending, refresh } = await useAsyncData('jobs-listing', () => fetchJobs(), {
-  server: false
+const { data, pending, refresh, error: fetchError } = await useAsyncData('jobs-listing', fetchJobs, {
+  server: false,
+  default: () => []
 })
 
 const jobs = computed(() => {

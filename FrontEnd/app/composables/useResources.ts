@@ -1,3 +1,19 @@
+import {
+  mdiCodeBraces,
+  mdiChartBox,
+  mdiPalette,
+  mdiCellphone,
+  mdiBriefcase,
+  mdiHandshake,
+  mdiTag,
+  mdiCurrencyUsd,
+  mdiVideo,
+  mdiFileDocument,
+  mdiBookOpen,
+  mdiSchool,
+  mdiTagOutline
+} from '@mdi/js'
+
 export interface Resource {
   id: string
   name: string
@@ -102,20 +118,20 @@ export const useResources = () => {
 
   const getCategoryIcon = (category: string): string => {
     const iconMap: Record<string, string> = {
-      'programming': '💻',
-      'data-science': '📊',
-      'design': '🎨',
-      'marketing': '📱',
-      'business': '💼',
-      'soft-skills': '🤝',
-      'free': '🆓',
-      'paid': '💰',
-      'video': '🎥',
-      'article': '📄',
-      'course': '📚',
-      'tutorial': '📖'
+      'programming': mdiCodeBraces,
+      'data-science': mdiChartBox,
+      'design': mdiPalette,
+      'marketing': mdiCellphone,
+      'business': mdiBriefcase,
+      'soft-skills': mdiHandshake,
+      'free': mdiTag,
+      'paid': mdiCurrencyUsd,
+      'video': mdiVideo,
+      'article': mdiFileDocument,
+      'course': mdiBookOpen,
+      'tutorial': mdiSchool
     }
-    return iconMap[category.toLowerCase()] || '📌'
+    return iconMap[category.toLowerCase()] || mdiTagOutline
   }
 
   return {

@@ -216,25 +216,42 @@
                 <label for="experience_level" class="block text-sm font-semibold text-ink-700">
                   Experience Level <span class="text-red-500">*</span>
                 </label>
-                <div class="relative">
-                  <div class="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none">
+                <div class="relative" ref="experienceDropdownRef">
+                  <div class="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none z-10">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <select
-                    id="experience_level"
-                    v-model="form.experience_level"
-                    class="w-full pl-12 pr-10 py-3.5 rounded-xl border-2 border-ink-200 bg-white text-sm text-ink-900 transition focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-100 appearance-none cursor-pointer"
+                  <button
+                    type="button"
+                    @click="showExperienceDropdown = !showExperienceDropdown"
+                    class="w-full pl-12 pr-10 py-3.5 rounded-xl border-2 border-ink-200 bg-white text-sm text-ink-900 transition focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-100 text-left flex items-center gap-3"
                   >
-                    <option value="student">🎓 Student</option>
-                    <option value="entry">🚀 Entry Level</option>
-                    <option value="junior">💼 Junior (1-3 years)</option>
-                  </select>
+                    <component v-if="selectedExperience" :is="MaterialIcon(selectedExperience.icon, 5)" class="text-ink-400 flex-shrink-0" />
+                    <span v-if="selectedExperience">{{ selectedExperience.label }}</span>
+                  </button>
                   <div class="absolute right-4 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
+                  </div>
+                  <div
+                    v-if="showExperienceDropdown"
+                    class="absolute z-20 w-full mt-1 bg-white border-2 border-ink-200 rounded-xl shadow-lg overflow-hidden"
+                  >
+                    <button
+                      v-for="option in experienceOptions"
+                      :key="option.value"
+                      type="button"
+                      @click="form.experience_level = option.value as ExperienceLevel; showExperienceDropdown = false"
+                      :class="[
+                        'w-full px-4 py-3 text-left text-sm flex items-center gap-3 transition',
+                        form.experience_level === option.value ? 'bg-emerald-50 text-emerald-700' : 'text-ink-900 hover:bg-ink-50'
+                      ]"
+                    >
+                      <component :is="MaterialIcon(option.icon, 5)" class="text-ink-400 flex-shrink-0" />
+                      <span>{{ option.label }}</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -356,9 +373,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, h, computed } from 'vue'
 import { useRouter, useRoute, definePageMeta } from '#imports'
 import { useAuthStore, type ExperienceLevel, type RegisterPayload } from '~/stores/auth'
+import { mdiSchool, mdiRocketLaunch, mdiBriefcase } from '@mdi/js'
+import { onClickOutside } from '@vueuse/core'
 
 definePageMeta({
   middleware: 'guest',
@@ -383,6 +402,34 @@ const skillsInput = ref('')
 const showPassword = ref(false)
 const acceptedTerms = ref(false)
 const currentYear = new Date().getFullYear()
+const showExperienceDropdown = ref(false)
+const experienceDropdownRef = ref<HTMLElement | null>(null)
+
+onClickOutside(experienceDropdownRef, () => {
+  showExperienceDropdown.value = false
+})
+
+const experienceOptions = [
+  { value: 'student', label: 'Student', icon: mdiSchool },
+  { value: 'entry', label: 'Entry Level', icon: mdiRocketLaunch },
+  { value: 'junior', label: 'Junior (1-3 years)', icon: mdiBriefcase }
+]
+
+const selectedExperience = computed(() => {
+  const found = experienceOptions.find(opt => opt.value === form.experience_level)
+  if (found) return found
+  return experienceOptions[0]
+})
+
+const MaterialIcon = (path: string, size = 5) => {
+  return h('svg', {
+    class: `h-${size} w-${size}`,
+    viewBox: '0 0 24 24',
+    fill: 'currentColor'
+  }, [
+    h('path', { d: path })
+  ])
+}
 
 const benefits = [
   'Free forever - no hidden costs',

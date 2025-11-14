@@ -6,6 +6,9 @@ from app.core.exceptions import EmbeddingGenerationError
 from app.db.model.job import ExperienceLevel, Job, JobType
 from app.services.embedding_service import embedding_service
 from sqlalchemy.orm import Session
+from sqlalchemy import func, cast
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.types import String
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +58,9 @@ def get_jobs(
         query = query.filter(Job.recommended_experience_level == experience_level)
 
     if skills:
-        query = query.filter(Job.required_skills.overlap(skills))
+        # Use PostgreSQL && (overlap) operator for array matching
+        # This checks if any of the user's skills match any of the job's required skills
+        query = query.filter(Job.required_skills.op('&&')(cast(skills, ARRAY(String))))
 
     return query.offset(skip).limit(limit).all()
 

@@ -52,9 +52,9 @@
         <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Jobs Applied</p>
-              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.jobs_applied || 8 }}</p>
-              <p class="mt-1 text-xs text-ink-400">3 responses</p>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Jobs Matched</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.jobs_matched }}</p>
+              <p class="mt-1 text-xs text-ink-400">Based on your skills</p>
             </div>
             <GradientIcon size="md" color="brand">
               <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -67,9 +67,9 @@
         <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Courses Completed</p>
-              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.courses_completed || 5 }}</p>
-              <p class="mt-1 text-xs text-ink-400">15 hours learned</p>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Resources Found</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.resources_found }}</p>
+              <p class="mt-1 text-xs text-ink-400">Tailored for you</p>
             </div>
             <GradientIcon size="md" color="brand">
               <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -82,13 +82,13 @@
         <div class="group rounded-2xl border border-ink-100 bg-white p-6 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Interviews</p>
-              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.interviews || 3 }}</p>
-              <p class="mt-1 text-xs text-ink-400">2 upcoming</p>
+              <p class="text-sm font-semibold text-ink-500 uppercase tracking-wide">Bookmarked</p>
+              <p class="mt-2 text-4xl font-bold text-brand-600 transition-all duration-300 group-hover:scale-110">{{ statsData.bookmarked_count }}</p>
+              <p class="mt-1 text-xs text-ink-400">Saved resources</p>
             </div>
             <GradientIcon size="md" color="brand">
               <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
             </GradientIcon>
           </div>
@@ -97,21 +97,27 @@
 
       <!-- Skill Match Analysis -->
       <div class="rounded-2xl border border-white/70 bg-white p-8 shadow-sm">
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-8">
           <div>
-            <h2 class="font-display text-xl font-semibold text-ink-900">Skill Match Analysis</h2>
-            <p class="mt-1 text-sm text-ink-600">Your skills vs. market demand</p>
+            <h2 class="font-display text-xl font-semibold text-ink-900">Skill Visualization</h2>
+            <p class="mt-1 text-sm text-ink-600">Your skills overview</p>
           </div>
-          <NuxtLink to="/profile?tab=skills" class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <NuxtLink to="/profile?tab=skills" class="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
             Manage Skills →
           </NuxtLink>
         </div>
-        <SkillChart 
-          v-if="auth.user?.skills && auth.user.skills.length > 0"
-          :skills="skillsForChart"
-          chart-type="pie"
-          :height="300"
-        />
+
+        <div v-if="auth.user?.skills && auth.user.skills.length > 0">
+          <!-- Chart Container -->
+          <div class="w-full" style="height: 550px;">
+            <SkillChart
+              :skills="skillsForChart"
+              chart-type="pie"
+              :height="550"
+            />
+          </div>
+        </div>
+
         <div v-else class="py-12 text-center">
           <svg class="mx-auto h-12 w-12 text-ink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -130,18 +136,24 @@
             <h2 class="font-display text-2xl font-semibold text-ink-900">Recommended Jobs</h2>
             <p class="mt-1 text-sm text-ink-600">{{ scoredJobs.length }} jobs matched to your skills</p>
           </div>
-          <NuxtLink to="/jobs" class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <NuxtLink to="/jobs" class="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
             View All →
           </NuxtLink>
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
-          <JobCard
-            v-for="job in recommendedJobs"
+          <div
+            v-for="(job, index) in recommendedJobs"
             :key="job.id"
-            :job="job as any"
-            :user-skills="auth.user?.skills || []"
-            @click="navigateToJob(job.id)"
-          />
+            :ref="el => jobCardRefs[index] = el as HTMLElement"
+            class="opacity-0 translate-y-8 transition-all duration-700"
+            :style="{ transitionDelay: `${index * 100}ms` }"
+          >
+            <JobCard
+              :job="job as any"
+              :user-skills="auth.user?.skills || []"
+              @click="navigateToJob(job.id)"
+            />
+          </div>
         </div>
         <p v-if="!recommendedJobs.length" class="rounded-2xl border border-ink-200 bg-white p-8 text-center text-sm text-ink-600">
           Add more skills to your profile to see personalized job recommendations.
@@ -155,17 +167,25 @@
             <h2 class="font-display text-2xl font-semibold text-ink-900">Recommended Learning</h2>
             <p class="mt-1 text-sm text-ink-600">Courses tailored to boost your career</p>
           </div>
-          <NuxtLink to="/resources" class="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <NuxtLink to="/resources" class="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
             View All →
           </NuxtLink>
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
-          <CourseCard
-            v-for="resource in recommendedResources"
+          <div
+            v-for="(resource, index) in recommendedResources"
             :key="resource.id"
-            :resource="resource as any"
-            @view="handleViewResource"
-          />
+            :ref="el => resourceCardRefs[index] = el as HTMLElement"
+            class="opacity-0 translate-y-8 transition-all duration-700"
+            :style="{ transitionDelay: `${index * 100}ms` }"
+          >
+            <CourseCard
+              :resource="resource as any"
+              :is-bookmarked="isBookmarked(resource.id)"
+              @bookmark="toggleBookmark(resource.id)"
+              @view="handleViewResource"
+            />
+          </div>
         </div>
         <p v-if="!recommendedResources.length" class="rounded-2xl border border-ink-200 bg-white p-8 text-center text-sm text-ink-600">
           Add skills to discover relevant learning resources.
@@ -176,7 +196,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { definePageMeta, useAsyncData, useRouter } from '#imports'
 import { useAuthStore, type ExperienceLevel } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
@@ -228,6 +248,14 @@ const navigateToJob = (jobId: string) => {
 const handleViewResource = (resource: ResourceResponse) => {
   window.open(resource.url, '_blank', 'noopener,noreferrer')
 }
+
+// Refs for scroll animations
+const jobCardRefs = ref<HTMLElement[]>([])
+const resourceCardRefs = ref<HTMLElement[]>([])
+let observer: IntersectionObserver | null = null
+
+// Chart type for dashboard (only pie chart now)
+// const dashboardChartType = ref<'pie' | 'radar' | 'bar'>('pie')
 
 const { data: jobsData } = await useAsyncData('dashboard-jobs', () =>
   api<JobResponse[]>('/jobs/', {
@@ -310,40 +338,138 @@ const capitalize = (value: string | null | undefined) => {
 // Profile completion calculation
 const profileCompletion = computed(() => {
   if (!auth.user) return 0
-  let completed = 0
-  const total = 10
   
-  if (auth.user.full_name) completed++
-  if (auth.user.email) completed++
-  if (auth.user.education_level) completed++
-  if (auth.user.preferred_career_track) completed++
+  let completed = 0
+  const total = 7 // Total profile fields to complete
+  
+  // Core fields (always present after registration)
+  if (auth.user.full_name && auth.user.full_name.trim().length > 0) completed++
+  if (auth.user.email && auth.user.email.trim().length > 0) completed++
+  
+  // Profile fields
+  if (auth.user.education_level && auth.user.education_level.trim().length > 0) completed++
+  if (auth.user.preferred_career_track && auth.user.preferred_career_track.trim().length > 0) completed++
   if (auth.user.experience_level) completed++
-  if (auth.user.skills && auth.user.skills.length > 0) completed++
-  if (auth.user.skills && auth.user.skills.length >= 3) completed++
-  if (auth.user.skills && auth.user.skills.length >= 5) completed++
-  completed += 2 // Placeholder for other profile fields
+  
+  // Skills-based completion
+  if (auth.user.skills && auth.user.skills.length >= 1) completed++
+  if (auth.user.skills && auth.user.skills.length >= 5) completed++ // Bonus for having 5+ skills
   
   return Math.round((completed / total) * 100)
 })
 
-// Skills for chart
+// Skills for chart with weighted values
 const skillsForChart = computed(() => {
-  if (!auth.user?.skills) return []
-  const skillCounts: Record<string, number> = {}
-  auth.user.skills.forEach(skill => {
-    skillCounts[skill] = (skillCounts[skill] || 0) + 1
+  if (!auth.user?.skills || auth.user.skills.length === 0) return []
+  
+  // Categorize skills (simplified - you can enhance this with actual categorization logic)
+  const getCategoryWeight = (skill: string): number => {
+    const skillLower = skill.toLowerCase()
+    if (skillLower.includes('javascript') || skillLower.includes('python') || skillLower.includes('java') || skillLower.includes('react') || skillLower.includes('node')) {
+      return 85 // Programming
+    } else if (skillLower.includes('design') || skillLower.includes('ui') || skillLower.includes('ux') || skillLower.includes('figma')) {
+      return 75 // Design
+    } else if (skillLower.includes('data') || skillLower.includes('sql') || skillLower.includes('analytics')) {
+      return 80 // Data
+    } else if (skillLower.includes('marketing') || skillLower.includes('seo') || skillLower.includes('content')) {
+      return 70 // Marketing
+    }
+    return 60 // Other
+  }
+  
+  return auth.user.skills.map((skill, index) => {
+    const baseValue = getCategoryWeight(skill)
+    const variation = (index % 3) * 10 // Adds 0, 10, or 20 for visual variety
+    
+    return {
+      name: skill,
+      value: Math.min(100, baseValue + variation),
+      category: 'skill'
+    }
   })
-  return Object.entries(skillCounts).map(([name, value]) => ({
-    name,
-    value,
-    category: 'skill'
-  }))
 })
 
-// Stats data (placeholder - replace with real data from backend)
-const statsData = computed(() => ({
-  jobs_applied: 8,
-  courses_completed: 5,
-  interviews: 3
-}))
+// Bookmarked resources (client-side storage)
+const bookmarkedResources = ref<Set<string>>(new Set())
+
+// Save bookmarks to localStorage
+const saveBookmarks = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('ci_bookmarked_resources', JSON.stringify(Array.from(bookmarkedResources.value)))
+  }
+}
+
+// Toggle bookmark
+const toggleBookmark = (resourceId: string) => {
+  if (bookmarkedResources.value.has(resourceId)) {
+    bookmarkedResources.value.delete(resourceId)
+  } else {
+    bookmarkedResources.value.add(resourceId)
+  }
+  saveBookmarks()
+}
+
+// Check if resource is bookmarked
+const isBookmarked = (resourceId: string) => {
+  return bookmarkedResources.value.has(resourceId)
+}
+
+// Real stats data from actual data
+const statsData = computed(() => {
+  const skillsCount = auth.user?.skills?.length || 0
+  const jobsCount = scoredJobs.value.length
+  const resourcesCount = recommendedResources.value.length
+  
+  return {
+    skills_added: skillsCount,
+    jobs_matched: jobsCount,
+    resources_found: resourcesCount,
+    bookmarked_count: bookmarkedResources.value.size
+  }
+})
+
+// Intersection Observer for scroll animations and load bookmarks
+onMounted(() => {
+  if (typeof window === 'undefined') return
+
+  // Load bookmarks from localStorage
+  const saved = localStorage.getItem('ci_bookmarked_resources')
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved)
+      bookmarkedResources.value = new Set(parsed)
+    } catch (e) {
+      console.error('Error loading bookmarks:', e)
+    }
+  }
+
+  // Setup intersection observer for card animations
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0')
+          entry.target.classList.remove('opacity-0', 'translate-y-8')
+          observer?.unobserve(entry.target)
+        }
+      })
+    },
+    {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    }
+  )
+
+  // Observe all card elements
+  ;[...jobCardRefs.value, ...resourceCardRefs.value].forEach((el) => {
+    if (el) observer?.observe(el)
+  })
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+})
 </script>

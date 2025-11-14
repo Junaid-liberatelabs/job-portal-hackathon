@@ -2,10 +2,15 @@
   <div class="relative overflow-hidden bg-ink-50">
     <!-- Hero Section with Typewriter Animation -->
     <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 text-white overflow-hidden">
-      <!-- Animated Background Pattern -->
+      <!-- Hero Background Image -->
       <div class="absolute inset-0">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNGgtMnYyaDJ2LTJ6bTAgNGgydjItMnYtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-ink-900/50 to-transparent"></div>
+        <img 
+          src="/images/hero-bg.jpg" 
+          alt="Career background" 
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-600/80 via-brand-700/80 to-ink-900/90"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent"></div>
       </div>
       
       <div class="relative max-w-7xl mx-auto px-6 py-24 text-center z-10">
@@ -56,10 +61,11 @@
         <!-- Stats with Animation -->
         <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto animate-fade-in-delay-3">
           <div v-for="(stat, index) in heroStats" :key="stat.label" 
+               :ref="el => statsRefs[index] = el as HTMLElement"
                class="group p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
                :style="{ animationDelay: `${index * 100}ms` }">
             <div class="text-5xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform">
-              {{ stat.value }}
+              {{ getAnimatedValue(index) }}
             </div>
             <div class="text-sm text-blue-100 font-semibold">{{ stat.label }}</div>
           </div>
@@ -400,10 +406,12 @@ const typedText = ref('')
 const currentWordIndex = ref(0)
 const currentCharIndex = ref(0)
 const isDeleting = ref(false)
-let typingTimeout: NodeJS.Timeout | null = null
+let typingTimeout: ReturnType<typeof setTimeout> | null = null
 
 const typeWriter = () => {
   const currentWord = words[currentWordIndex.value]
+  
+  if (!currentWord) return
   
   if (!isDeleting.value) {
     // Typing
@@ -471,11 +479,95 @@ onBeforeUnmount(() => {
 })
 
 const heroStats = [
-  { label: 'Active Users', value: '2.5k+' },
-  { label: 'Job Listings', value: '1.8k+' },
-  { label: 'Success Rate', value: '94%' },
-  { label: 'Partner Companies', value: '150+' }
-] 
+  { label: 'Active Users', value: '2.5k+', numericValue: 2500, suffix: 'k+', divisor: 1000 },
+  { label: 'Job Listings', value: '1.8k+', numericValue: 1800, suffix: 'k+', divisor: 1000 },
+  { label: 'Success Rate', value: '94%', numericValue: 94, suffix: '%', divisor: 1 },
+  { label: 'Partner Companies', value: '150+', numericValue: 150, suffix: '+', divisor: 1 }
+]
+
+// Animated counters for stats
+const statsRefs = ref<HTMLElement[]>([])
+const statCounts = ref([0, 0, 0, 0])
+const statsAnimated = ref([false, false, false, false])
+
+// Format the animated value
+const getAnimatedValue = (index: number) => {
+  const stat = heroStats[index]
+  const count = statCounts.value[index] ?? 0
+  
+  if (!stat) return '0'
+  
+  if (stat.divisor > 1) {
+    const displayValue = (count / stat.divisor).toFixed(1)
+    return displayValue + stat.suffix
+  }
+  
+  return count + stat.suffix
+}
+
+// Animate a single stat counter
+const animateStat = (index: number) => {
+  if (statsAnimated.value[index]) return
+  
+  const stat = heroStats[index]
+  if (!stat) return
+  
+  const duration = 2000
+  const startTime = Date.now()
+  const startValue = 0
+  const endValue = stat.numericValue
+  
+  const animate = () => {
+    const now = Date.now()
+    const progress = Math.min((now - startTime) / duration, 1)
+    
+    // Easing function (ease-out cubic)
+    const easeOut = 1 - Math.pow(1 - progress, 3)
+    statCounts.value[index] = Math.floor(easeOut * endValue)
+    
+    if (progress < 1) {
+      requestAnimationFrame(animate)
+    } else {
+      statCounts.value[index] = endValue
+      statsAnimated.value[index] = true
+    }
+  }
+  
+  animate()
+}
+
+// Setup intersection observer for stats
+onMounted(() => {
+  if (typeof window === 'undefined') return
+  
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = statsRefs.value.indexOf(entry.target as HTMLElement)
+          if (index !== -1 && !statsAnimated.value[index]) {
+            // Add slight delay for staggered effect
+            setTimeout(() => animateStat(index), index * 100)
+          }
+        }
+      })
+    },
+    {
+      threshold: 0.5,
+      rootMargin: '0px'
+    }
+  )
+  
+  // Observe all stat elements
+  statsRefs.value.forEach((el) => {
+    if (el) observer.observe(el)
+  })
+  
+  // Cleanup
+  onUnmounted(() => {
+    observer.disconnect()
+  })
+})
 
 const platformFeatures = [
   {
