@@ -17,7 +17,7 @@ def create_job(db: Session, job_data: dict):
     db.add(db_job)
     db.commit()
     db.refresh(db_job)
-    
+
     # Generate and store embedding
     try:
         embedding = embedding_service.generate_job_embedding(db_job)
@@ -28,7 +28,7 @@ def create_job(db: Session, job_data: dict):
     except EmbeddingGenerationError as e:
         logger.error(f"Failed to generate embedding for job {db_job.id}: {e}")
         # Continue without embedding - job creation should not fail
-    
+
     return db_job
 
 
@@ -67,8 +67,15 @@ def update_job(db: Session, job_id: str, update_data: dict):
         return None
 
     # Check if embedding-relevant fields are being updated
-    embedding_fields = {"title", "description", "required_skills", "recommended_experience_level"}
-    should_regenerate_embedding = any(field in update_data for field in embedding_fields)
+    embedding_fields = {
+        "title",
+        "description",
+        "required_skills",
+        "recommended_experience_level",
+    }
+    should_regenerate_embedding = any(
+        field in update_data for field in embedding_fields
+    )
 
     for key, value in update_data.items():
         if hasattr(job, key) and key not in ["id", "created_at"]:
@@ -76,7 +83,7 @@ def update_job(db: Session, job_id: str, update_data: dict):
 
     db.commit()
     db.refresh(job)
-    
+
     # Regenerate embedding if relevant fields changed
     if should_regenerate_embedding:
         try:
@@ -88,7 +95,7 @@ def update_job(db: Session, job_id: str, update_data: dict):
         except EmbeddingGenerationError as e:
             logger.error(f"Failed to regenerate embedding for job {job.id}: {e}")
             # Continue without embedding update
-    
+
     return job
 
 

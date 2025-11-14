@@ -17,14 +17,14 @@ async def get_current_user(
 ):
     """
     Dependency to get the current authenticated user from JWT token.
-    
+
     Args:
         token: JWT token from Authorization header
         db: Database session
-        
+
     Returns:
         User object if authentication is successful
-        
+
     Raises:
         HTTPException: If token is invalid or user not found
     """
@@ -49,7 +49,7 @@ async def get_current_user(
     user = get_user_by_email(db, email=email)
     if user is None:
         raise credentials_exception
-    
+
     # Verify user_id matches if present in token
     if user_id and user.id != user_id:
         raise credentials_exception

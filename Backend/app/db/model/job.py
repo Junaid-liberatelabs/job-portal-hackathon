@@ -1,13 +1,11 @@
 import uuid
-from enum import Enum as PyEnum
-from pgvector.sqlalchemy import Vector
 
 from app.db.base import Base
-from sqlalchemy import (ARRAY, Column, DateTime, Enum, Float, Index, String,
-                        func)
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import ARRAY, Column, DateTime, Enum, Float, Index, String, func
 
 
-class JobType(PyEnum):
+class JobType(Enum):
     # Internship / Part-time / Full-time / Freelance
     INTERNSHIP = "internship"
     PART_TIME = "part_time"
@@ -15,13 +13,13 @@ class JobType(PyEnum):
     FREELANCE = "freelance"
 
 
-class JobLocation(PyEnum):
+class JobLocation(Enum):
     REMOTE = "remote"
     HYBRID = "hybrid"
     ON_SITE = "on_site"
 
 
-class ExperienceLevel(PyEnum):
+class ExperienceLevel(Enum):
     STUDENT = "student"
     ENTRY = "entry"
     JUNIOR = "junior"  # included for a touch of flexibility

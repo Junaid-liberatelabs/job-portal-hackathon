@@ -10,9 +10,11 @@ from contextlib import asynccontextmanager
 
 from app.api.router import router as api_router
 from app.core.config import settings
+
 # from app.core.exceptions import register_exception_handlers
 from app.core.logging_config import get_logger, setup_logging
 from app.db.init_db import init_db
+
 # from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -90,9 +92,9 @@ def create_application() -> FastAPI:
         CORSMiddleware,
         allow_origins=[
             "http://localhost:3000",
-            "http://localhost:3001", 
+            "http://localhost:3001",
             "http://localhost:3002",
-            "http://localhost:8000"
+            "http://localhost:8000",
         ],
         allow_credentials=True,
         allow_methods=["*"],

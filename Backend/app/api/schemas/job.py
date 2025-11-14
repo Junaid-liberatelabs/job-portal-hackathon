@@ -1,6 +1,6 @@
 from datetime import datetime
-from uuid import uuid4
 from typing import List, Optional
+from uuid import uuid4
 
 from app.db.model.job import ExperienceLevel, JobLocation, JobType
 from pydantic import BaseModel, Field, field_validator
