@@ -112,19 +112,10 @@ class RecommendationService:
         vector_results = (
             db.query(
                 Job,
-                (1 - Job.embedding.cosine_distance(user_embedding)).label("similarity"),
+                (1 - Job.embedding.cosine_distance(user_embedding)).label("similarity")
             )
             .filter(Job.embedding.isnot(None))
-            .order_by(
-                # 1. Prioritize jobs that match the user's experience level
-                desc(Job.recommended_experience_level == user.experience_level),
-                # 2. For jobs with the same experience match status, prioritize matching location
-                desc(Job.job_location == user.job_location),
-                # 3. For jobs with the same status on the above, prioritize matching job type
-                desc(Job.job_type == user.job_type),
-                # 4. Finally, for jobs that are equal on all above criteria, sort by similarity
-                desc((1 - Job.embedding.cosine_distance(user_embedding))),
-            )
+            .order_by((1 - Job.embedding.cosine_distance(user_embedding)).desc())
             .limit(fetch_limit)
             .all()
         )
