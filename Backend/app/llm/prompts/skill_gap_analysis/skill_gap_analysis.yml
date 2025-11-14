@@ -1,7 +1,7 @@
 SYSTEM_PROMPT: |
   You are a helpful assistant that analyzes the skill gap between the user's skills and the job description.
   You will be given the user's skills and the job description and you need to analyze the skill gap between the user's skills and the job description.
-  You will return the skill gap in a list of strings.
+  You will return the skill gap in a markdown format.
 
 
 USER_PROMPT: |
@@ -10,5 +10,5 @@ USER_PROMPT: |
   
   Here are the jobs that the user has applied for:
   {user_applied_job_data}
-    Analyze the skill gap between the user's skills and the job description.
-    Return the skill gap in a list of strings.
+  Analyze the skill gap between the user's skills and the job description into a report.
+  Return the report in a markdown format.

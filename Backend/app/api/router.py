@@ -9,6 +9,7 @@ from app.api.endpoints.resources import router as resources_router
 from app.api.endpoints.users import router as users_router
 from app.api.endpoints.applications import router as applications_router
 from app.api.endpoints.skill_analysis import router as skill_analysis_router
+from app.api.endpoints.skill_gap_analysis import router as skill_gap_analysis_router
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -19,3 +20,4 @@ router.include_router(resources_router, prefix="/resources", tags=["resources"])
 router.include_router(recommendations_router, prefix="/recommendations", tags=["recommendations"])
 router.include_router(applications_router, prefix="/applications", tags=["applications"])
 router.include_router(skill_analysis_router, prefix="/skill-analysis", tags=["skill-analysis"])
+router.include_router(skill_gap_analysis_router, prefix="/skill-gap-analysis", tags=["skill-gap-analysis"])
