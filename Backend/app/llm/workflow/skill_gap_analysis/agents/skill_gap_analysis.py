@@ -9,7 +9,7 @@ from app.llm.workflow.skill_gap_analysis.state import SkillGapAnalysisState
 class SkillGapAnalysis:
     def __init__(self):
         self.logger = get_logger(__name__)
-        # self.llm = ChatGroq(model_name="openai/gpt-oss-20b"
+        self.llm = ChatGroq(model_name="openai/gpt-oss-20b")
         self.llm_gpt= ChatOpenAI(model_name="gpt-4.1-nano", max_retries=3)
         self.fallback_llm = self.llm.with_fallbacks([self.llm_gpt])
         self.system_prompt = load_yaml_prompt(path="skill_gap_analysis/skill_gap_analysis", key="SYSTEM_PROMPT")
