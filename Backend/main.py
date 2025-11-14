@@ -23,6 +23,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
 # from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.postgres import ShallowPostgresSaver
 # from saaslab.db.base import Base
 # from saaslab.db.session import sync_engine
 
@@ -46,10 +47,19 @@ async def lifespan(app: FastAPI):
     """
     # Startup: Set up logging and create database tables if they don't exist
     setup_logging()
-    # app.state.checkpointer = MemorySaver()
     logger.info("Starting up application...")
     # Example: Initialize database connections, load models, etc.
     await init_db()
+    
+    # Initialize PostgreSQL checkpointer for LangGraph
+    logger.info("Initializing LangGraph checkpointer...")
+    from app.llm.workflow.agent_chat.graph import agent_chat_graph
+    checkpointer_ctx = ShallowPostgresSaver.from_conn_string(settings.DATABASE_URL)
+    app.state.checkpointer_ctx = checkpointer_ctx
+    app.state.checkpointer = checkpointer_ctx.__enter__()
+    app.state.checkpointer.setup()
+    app.state.agent_chat_graph = agent_chat_graph.compile(checkpointer=app.state.checkpointer)
+    logger.info("LangGraph checkpointer initialized")
 
     if settings.ENVIRONMENT in ["development", "staging", "production"]:
         logger.info("Creating database tables")
@@ -59,6 +69,12 @@ async def lifespan(app: FastAPI):
 
     # Shutdown: Clean up resources
     logger.info("Shutting down application...")
+    # Clean up checkpointer
+    if hasattr(app.state, 'checkpointer_ctx'):
+        try:
+            app.state.checkpointer_ctx.__exit__(None, None, None)
+        except Exception:
+            pass
     # Example: Close database connections
     # await close_db()
 
