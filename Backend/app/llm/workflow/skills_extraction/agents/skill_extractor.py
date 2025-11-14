@@ -31,7 +31,7 @@ class SkillExtractor:
         ]
         try:
          response = self.fallback_llm.with_structured_output(AnalysisOutput).invoke(messages)
-         print(response)
+        #  print(response)
 
          state.analysis_output = response
          return state

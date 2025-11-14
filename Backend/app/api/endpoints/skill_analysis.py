@@ -19,7 +19,7 @@ async def analyze_skills(file: UploadFile = File(...)):
     #     raise HTTPException(status_code=400, detail="File must be provided")
 
     cv_text = extract_pdf(file)
-    print(cv_text)
+    # print(cv_text)
 
     try:
         graph = skill_extraction_graph.compile()
