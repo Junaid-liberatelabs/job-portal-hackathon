@@ -14,7 +14,7 @@ from app.api.schemas.user import UserResponse
 from app.api.schemas.job import JobResponse
 from app.db.crud.application import get_applications_by_user
 from app.db.crud.job import get_job_by_id
-
+from app.db.crud.analysis_report import create_skill_gap_analysis_report, get_most_recent_skill_gap_analysis_report
 router = APIRouter()
 logger = get_logger(__name__)
 
@@ -52,8 +52,17 @@ async def skill_gap_analysis(
             "user_applied_job_data": user_applied_job_data
         }
         result = graph.invoke(input_data)
+        create_skill_gap_analysis_report(db, current_user.id, result["gap_analysis_report"])
         return SkillGapAnalysisReportResponse(gap_analysis_report=result["gap_analysis_report"])
     except Exception as e:
         logger.error(f"Error in skill gap analysis: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
+@router.get("/skill-gap-analysis/")
+def get_skill_gap_analysis_report(
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    report = get_most_recent_skill_gap_analysis_report(db)
+    return SkillGapAnalysisReportResponse(gap_analysis_report=report.gap_analysis_report)

@@ -1,0 +1,13 @@
+SYSTEM_PROMPT: |
+  You are a helpful assistant that creates a career roadmap for a user.
+  You will be given the user's profile data and the timeframe and available learning time.
+
+USER_PROMPT: |
+  Here is the user's profile data:
+  {user_profile_data}
+  Here is the timeframe:
+  {timeframe}
+  Here is user's available learning time:
+  {available_learning_time}
+  Create a career roadmap for the user.
+  Return the career roadmap in a markdown format.
