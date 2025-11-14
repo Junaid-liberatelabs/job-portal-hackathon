@@ -18,6 +18,8 @@ class SkillExtractor:
 
        self.fallback_llm = self.llm.with_fallbacks([self.llm_gpt])
 
+       
+
        self.system_prompt = load_yaml_prompt(path="skills_extractions/skill_extraction", key="SYSTEM_PROMPT")
        self.user_prompt = load_yaml_prompt(path="skills_extractions/skill_extraction", key="USER_PROMPT")
        
@@ -28,7 +30,8 @@ class SkillExtractor:
             HumanMessage(content=self.user_prompt.format(text=f"{state.file_data} \n\n Here is the additional CV content: \n\n {state.additional_cv_content}"))
         ]
         try:
-         response = self.fallback_llm.invoke.with_structured_output(AnalysisOutput)(messages)
+         response = self.fallback_llm.with_structured_output(AnalysisOutput).invoke(messages)
+         print(response)
 
          state.analysis_output = response
          return state

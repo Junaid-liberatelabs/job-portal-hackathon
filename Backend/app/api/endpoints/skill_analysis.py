@@ -8,6 +8,9 @@ router = APIRouter()
 from app.core.logging_config import get_logger
 logger = get_logger(__name__)
 
+
+
+
 @router.post("/analyze")
 async def analyze_skills(file: UploadFile = File(...)):
 
@@ -16,15 +19,17 @@ async def analyze_skills(file: UploadFile = File(...)):
     #     raise HTTPException(status_code=400, detail="File must be provided")
 
     cv_text = extract_pdf(file)
+    print(cv_text)
 
     try:
         graph = skill_extraction_graph.compile()
         input_data = {
             "file_data": cv_text,
-            "additional_cv_content": None
         }
         result = graph.invoke(input_data)
-        return SkillAnalysisResponse(analysis_output=result.analysis_output)
+        if result.get("analysis_output") is None:
+            raise HTTPException(status_code=500, detail="Failed to extract skills from the document")
+        return SkillAnalysisResponse(analysis_output=result["analysis_output"])
     except Exception as e:
         logger.error(f"Error analyzing skills: {e}")
         raise HTTPException(status_code=500, detail=str(e))

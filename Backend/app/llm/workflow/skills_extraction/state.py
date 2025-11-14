@@ -5,5 +5,5 @@ from typing import Optional
 class SkillsExtractionState(BaseModel):
     file_data: str
     additional_cv_content: Optional[str] = None
-    analysis_output: AnalysisOutput
+    analysis_output: Optional[AnalysisOutput] = None
 
