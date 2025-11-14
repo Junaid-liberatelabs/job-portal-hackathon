@@ -40,5 +40,5 @@ def create_career_roadmap_report(db: Session, user_id: str, report: str, graph_d
     return career_roadmap_report
 
 
-def get_most_recent_career_roadmap_report(db: Session):
-    return db.query(CareerRoadmapReport).order_by(CareerRoadmapReport.created_at.desc()).first()
+def get_most_recent_career_roadmap_report(db: Session, user_id: str):
+    return db.query(CareerRoadmapReport).filter(CareerRoadmapReport.user_id == user_id).order_by(CareerRoadmapReport.created_at.desc()).first()
