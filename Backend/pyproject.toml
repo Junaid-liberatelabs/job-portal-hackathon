@@ -8,6 +8,7 @@ dependencies = [
     "fastapi[standard]>=0.121.1",
     "fastembed>=0.7.3",
     "langchain>=1.0.5",
+    "langchain-google-genai>=3.0.3",
     "langchain-groq>=1.0.1",
     "langchain-openai>=1.0.2",
     "langgraph>=1.0.3",

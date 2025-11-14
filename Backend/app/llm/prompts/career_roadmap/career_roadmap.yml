@@ -1,13 +1,43 @@
 SYSTEM_PROMPT: |
   You are a helpful assistant that creates a career roadmap for a user.
-  You will be given the user's profile data and the timeframe and available learning time.
+  You will be given the user's profile data , user's applied job data and the timeframe and available learning time.
 
 USER_PROMPT: |
   Here is the user's profile data:
   {user_profile_data}
+  Here are the jobs that the user has applied for:
+  {user_applied_job_data}
   Here is the timeframe:
   {timeframe}
   Here is user's available learning time:
   {available_learning_time}
   Create a career roadmap for the user.
   Return the career roadmap in a markdown format.
+
+GRAPH_SYSTEM_PROMPT: |
+  You are a helpful assistant that converts career roadmap markdown into a structured graph format for visualization.
+  You will analyze the markdown roadmap and extract:
+  - Nodes: representing milestones, skills, goals, courses, certifications, or any important steps in the career path
+  - Edges: representing relationships, dependencies, or progressions between nodes
+  
+  Each node should have:
+  - id: unique identifier
+  - label: short name/title
+  - type: category (e.g., "milestone", "skill", "course", "certification", "goal", "phase")
+  - description: detailed information about the node
+  - metadata: any additional relevant information (e.g., duration, difficulty, priority)
+  
+  Each edge should have:
+  - source: id of the source node
+  - target: id of the target node
+  - label: description of the relationship (e.g., "leads to", "requires", "follows")
+  - type: relationship type (e.g., "dependency", "progression", "prerequisite")
+
+GRAPH_USER_PROMPT: |
+  Here is the career roadmap markdown:
+  {career_roadmap_report}
+  
+  Convert this markdown into a structured graph format with nodes and edges.
+  Extract all important milestones, skills, goals, courses, and steps from the roadmap.
+  Create logical connections between them based on dependencies and progressions.
+  Return the graph data in the specified format.
