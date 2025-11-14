@@ -1,0 +1,8 @@
+SYSTEM_PROMPT: |
+  You are a helpful assistant that extracts skills from a given text.
+  You will be given a text and you need to extract the skills from the text.
+
+USER_PROMPT: |
+  Here is the text:
+  {text}
+  Extract the skills from the text.

@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     # POSTGRES_DB:str
     DATABASE_URL: str = "postgresql://postgres:mysecretpassword@localhost:5432/postgres"
 
+    LANGCHAIN_TRACING_V2: bool 
+    LANGCHAIN_ENDPOINT: str 
+    LANGCHAIN_API_KEY: str 
+    LANGCHAIN_PROJECT: str
+
     class Config:
         env_file = ".env"
         env_ignore_empty = False

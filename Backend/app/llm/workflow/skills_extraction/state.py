@@ -1,12 +1,9 @@
 from pydantic import BaseModel
-from typing import List
-
-class AnalysisOutput(BaseModel):
-    key_skills: List[str]
-    tools_and_technologies: List[str]
-    relevant_roles: List[str]
+from app.api.schemas.skill_analysis import AnalysisOutput
+from typing import Optional
 
 class SkillsExtractionState(BaseModel):
     file_data: str
+    additional_cv_content: Optional[str] = None
     analysis_output: AnalysisOutput
 
