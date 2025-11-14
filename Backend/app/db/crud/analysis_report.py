@@ -13,7 +13,7 @@ def create_skill_gap_analysis_report(db: Session, user_id: str, report: str):
 
 
 def get_skill_gap_analysis_report(db: Session, user_id: str):
-    return db.query(SkillGapAnalysisReport).filter(SkillGapAnalysisReport.user_id == user_id).first()
+    return db.query(SkillGapAnalysisReport).filter(SkillGapAnalysisReport.user_id == user_id ).order_by(SkillGapAnalysisReport.created_at.desc()).first()
 
 
 def get_skill_gap_analysis_report_by_date(db: Session, date: datetime):
@@ -22,9 +22,7 @@ def get_skill_gap_analysis_report_by_date(db: Session, date: datetime):
 def get_all_skill_gap_analysis_reports(db: Session):
     return db.query(SkillGapAnalysisReport).all()
 
-#get the most recent skill gap analysis report
-def get_most_recent_skill_gap_analysis_report(db: Session):
-    return db.query(SkillGapAnalysisReport).order_by(SkillGapAnalysisReport.created_at.desc()).first()
+
 
 
 #career roadmap report

@@ -1,5 +1,42 @@
 <template>
   <div class="relative bg-ink-50 py-16">
+    <!-- Notification Popup -->
+    <Transition name="popup">
+      <div
+        v-if="showNotification"
+        class="fixed top-4 right-4 z-50 max-w-md rounded-lg shadow-lg p-4"
+        :class="notificationType === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'"
+      >
+        <div class="flex items-start gap-3">
+          <div v-if="notificationType === 'success'" class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div v-else class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p
+              class="text-sm font-medium"
+              :class="notificationType === 'success' ? 'text-green-800' : 'text-red-800'"
+            >
+              {{ notificationMessage }}
+            </p>
+          </div>
+          <button
+            @click="showNotification = false"
+            class="flex-shrink-0 text-ink-400 hover:text-ink-600 transition-colors"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Transition>
     <div class="mx-auto flex max-w-5xl flex-col gap-10 px-6 lg:px-10">
       <div class="flex items-center gap-3">
         <Button variant="outline" size="sm" @click="router.back()">
@@ -84,8 +121,9 @@
             </div>
 
             <div class="flex flex-wrap gap-3 pt-4">
-              <Button size="lg" @click="handleApply">
-                Apply for this role
+              <Button size="lg" @click="handleApply" :disabled="applying || hasApplied">
+                <span v-if="applying" class="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent mr-2"></span>
+                {{ applying ? 'Applying...' : hasApplied ? 'Applied' : 'Apply for this role' }}
               </Button>
               <Button variant="outline" size="lg" @click="handleSave">
                 <BookmarkIcon :class="['h-5 w-5', isSaved && 'fill-current']" />
@@ -108,6 +146,8 @@
                 :job="similar as any"
                 :user-skills="auth.user?.skills || []"
                 @click="navigateToJob(similar.id)"
+                @applied="handleSimilarApplied"
+                @apply-error="handleSimilarApplyError"
               />
             </div>
           </div>
@@ -125,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { definePageMeta, useRoute, useRouter, useAsyncData } from '#imports'
 import { useAuthStore, type ExperienceLevel, type JobType } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
@@ -163,12 +203,32 @@ await auth.fetchProfile()
 
 const jobId = computed(() => route.params.id as string)
 const isSaved = ref(false)
+const applying = ref(false)
+const hasApplied = ref(false)
+
+// Check if user has already applied
+const checkApplicationStatus = async () => {
+  if (!jobId.value) return
+  try {
+    const response = await api<{ has_applied: boolean; application: any }>(`/applications/job/${jobId.value}/check`)
+    hasApplied.value = response?.has_applied || false
+  } catch (error) {
+    console.error('Error checking application status:', error)
+  }
+}
 
 const { data: job, pending } = await useAsyncData(
   `job-${jobId.value}`,
   () => api<JobResponse>(`/jobs/${jobId.value}`),
   { server: false }
 )
+
+// Check application status when job is loaded
+watch(() => job.value, async (newJob) => {
+  if (newJob) {
+    await checkApplicationStatus()
+  }
+}, { immediate: true })
 
 interface JobRecommendation {
   job: JobResponse
@@ -211,14 +271,52 @@ const navigateToJob = (id: string) => {
   router.push(`/jobs/${id}`)
 }
 
-const handleApply = () => {
-  if (job.value) {
-    alert(`Application feature coming soon! You're applying for: ${job.value.title}`)
+// Notification popup
+const showNotification = ref(false)
+const notificationMessage = ref('')
+const notificationType = ref<'success' | 'error'>('success')
+
+const showNotificationPopup = (message: string, type: 'success' | 'error') => {
+  notificationMessage.value = message
+  notificationType.value = type
+  showNotification.value = true
+  setTimeout(() => {
+    showNotification.value = false
+  }, 5000)
+}
+
+const handleApply = async () => {
+  if (!job.value || applying.value || hasApplied.value) return
+
+  applying.value = true
+  try {
+    await api('/applications/', {
+      method: 'POST',
+      body: {
+        job_id: job.value.id
+      }
+    })
+    
+    hasApplied.value = true
+    showNotificationPopup('Application submitted successfully!', 'success')
+  } catch (error: any) {
+    const errorMessage = error?.response?._data?.detail || 'Failed to submit application. Please try again.'
+    showNotificationPopup(errorMessage, 'error')
+  } finally {
+    applying.value = false
   }
 }
 
 const handleSave = () => {
   isSaved.value = !isSaved.value
+}
+
+const handleSimilarApplied = (job: JobResponse) => {
+  showNotificationPopup(`Application submitted successfully for ${job.title}!`, 'success')
+}
+
+const handleSimilarApplyError = (job: JobResponse, error: string) => {
+  showNotificationPopup(error, 'error')
 }
 
 const experienceLabel = (value: ExperienceLevel) => {
@@ -235,3 +333,20 @@ const capitalize = (value: string | null | undefined) => {
   return value.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
 }
 </script>
+
+<style scoped>
+.popup-enter-active,
+.popup-leave-active {
+  transition: all 0.3s ease;
+}
+
+.popup-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.popup-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+</style>

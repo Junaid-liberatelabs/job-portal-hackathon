@@ -76,13 +76,20 @@
         </button>
         
         <button
-          @click.stop="$emit('apply', job)"
-          class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
+          @click.stop="handleApply"
+          :disabled="applying || hasApplied"
+          class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <span>Apply Now</span>
-          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <span v-if="applying" class="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent"></span>
+          <span v-else-if="hasApplied" class="h-4 w-4">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </span>
+          <svg v-else class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
+          <span>{{ applying ? 'Applying...' : hasApplied ? 'Applied' : 'Apply Now' }}</span>
         </button>
       </div>
     </div>
@@ -90,10 +97,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { MapPinIcon, BriefcaseIcon, CurrencyDollarIcon, BookmarkIcon } from '@heroicons/vue/24/outline'
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/vue/24/solid'
 import type { Job } from '~/composables/useJobs'
+import { useApi } from '~/composables/useApi'
 
 interface Props {
   job: Job
@@ -112,7 +120,57 @@ const emit = defineEmits<{
   click: [job: Job]
   save: [job: Job]
   apply: [job: Job]
+  applied: [job: Job]
+  'apply-error': [job: Job, error: string]
 }>()
+
+const api = useApi()
+const applying = ref(false)
+const hasApplied = ref(false)
+
+// Check if user has already applied
+const checkApplicationStatus = async () => {
+  if (!props.job?.id) return
+  try {
+    const response = await api<{ has_applied: boolean; application: any }>(`/applications/job/${props.job.id}/check`)
+    hasApplied.value = response?.has_applied || false
+  } catch (error) {
+    console.error('Error checking application status:', error)
+  }
+}
+
+// Check application status on mount and when job changes
+onMounted(() => {
+  checkApplicationStatus()
+})
+
+watch(() => props.job?.id, () => {
+  checkApplicationStatus()
+})
+
+const handleApply = async () => {
+  if (!props.job || applying.value || hasApplied.value) return
+
+  applying.value = true
+  try {
+    await api('/applications/', {
+      method: 'POST',
+      body: {
+        job_id: props.job.id
+      }
+    })
+    
+    hasApplied.value = true
+    emit('apply', props.job)
+    emit('applied', props.job)
+  } catch (error: any) {
+    const errorMessage = error?.response?._data?.detail || 'Failed to submit application. Please try again.'
+    emit('apply', props.job)
+    emit('apply-error', props.job, errorMessage)
+  } finally {
+    applying.value = false
+  }
+}
 
 const { formatJobType, formatLocation, formatSalaryRange, calculateSkillMatch } = useJobs()
 

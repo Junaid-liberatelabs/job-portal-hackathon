@@ -14,7 +14,8 @@ from app.api.schemas.user import UserResponse
 from app.api.schemas.job import JobResponse
 from app.db.crud.application import get_applications_by_user
 from app.db.crud.job import get_job_by_id
-from app.db.crud.analysis_report import create_skill_gap_analysis_report, get_most_recent_skill_gap_analysis_report
+from app.db.crud.analysis_report import create_skill_gap_analysis_report, get_skill_gap_analysis_report
+from app.llm.workflow.skill_gap_analysis.tools.resource_search_tool import create_resource_search_tool
 router = APIRouter()
 logger = get_logger(__name__)
 
@@ -47,9 +48,13 @@ async def skill_gap_analysis(
         print(user_profile_data)
         print(user_applied_job_data)
         
+        # Create resource search tool with db session (tool handles db internally)
+        resource_search_tool = create_resource_search_tool(db)
+        
         input_data = {
             "user_profile_data": user_profile_data,
-            "user_applied_job_data": user_applied_job_data
+            "user_applied_job_data": user_applied_job_data,
+            "resource_search_tool": resource_search_tool
         }
         result = graph.invoke(input_data)
         create_skill_gap_analysis_report(db, current_user.id, result["gap_analysis_report"])
@@ -60,9 +65,11 @@ async def skill_gap_analysis(
 
 
 @router.get("/skill-gap-analysis/")
-def get_skill_gap_analysis_report(
+def get_skill_gap_analysis_report_endpoint(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    report = get_most_recent_skill_gap_analysis_report(db)
+    report = get_skill_gap_analysis_report(db, current_user.id)
+    if not report:
+        raise HTTPException(status_code=404, detail="No skill gap analysis report found. Please run the analysis first.")
     return SkillGapAnalysisReportResponse(gap_analysis_report=report.gap_analysis_report)
