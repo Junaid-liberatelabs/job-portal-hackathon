@@ -26,7 +26,7 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="mb-8">
         <h2 class="text-3xl font-bold text-ink-900 mb-2">Dashboard Overview</h2>
-        <p class="text-ink-600">Manage job postings, resources, and track applications</p>
+        <p class="text-ink-600">Manage job postings and track applications</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -47,10 +47,10 @@
           icon-color-class="text-green-600"
         />
         <StatsCard
-          title="Total Resources"
-          :value="stats.totalResources"
-          subtitle="Learning resources"
-          :icon="BookOpenIcon"
+          title="Avg. Applicants/Job"
+          :value="stats.avgApplicants"
+          subtitle="Per job posting"
+          :icon="ChartBarIcon"
           icon-bg-class="bg-purple-100"
           icon-color-class="text-purple-600"
         />
@@ -103,36 +103,6 @@
         @edit-job="openEditModal"
         @delete-job="handleDeleteJob"
       />
-
-      <div class="flex items-center justify-between mb-6 mt-12">
-        <div>
-          <h3 class="text-2xl font-bold text-ink-900">Learning Resources</h3>
-          <p class="text-sm text-ink-600 mt-1">Manage educational content and learning materials</p>
-        </div>
-        <button
-          @click="openCreateResourceModal"
-          class="btn btn-primary flex items-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Create New Resource
-        </button>
-      </div>
-
-      <div v-if="resourcesLoading" class="flex items-center justify-center py-20">
-        <div class="text-center">
-          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p class="text-ink-600">Loading resources...</p>
-        </div>
-      </div>
-
-      <ResourcesTable
-        v-else
-        :resources="resources"
-        @edit-resource="openEditResourceModal"
-        @delete-resource="handleDeleteResource"
-      />
     </main>
 
     <CreateJobModal
@@ -147,14 +117,6 @@
       :is-open="isApplicantsModalOpen"
       :job="selectedJob"
       @close="closeApplicantsModal"
-    />
-
-    <CreateResourceModal
-      :is-open="isCreateResourceModalOpen"
-      :edit-resource="editingResource"
-      @close="closeCreateResourceModal"
-      @resource-created="handleResourceCreated"
-      @resource-updated="handleResourceUpdated"
     />
 
     <Teleport to="body">
@@ -179,14 +141,12 @@
                 </svg>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-ink-900">{{ deleteType === 'job' ? 'Delete Job' : 'Delete Resource' }}</h3>
+                <h3 class="text-lg font-bold text-ink-900">Delete Job</h3>
                 <p class="text-sm text-ink-600">This action cannot be undone</p>
               </div>
             </div>
             <p class="text-ink-700 mb-6">
-              {{ deleteType === 'job' 
-                ? 'Are you sure you want to delete this job? All associated applications will be affected.'
-                : 'Are you sure you want to delete this resource? This action cannot be undone.' }}
+              Are you sure you want to delete this job? All associated applications will be affected.
             </p>
             <div class="flex items-center justify-end gap-3">
               <button
@@ -199,7 +159,7 @@
                 @click="confirmDelete"
                 class="btn btn-danger"
               >
-                {{ deleteType === 'job' ? 'Delete Job' : 'Delete Resource' }}
+                Delete Job
               </button>
             </div>
           </div>
@@ -214,8 +174,7 @@ import {
   BriefcaseIcon,
   UsersIcon,
   ChartBarIcon,
-  FireIcon,
-  BookOpenIcon
+  FireIcon
 } from '@heroicons/vue/24/outline'
 
 interface Job {
@@ -233,41 +192,23 @@ interface Job {
   updated_at: string
 }
 
-interface Resource {
-  id: string
-  name: string
-  description: string
-  url: string
-  tags: string[]
-  pricing?: string
-  platform?: string
-  duration?: string
-  created_at: string
-  updated_at: string
-}
-
 useHead({
   title: 'Dashboard'
 })
 
 const { jobsWithApplicants, loading, error, fetchJobsWithApplicants, deleteJob } = useJobs()
-const { resources, loading: resourcesLoading, error: resourcesError, fetchResources, deleteResource } = useResources()
 
 const isCreateModalOpen = ref(false)
 const isApplicantsModalOpen = ref(false)
-const isCreateResourceModalOpen = ref(false)
 const editingJob = ref<Job | null>(null)
-const editingResource = ref<Resource | null>(null)
 const selectedJob = ref<Job | null>(null)
 const showDeleteConfirm = ref(false)
 const deleteJobId = ref<string | null>(null)
-const deleteResourceId = ref<string | null>(null)
-const deleteType = ref<'job' | 'resource'>('job')
 
 const stats = computed(() => {
   const totalJobs = jobsWithApplicants.value.length
   const totalApplications = jobsWithApplicants.value.reduce((sum, item) => sum + item.applicants_count, 0)
-  const totalResources = resources.value.length
+  const avgApplicants = totalJobs > 0 ? Math.round(totalApplications / totalJobs * 10) / 10 : 0
   
   const typeCount: Record<string, number> = {}
   jobsWithApplicants.value.forEach(item => {
@@ -283,14 +224,13 @@ const stats = computed(() => {
   return {
     totalJobs,
     totalApplications,
-    totalResources,
+    avgApplicants,
     mostPopularType: formattedType
   }
 })
 
 onMounted(() => {
   fetchJobsWithApplicants()
-  fetchResources()
 })
 
 const openCreateModal = () => {
@@ -328,55 +268,17 @@ const handleJobUpdated = () => {
 
 const handleDeleteJob = (jobId: string) => {
   deleteJobId.value = jobId
-  deleteType.value = 'job'
-  showDeleteConfirm.value = true
-}
-
-const openCreateResourceModal = () => {
-  editingResource.value = null
-  isCreateResourceModalOpen.value = true
-}
-
-const openEditResourceModal = (resource: Resource) => {
-  editingResource.value = resource
-  isCreateResourceModalOpen.value = true
-}
-
-const closeCreateResourceModal = () => {
-  isCreateResourceModalOpen.value = false
-  editingResource.value = null
-}
-
-const handleResourceCreated = () => {
-  fetchResources()
-}
-
-const handleResourceUpdated = () => {
-  fetchResources()
-}
-
-const handleDeleteResource = (resourceId: string) => {
-  deleteResourceId.value = resourceId
-  deleteType.value = 'resource'
   showDeleteConfirm.value = true
 }
 
 const confirmDelete = async () => {
-  if (deleteType.value === 'job' && deleteJobId.value) {
+  if (deleteJobId.value) {
     try {
       await deleteJob(deleteJobId.value)
       showDeleteConfirm.value = false
       deleteJobId.value = null
     } catch (e) {
       console.error('Failed to delete job:', e)
-    }
-  } else if (deleteType.value === 'resource' && deleteResourceId.value) {
-    try {
-      await deleteResource(deleteResourceId.value)
-      showDeleteConfirm.value = false
-      deleteResourceId.value = null
-    } catch (e) {
-      console.error('Failed to delete resource:', e)
     }
   }
 }

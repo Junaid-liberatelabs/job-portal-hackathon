@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from app.core.exceptions import EmbeddingGenerationError
-from app.db.model.job import Job
+from app.db.model.job import ExperienceLevel, Job, JobType
 from app.services.embedding_service import embedding_service
 from sqlalchemy.orm import Session
 from sqlalchemy import func, cast
@@ -44,8 +44,8 @@ def get_jobs(
     db: Session,
     skip: int = 0,
     limit: int = 100,
-    job_type: Optional[str] = None,
-    experience_level: Optional[str] = None,
+    job_type: Optional[JobType] = None,
+    experience_level: Optional[ExperienceLevel] = None,
     skills: Optional[list[str]] = None,
 ):
     """Get jobs with optional filtering"""

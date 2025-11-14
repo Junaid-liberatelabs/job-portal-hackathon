@@ -6,6 +6,7 @@ from app.db.crud.job import create_job as crud_create_job
 from app.db.crud.job import delete_job as crud_delete_job
 from app.db.crud.job import get_job_by_id, get_jobs
 from app.db.crud.job import update_job as crud_update_job
+from app.db.model.job import ExperienceLevel, JobType
 from app.db.session import get_db
 from app.services.recommendation_service import recommendation_service
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -46,8 +47,8 @@ async def list_jobs(
     limit: int = Query(
         100, ge=1, le=1000, description="Maximum number of records to return"
     ),
-    job_type: Optional[str] = Query(None, description="Filter by job type"),
-    experience_level: Optional[str] = Query(
+    job_type: Optional[JobType] = Query(None, description="Filter by job type"),
+    experience_level: Optional[ExperienceLevel] = Query(
         None, description="Filter by experience level"
     ),
     skills: Optional[str] = Query(

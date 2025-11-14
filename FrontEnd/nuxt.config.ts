@@ -56,9 +56,7 @@ export default defineNuxtConfig({
   
   runtimeConfig: {
     public: {
-      // API base URL - defaults to localhost:8000 for development
-      // Can be overridden with NUXT_PUBLIC_API_BASE environment variable
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000'
+      apiBase: 'http://localhost:8000'
     }
   },
   

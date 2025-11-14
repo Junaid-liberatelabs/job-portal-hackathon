@@ -282,7 +282,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, watch } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { definePageMeta, useAsyncData, useRouter } from '#imports'
 import { useAuthStore, type ExperienceLevel, type JobType } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
@@ -299,14 +299,9 @@ interface JobResponse {
   description: string
   company: string
   job_type: JobType
-  job_location?: 'remote' | 'hybrid' | 'on_site' | null
+  job_location?: string | null
   required_skills: string[]
-  url?: string | null
   recommended_experience_level: ExperienceLevel
-  salary_range_min?: number | null
-  salary_range_max?: number | null
-  created_at?: string
-  updated_at?: string
 }
 
 const jobTypes: JobType[] = ['internship', 'part_time', 'full_time', 'freelance']
@@ -333,25 +328,16 @@ const sortBy = ref<'relevance' | 'recent' | 'title' | 'company'>('relevance')
 
 const fetchJobs = async () => {
   try {
-    const query: Record<string, any> = { 
-      skip: 0,
-      limit: 100 
-    }
+    const query: Record<string, any> = { limit: 50 }
     
-    // Add job_type filter if provided
-    if (filters.job_type) {
-      query.job_type = filters.job_type
-    }
-    
-    // Add experience_level filter if provided
-    if (filters.experience_level) {
-      query.experience_level = filters.experience_level
-    }
+    if (filters.job_type) query.job_type = filters.job_type
+    if (filters.experience_level) query.experience_level = filters.experience_level
 
-    // Add skills filter if provided (comma-separated string)
     const skillsInput = filters.skills.trim()
     if (skillsInput) {
       query.skills = skillsInput
+    } else if (auth.user?.skills?.length) {
+      query.skills = auth.user.skills.join(',')
     }
 
     console.log('Fetching jobs with query:', query)
@@ -369,17 +355,6 @@ const { data, pending, refresh, error: fetchError } = await useAsyncData('jobs-l
   default: () => []
 })
 
-interface JobRecommendation {
-  job: JobResponse
-  similarity_score: number
-}
-
-const { data: recommendationsData, refresh: refreshRecommendations } = await useAsyncData(
-  'job-recommendations',
-  () => api<JobRecommendation[]>('/recommendations/jobs', { query: { limit: 100 } }),
-  { server: false, default: () => [] }
-)
-
 const jobs = computed(() => {
   const list = data.value ?? []
   if (!filters.search.trim()) {
@@ -391,36 +366,28 @@ const jobs = computed(() => {
   )
 })
 
+// Calculate match percentage for each job
+const calculateMatchScore = (job: JobResponse): number => {
+  const userSkills = auth.user?.skills || []
+  if (!userSkills.length || !job.required_skills.length) return 0
+  
+  const userSkillsLower = userSkills.map(s => s.toLowerCase())
+  const matchedSkills = job.required_skills.filter(skill => 
+    userSkillsLower.includes(skill.toLowerCase())
+  )
+  
+  return Math.round((matchedSkills.length / job.required_skills.length) * 100)
+}
+
 // Sorted jobs based on selected sort option
 const sortedJobs = computed(() => {
-  // If relevance sort is selected, use recommendations from backend
-  if (sortBy.value === 'relevance' && recommendationsData.value?.length) {
-    const recommendedJobs = recommendationsData.value
-      .map(rec => rec.job)
-      .filter(job => {
-        // Apply search filter if active
-        if (filters.search.trim()) {
-          const keyword = filters.search.trim().toLowerCase()
-          if (!job.title.toLowerCase().includes(keyword) && 
-              !job.company.toLowerCase().includes(keyword)) {
-            return false
-          }
-        }
-        return true
-      })
-    
-    const recommendedJobIds = new Set(recommendedJobs.map(j => j.id))
-    
-    // Merge recommended jobs with other filtered jobs, prioritizing recommendations
-    const otherJobs = jobs.value.filter(j => !recommendedJobIds.has(j.id))
-    return [...recommendedJobs, ...otherJobs]
-  }
-  
-  // For other sorts, use regular jobs list
   const jobsList = [...jobs.value]
   
   switch (sortBy.value) {
+    case 'relevance':
+      return jobsList.sort((a, b) => calculateMatchScore(b) - calculateMatchScore(a))
     case 'recent':
+      // Assuming jobs are returned in descending order by default
       return jobsList
     case 'title':
       return jobsList.sort((a, b) => a.title.localeCompare(b.title))
@@ -428,13 +395,6 @@ const sortedJobs = computed(() => {
       return jobsList.sort((a, b) => a.company.localeCompare(b.company))
     default:
       return jobsList
-  }
-})
-
-// Watch sortBy to refresh recommendations when switching to relevance
-watch(sortBy, async (newValue) => {
-  if (newValue === 'relevance') {
-    await refreshRecommendations()
   }
 })
 
@@ -493,4 +453,9 @@ const capitalize = (value: string | null | undefined) => {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
+const lowerSkills = computed(() => new Set((auth.user?.skills ?? []).map((skill) => skill.toLowerCase())))
+
+const overlap = (job: JobResponse) => {
+  return job.required_skills.filter((skill) => lowerSkills.value.has(skill.toLowerCase()))
+}
 </script>

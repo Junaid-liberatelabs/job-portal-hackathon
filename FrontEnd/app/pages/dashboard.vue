@@ -134,7 +134,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="font-display text-2xl font-semibold text-ink-900">Recommended Jobs</h2>
-            <p class="mt-1 text-sm text-ink-600">{{ recommendedJobs.length }} jobs matched to your skills</p>
+            <p class="mt-1 text-sm text-ink-600">{{ scoredJobs.length }} jobs matched to your skills</p>
           </div>
           <NuxtLink to="/jobs" class="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
             View All →
@@ -142,17 +142,16 @@
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
           <div
-            v-for="(recommendation, index) in jobRecommendations"
-            :key="recommendation.job.id"
+            v-for="(job, index) in recommendedJobs"
+            :key="job.id"
             :ref="el => jobCardRefs[index] = el as HTMLElement"
             class="opacity-0 translate-y-8 transition-all duration-700"
             :style="{ transitionDelay: `${index * 100}ms` }"
           >
             <JobCard
-              :job="recommendation.job as any"
+              :job="job as any"
               :user-skills="auth.user?.skills || []"
-              :similarity-score="recommendation.similarity_score"
-              @click="navigateToJob(recommendation.job.id)"
+              @click="navigateToJob(job.id)"
             />
           </div>
         </div>
@@ -174,17 +173,16 @@
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
           <div
-            v-for="(recommendation, index) in resourceRecommendations"
-            :key="recommendation.resource.id"
+            v-for="(resource, index) in recommendedResources"
+            :key="resource.id"
             :ref="el => resourceCardRefs[index] = el as HTMLElement"
             class="opacity-0 translate-y-8 transition-all duration-700"
             :style="{ transitionDelay: `${index * 100}ms` }"
           >
             <CourseCard
-              :resource="recommendation.resource as any"
-              :is-bookmarked="isBookmarked(recommendation.resource.id)"
-              :similarity-score="recommendation.similarity_score"
-              @bookmark="toggleBookmark(recommendation.resource.id)"
+              :resource="resource as any"
+              :is-bookmarked="isBookmarked(resource.id)"
+              @bookmark="toggleBookmark(resource.id)"
               @view="handleViewResource"
             />
           </div>
@@ -259,46 +257,50 @@ let observer: IntersectionObserver | null = null
 // Chart type for dashboard (only pie chart now)
 // const dashboardChartType = ref<'pie' | 'radar' | 'bar'>('pie')
 
-interface JobRecommendation {
-  job: JobResponse
-  similarity_score: number
-}
-
-interface ResourceRecommendation {
-  resource: ResourceResponse
-  similarity_score: number
-}
-
-const { data: jobsRecommendationsData } = await useAsyncData('dashboard-job-recommendations', () =>
-  api<JobRecommendation[]>('/recommendations/jobs', {
-    query: { limit: 4 }
+const { data: jobsData } = await useAsyncData('dashboard-jobs', () =>
+  api<JobResponse[]>('/jobs/', {
+    query: { limit: 50 }
   })
 )
 
-const { data: resourcesRecommendationsData } = await useAsyncData('dashboard-resource-recommendations', () =>
-  api<ResourceRecommendation[]>('/recommendations/resources', {
-    query: { limit: 4 }
+const { data: resourcesData } = await useAsyncData('dashboard-resources', () =>
+  api<ResourceResponse[]>('/resources/', {
+    query: { limit: 50 }
   })
 )
 
-// Keep full recommendation data with similarity scores
-const jobRecommendations = computed(() => {
-  if (!jobsRecommendationsData.value) return []
-  return jobsRecommendationsData.value
+const userSkills = computed(() => new Set((auth.user?.skills ?? []).map((skill) => skill.toLowerCase())))
+
+const scoredJobs = computed(() => {
+  const jobs = jobsData.value ?? []
+  if (!auth.user) return []
+  return jobs
+    .map((job) => {
+      const overlap = job.required_skills.filter((skill) => userSkills.value.has(skill.toLowerCase()))
+      return { job, overlap }
+    })
+    .filter(({ overlap }) => overlap.length > 0)
+    .sort((a, b) => b.overlap.length - a.overlap.length)
 })
 
-const resourceRecommendations = computed(() => {
-  if (!resourcesRecommendationsData.value) return []
-  return resourcesRecommendationsData.value
+const recommendedJobs = computed(() => scoredJobs.value.slice(0, 4).map((item) => item.job))
+const topJob = computed(() => recommendedJobs.value[0])
+
+const scoredResources = computed(() => {
+  const resources = resourcesData.value ?? []
+  if (!auth.user) return []
+  return resources
+    .map((resource) => {
+      const tags = resource.tags?.map((tag) => tag.toLowerCase()) ?? []
+      const overlap = tags.filter((tag) => userSkills.value.has(tag))
+      return { resource, overlap }
+    })
+    .filter(({ overlap }) => overlap.length > 0)
+    .sort((a, b) => b.overlap.length - a.overlap.length)
 })
 
-const recommendedJobs = computed(() => {
-  return jobRecommendations.value.map(rec => rec.job)
-})
-
-const recommendedResources = computed(() => {
-  return resourceRecommendations.value.map(rec => rec.resource)
-})
+const recommendedResources = computed(() => scoredResources.value.slice(0, 4).map((item) => item.resource))
+const topResource = computed(() => recommendedResources.value[0])
 
 const experienceLabel = computed(() => {
   const mapping: Record<string, string> = {
@@ -309,6 +311,17 @@ const experienceLabel = computed(() => {
   return mapping[auth.user?.experience_level ?? ''] || 'Not provided'
 })
 
+const overlapMessage = (job: JobResponse) => {
+  const overlap = job.required_skills.filter((skill) => userSkills.value.has(skill.toLowerCase()))
+  if (!overlap.length) return 'Review job requirements to plan your next sprint.'
+  return `Matches: ${overlap.slice(0, 3).join(', ')}${overlap.length > 3 ? ' +' : ''}`
+}
+
+const resourceMessage = (resource: ResourceResponse) => {
+  const tags = resource.tags ?? []
+  const overlap = tags.filter((tag) => userSkills.value.has(tag.toLowerCase()))
+  return overlap.length ? `Supports: ${overlap.join(', ')}` : 'Strengthens adjacent capabilities.'
+}
 
 const resourceCost = (resource: ResourceResponse) => {
   const tags = resource.tags ?? []
@@ -404,7 +417,7 @@ const isBookmarked = (resourceId: string) => {
 // Real stats data from actual data
 const statsData = computed(() => {
   const skillsCount = auth.user?.skills?.length || 0
-  const jobsCount = recommendedJobs.value.length
+  const jobsCount = scoredJobs.value.length
   const resourcesCount = recommendedResources.value.length
   
   return {

@@ -33,8 +33,8 @@ class Job(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     company = Column(String, nullable=False)
-    job_type = Column(SQLEnum(JobType), nullable=False, index=True)
-    job_location = Column(SQLEnum(JobLocation), nullable=True)
+    job_type = Column(SQLEnum(JobType), nullable=False, index=True)  # mandatory
+    job_location = Column(SQLEnum(JobLocation), nullable=True)  # optional
 
     required_skills = Column(ARRAY(String), nullable=False, default=list)
     url = Column(String, nullable=True)

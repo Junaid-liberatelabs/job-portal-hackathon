@@ -101,7 +101,7 @@ class EmbeddingService:
         ]
 
         text = " ".join(part for part in text_parts if part.strip())
-        print(text)
+
         if not text.strip():
             raise EmbeddingGenerationError("User profile has no content to embed")
 
@@ -124,7 +124,7 @@ class EmbeddingService:
         # Concatenate job fields
         skills_text = " ".join(job.required_skills) if job.required_skills else ""
         experience_text = (
-            job.recommended_experience_level
+            job.recommended_experience_level.value
             if job.recommended_experience_level
             else ""
         )

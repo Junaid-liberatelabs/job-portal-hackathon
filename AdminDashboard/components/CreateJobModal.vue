@@ -147,19 +147,6 @@
 
                 <div class="md:col-span-2">
                   <label class="block text-sm font-medium text-ink-700 mb-2">
-                    Job URL <span class="text-red-500">*</span>
-                  </label>
-                  <input
-                    v-model="formData.url"
-                    type="url"
-                    required
-                    class="input"
-                    placeholder="https://example.com/job-posting"
-                  />
-                </div>
-
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-ink-700 mb-2">
                     Required Skills <span class="text-red-500">*</span>
                   </label>
                   <input
@@ -205,7 +192,7 @@
                 <button
                   type="submit"
                   class="btn btn-primary"
-                  :disabled="loading || formData.required_skills.length === 0 || !formData.url.trim()"
+                  :disabled="loading || formData.required_skills.length === 0"
                 >
                   <span v-if="loading">
                     {{ editMode ? 'Updating...' : 'Creating...' }}
@@ -231,7 +218,6 @@ interface Job {
   company: string
   job_type: string
   job_location?: string
-  url?: string
   required_skills: string[]
   recommended_experience_level: string
   salary_range_min?: number
@@ -257,7 +243,6 @@ const formData = ref({
   company: '',
   job_type: '',
   job_location: '',
-  url: '',
   required_skills: [] as string[],
   recommended_experience_level: '',
   salary_range_min: undefined as number | undefined,
@@ -276,7 +261,6 @@ watch(() => props.editJob, (job) => {
       company: job.company,
       job_type: job.job_type,
       job_location: job.job_location || '',
-      url: (job as any).url || '',
       required_skills: [...job.required_skills],
       recommended_experience_level: job.recommended_experience_level,
       salary_range_min: job.salary_range_min,
@@ -310,7 +294,6 @@ const resetForm = () => {
     company: '',
     job_type: '',
     job_location: '',
-    url: '',
     required_skills: [],
     recommended_experience_level: '',
     salary_range_min: undefined,
@@ -340,7 +323,6 @@ const handleSubmit = async () => {
       job_location: formData.value.job_location && formData.value.job_location.trim() 
         ? formData.value.job_location.toLowerCase() 
         : undefined,
-      url: formData.value.url.trim(),
       required_skills: formData.value.required_skills.filter(s => s.trim().length > 0),
       recommended_experience_level: formData.value.recommended_experience_level.toLowerCase(),
       salary_range_min: formData.value.salary_range_min ? Number(formData.value.salary_range_min) : undefined,

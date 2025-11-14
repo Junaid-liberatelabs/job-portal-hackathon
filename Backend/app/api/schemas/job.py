@@ -14,7 +14,7 @@ class JobBase(BaseModel):
     job_type: JobType
     job_location: Optional[JobLocation] = None
     required_skills: List[str] = Field(..., min_items=1)
-    url: str = Field(..., min_length=1, max_length=255)
+    url: Optional[str] = Field(None, min_length=1, max_length=255)
     recommended_experience_level: ExperienceLevel
     salary_range_min: Optional[float] = Field(None, ge=0)
     salary_range_max: Optional[float] = Field(None, ge=0)
