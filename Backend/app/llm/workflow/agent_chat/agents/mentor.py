@@ -7,6 +7,8 @@ from app.llm.workflow.agent_chat.state import AgentChatState
 from app.llm.workflow.agent_chat.tools.mentor_tools import (
     user_career_roadmap_analysis,
     user_skill_gap_analysis_report,
+    user_full_profile,
+    user_applied_jobs,
     search_jobs,
     search_resources
 )
@@ -19,7 +21,14 @@ class MentorAgent:
         self.fallback_llm = self.llm.with_fallbacks([self.gemini_llm])
 
         #bind tools to the llm
-        self.tools = [user_career_roadmap_analysis, user_skill_gap_analysis_report, search_jobs, search_resources]
+        self.tools = [
+            user_career_roadmap_analysis,
+            user_skill_gap_analysis_report,
+            user_full_profile,
+            user_applied_jobs,
+            search_jobs,
+            search_resources
+        ]
         self.fallback_llm_with_tools = self.fallback_llm.bind_tools(self.tools)
         self.system_prompt = load_yaml_prompt(path="agent_chat/mentor", key="SYSTEM_PROMPT")
 

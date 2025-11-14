@@ -9,6 +9,7 @@ import uuid
 from typing import Annotated
 from app.core.config import settings
 from langchain_core.messages import HumanMessage
+from app.llm.workflow.agent_chat.tools.mentor_tools import user_id_context
 router = APIRouter()
 logger = get_logger(__name__)
 
@@ -30,6 +31,9 @@ def agent_chat_message(
     request: AgentChatMessageRequest = Body(...),
 ):
     compiled_graph = http_request.app.state.agent_chat_graph
+    
+    # Set user_id in context variable for tools to access
+    user_id_context.set(current_user.id)
     
     config = {
         "configurable": {
