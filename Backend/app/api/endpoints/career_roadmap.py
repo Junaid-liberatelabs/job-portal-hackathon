@@ -16,7 +16,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 @router.post("/career-roadmap")
-async def career_roadmap(
+def career_roadmap(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
     request: CareerRoadmapRequest = Body(...),
