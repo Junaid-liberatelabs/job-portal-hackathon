@@ -1,3 +1,4 @@
+import json
 from app.core.logging_config import get_logger
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
@@ -16,9 +17,19 @@ class SkillGapAnalysis:
         self.user_prompt = load_yaml_prompt(path="skill_gap_analysis/skill_gap_analysis", key="USER_PROMPT")
 
     def analyze_skill_gap_node(self, state: SkillGapAnalysisState):
+        user_data = state.user_profile_data
+        user_applied_job_data = state.user_applied_job_data
+        
+        # Format data as JSON for better LLM readability
+        user_data_str = json.dumps(user_data, indent=2, default=str)
+        user_applied_job_data_str = json.dumps(user_applied_job_data, indent=2, default=str)
+        
         messages = [
             SystemMessage(content=self.system_prompt),
-            HumanMessage(content=self.user_prompt.format(user_skills=state.user_profile_data.skills, job_description=state.user_applied_job_data))
+            HumanMessage(content=self.user_prompt.format(
+                user_data=user_data_str,
+                user_applied_job_data=user_applied_job_data_str
+            ))
         ]
         response = self.fallback_llm.invoke(messages)
         state.gap_analysis_report = response.content

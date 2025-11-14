@@ -10,6 +10,8 @@ from fastapi import Depends
 from fastapi import HTTPException
 
 from app.api.schemas.skill_gap_analysis import SkillGapAnalysisReportResponse
+from app.api.schemas.user import UserResponse
+from app.api.schemas.job import JobResponse
 from app.db.crud.application import get_applications_by_user
 from app.db.crud.job import get_job_by_id
 
@@ -24,14 +26,29 @@ async def skill_gap_analysis(
 
     try:
         graph = skill_gap_analysis_graph.compile()
-        user_applied_job_data = get_applications_by_user(db, current_user.id)
-        user_applied_job_data = [application.job_id for application in user_applied_job_data]
-        user_applied_job_data = [get_job_by_id(db, job_id) for job_id in user_applied_job_data]
+        
+        # Get all applications for the user
+        applications = get_applications_by_user(db, current_user.id)
+        
+        # Extract job IDs and get job details
+        job_ids = [application.job_id for application in applications]
+        jobs = [get_job_by_id(db, job_id) for job_id in job_ids]
+        
+        # Filter out None jobs (in case a job was deleted) and convert to dicts
+        user_applied_job_data = [
+            JobResponse.model_validate(job).model_dump() 
+            for job in jobs 
+            if job is not None
+        ]
+        
+        # Convert user model to dict with all available data
+        user_profile_data = UserResponse.model_validate(current_user).model_dump()
 
+        print(user_profile_data)
         print(user_applied_job_data)
-        print(current_user.model_dump())
+        
         input_data = {
-            "user_profile_data": current_user.model_dump(),
+            "user_profile_data": user_profile_data,
             "user_applied_job_data": user_applied_job_data
         }
         result = graph.invoke(input_data)
