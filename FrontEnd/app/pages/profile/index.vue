@@ -327,6 +327,28 @@
             </button>
           </div>
         </div>
+
+        <div class="rounded-2xl border border-brand-200 bg-brand-50 p-6">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-ink-900 mb-1">Skill Gap Analysis</h3>
+              <p class="text-sm text-ink-600 mb-4">Analyze your skills against job requirements to identify gaps and opportunities for growth.</p>
+              <NuxtLink to="/skill-gap-analysis">
+                <Button variant="accent" size="sm">
+                  View Skill Gap Analysis
+                  <svg class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </Button>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Experience Tab -->
@@ -548,7 +570,7 @@ const form = reactive<ProfileForm>({
   graduation_year: (auth.user?.graduation_year ?? null) as number | string | null,
   gpa: auth.user?.cgpa != null ? String(auth.user.cgpa) : '',
   experience_level: (auth.user?.experience_level || 'student') as ExperienceLevel,
-  preferred_career_track: auth.user?.preferred_career_track ?? tracks[0]
+  preferred_career_track: (auth.user?.preferred_career_track ?? tracks[0]) as string
 })
 
 watchEffect(() => {
@@ -830,4 +852,5 @@ const resourceMatchCount = computed(() => {
     resource.tags?.some((tag: string) => userSkills.has(tag.toLowerCase()))
   ).length
 })
+
 </script>

@@ -237,6 +237,8 @@
               :user-skills="auth.user?.skills || []"
               :similarity-score="recommendation.similarity_score"
               @click="navigateToJob(recommendation.job.id)"
+              @applied="handleJobApplied"
+              @apply-error="handleJobApplyError"
             />
           </div>
         </div>
@@ -401,6 +403,14 @@ const uploadCV = async (file: File) => {
 
 const navigateToJob = (jobId: string) => {
   router.push(`/jobs/${jobId}`)
+}
+
+const handleJobApplied = (job: JobResponse) => {
+  showNotificationPopup(`Application submitted successfully for ${job.title}!`, 'success')
+}
+
+const handleJobApplyError = (job: JobResponse, error: string) => {
+  showNotificationPopup(error, 'error')
 }
 
 const handleViewResource = (resource: ResourceResponse) => {

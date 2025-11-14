@@ -1,5 +1,42 @@
 <template>
   <div class="relative bg-gradient-to-br from-ink-50 via-white to-brand-50/30 min-h-screen py-8">
+    <!-- Notification Popup -->
+    <Transition name="popup">
+      <div
+        v-if="showNotification"
+        class="fixed top-4 right-4 z-50 max-w-md rounded-lg shadow-lg p-4"
+        :class="notificationType === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'"
+      >
+        <div class="flex items-start gap-3">
+          <div v-if="notificationType === 'success'" class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div v-else class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p
+              class="text-sm font-medium"
+              :class="notificationType === 'success' ? 'text-green-800' : 'text-red-800'"
+            >
+              {{ notificationMessage }}
+            </p>
+          </div>
+          <button
+            @click="showNotification = false"
+            class="flex-shrink-0 text-ink-400 hover:text-ink-600 transition-colors"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Transition>
     <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8">
       <!-- Header Section -->
       <header class="space-y-4">
@@ -252,6 +289,8 @@
             :user-skills="auth.user?.skills || []"
             class="cursor-pointer hover:shadow-xl transition-all duration-300"
             @click="navigateToJob(job.id)"
+            @applied="handleApplied"
+            @apply-error="handleApplyError"
           />
         </div>
 
@@ -320,6 +359,28 @@ await auth.fetchProfile()
 
 const navigateToJob = (jobId: string) => {
   router.push(`/jobs/${jobId}`)
+}
+
+// Notification popup
+const showNotification = ref(false)
+const notificationMessage = ref('')
+const notificationType = ref<'success' | 'error'>('success')
+
+const showNotificationPopup = (message: string, type: 'success' | 'error') => {
+  notificationMessage.value = message
+  notificationType.value = type
+  showNotification.value = true
+  setTimeout(() => {
+    showNotification.value = false
+  }, 5000)
+}
+
+const handleApplied = (job: JobResponse) => {
+  showNotificationPopup(`Application submitted successfully for ${job.title}!`, 'success')
+}
+
+const handleApplyError = (job: JobResponse, error: string) => {
+  showNotificationPopup(error, 'error')
 }
 
 const filters = reactive({
@@ -494,3 +555,20 @@ const capitalize = (value: string | null | undefined) => {
 }
 
 </script>
+
+<style scoped>
+.popup-enter-active,
+.popup-leave-active {
+  transition: all 0.3s ease;
+}
+
+.popup-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.popup-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+</style>
