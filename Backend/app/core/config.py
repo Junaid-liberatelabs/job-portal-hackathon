@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    #llm settings
+    OPENAI_API_KEY: str 
+    GEMINI_API_KEY: str
+    GROQ_API_KEY: str
+
     ENVIRONMENT: str = "development"
 
     # POSTGRES_SERVER:str
@@ -34,7 +39,7 @@ class Settings(BaseSettings):
     # POSTGRES_PASSWORD:str
     # POSTGRES_PORT:str
     # POSTGRES_DB:str
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/postgres"
+    DATABASE_URL: str = "postgresql://postgres:mysecretpassword@localhost:5432/postgres"
 
     class Config:
         env_file = ".env"
