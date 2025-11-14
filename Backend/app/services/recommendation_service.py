@@ -17,7 +17,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
-from Backend.app.db.crud import job
+from app.db.crud import job
 
 logger = logging.getLogger(__name__)
 

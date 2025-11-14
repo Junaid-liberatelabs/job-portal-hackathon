@@ -1,30 +1,30 @@
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
-from sqlalchemy import Enum
 
 
-class PreferredJobLocation(Enum):
+class PreferredJobLocation(str, Enum):
     REMOTE = "remote"
     HYBRID = "hybrid"
     ON_SITE = "on_site"
 
 
-class PreferredJobType(Enum):
+class PreferredJobType(str, Enum):
     INTERNSHIP = "internship"
     PART_TIME = "part_time"
     FULL_TIME = "full_time"
     FREELANCE = "freelance"
 
 
-class ExperienceLevel(Enum):
+class ExperienceLevel(str, Enum):
     STUDENT = "student"
     ENTRY = "entry"
     JUNIOR = "junior"
 
 
-class Project:
+class Project(BaseModel):
     title: str
     description: str
     url: str
@@ -97,6 +97,11 @@ class UserResponse(BaseModel):
     graduation_year: Optional[int] = Field(None, ge=1900, le=2025)
     profile_picture: Optional[str] = Field(None, min_length=1, max_length=255)
     bio: Optional[str] = Field(None, min_length=1, max_length=255)
+    preferred_job_location: Optional[PreferredJobLocation] = None
+    experience_level: Optional[ExperienceLevel] = None
+    preferred_job_type: Optional[PreferredJobType] = None
+    brief_experience: Optional[str] = Field(None, min_length=1, max_length=255)
+    project_description: Optional[List[Project]] = None
 
     created_at: datetime
     updated_at: datetime
@@ -107,7 +112,7 @@ class UserResponse(BaseModel):
 
 # Schema for user in database (internal use)
 class UserInDB(UserResponse):
-    hashed_password: str
+    hashed_password: Optional[str] = None
 
 
 # Token schemas

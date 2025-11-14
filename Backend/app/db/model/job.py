@@ -1,11 +1,12 @@
 import uuid
+from enum import Enum
 
 from app.db.base import Base
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import ARRAY, Column, DateTime, Enum, Float, Index, String, func
+from sqlalchemy import ARRAY, Column, DateTime, Enum as SQLEnum, Float, Index, String, func
 
 
-class JobType(Enum):
+class JobType(str, Enum):
     # Internship / Part-time / Full-time / Freelance
     INTERNSHIP = "internship"
     PART_TIME = "part_time"
@@ -13,13 +14,13 @@ class JobType(Enum):
     FREELANCE = "freelance"
 
 
-class JobLocation(Enum):
+class JobLocation(str, Enum):
     REMOTE = "remote"
     HYBRID = "hybrid"
     ON_SITE = "on_site"
 
 
-class ExperienceLevel(Enum):
+class ExperienceLevel(str, Enum):
     STUDENT = "student"
     ENTRY = "entry"
     JUNIOR = "junior"  # included for a touch of flexibility
@@ -32,13 +33,13 @@ class Job(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     company = Column(String, nullable=False)
-    job_type = Column(Enum(JobType), nullable=False, index=True)  # mandatory
-    job_location = Column(Enum(JobLocation), nullable=True)  # optional
+    job_type = Column(SQLEnum(JobType), nullable=False, index=True)  # mandatory
+    job_location = Column(SQLEnum(JobLocation), nullable=True)  # optional
 
     required_skills = Column(ARRAY(String), nullable=False, default=list)
 
     recommended_experience_level = Column(
-        Enum(ExperienceLevel), nullable=False, index=True
+        SQLEnum(ExperienceLevel), nullable=False, index=True
     )
 
     salary_range_min = Column(Float, nullable=True)  # optional
