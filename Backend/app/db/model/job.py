@@ -37,6 +37,7 @@ class Job(Base):
     job_location = Column(SQLEnum(JobLocation), nullable=True)  # optional
 
     required_skills = Column(ARRAY(String), nullable=False, default=list)
+    url = Column(String, nullable=True)
 
     recommended_experience_level = Column(
         SQLEnum(ExperienceLevel), nullable=False, index=True

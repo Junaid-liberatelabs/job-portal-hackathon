@@ -63,6 +63,7 @@ class UserUpdate(BaseModel):
     preferred_job_location: Optional[PreferredJobLocation] = None
     experience_level: Optional[ExperienceLevel] = None
     preferred_job_type: Optional[PreferredJobType] = None
+    institution: Optional[str] = Field(None, min_length=1, max_length=255)
     linkedin_url: Optional[str] = Field(None, min_length=1, max_length=255)
     github_url: Optional[str] = Field(None, min_length=1, max_length=255)
     phone_number: Optional[str] = Field(None, min_length=1, max_length=255)
@@ -95,6 +96,7 @@ class UserResponse(BaseModel):
     github_url: Optional[str] = Field(None, min_length=1, max_length=255)
     phone_number: Optional[str] = Field(None, min_length=1, max_length=255)
     graduation_year: Optional[int] = Field(None, ge=1900, le=2025)
+    institution: Optional[str] = Field(None, min_length=1, max_length=255)
     profile_picture: Optional[str] = Field(None, min_length=1, max_length=255)
     bio: Optional[str] = Field(None, min_length=1, max_length=255)
     preferred_job_location: Optional[PreferredJobLocation] = None

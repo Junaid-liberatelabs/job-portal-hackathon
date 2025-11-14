@@ -10,6 +10,9 @@ class ResourceBase(BaseModel):
     description: str = Field(..., min_length=1)
     url: HttpUrl  # Pydantic's HttpUrl type validates URL format
     tags: Optional[List[str]] = Field(default_factory=list)
+    pricing: Optional[str] = Field(None, min_length=1, max_length=255)
+    platform: Optional[str] = Field(None, min_length=1, max_length=255)
+    duration: Optional[str] = Field(None, min_length=1, max_length=255)
 
 
 # Schema for creating a resource
@@ -32,6 +35,9 @@ class ResourceResponse(BaseModel):
     description: str
     url: str  # HttpUrl is converted to string in response
     tags: List[str]
+    pricing: Optional[str] = Field(None, min_length=1, max_length=255)
+    platform: Optional[str] = Field(None, min_length=1, max_length=255)
+    duration: Optional[str] = Field(None, min_length=1, max_length=255)
     created_at: datetime
     updated_at: datetime
 

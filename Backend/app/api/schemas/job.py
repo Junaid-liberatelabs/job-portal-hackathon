@@ -14,6 +14,7 @@ class JobBase(BaseModel):
     job_type: JobType
     job_location: Optional[JobLocation] = None
     required_skills: List[str] = Field(..., min_items=1)
+    url: Optional[str] = Field(None, min_length=1, max_length=255)
     recommended_experience_level: ExperienceLevel
     salary_range_min: Optional[float] = Field(None, ge=0)
     salary_range_max: Optional[float] = Field(None, ge=0)
@@ -53,6 +54,7 @@ class JobUpdate(BaseModel):
     company: Optional[str] = Field(None, min_length=1, max_length=255)
     job_type: Optional[JobType] = None
     job_location: Optional[JobLocation] = None
+    url: Optional[str] = Field(None, min_length=1, max_length=255)
     required_skills: Optional[List[str]] = Field(None, min_items=1)
     recommended_experience_level: Optional[ExperienceLevel] = None
     salary_range_min: Optional[float] = Field(None, ge=0)
@@ -90,6 +92,7 @@ class JobResponse(BaseModel):
     description: str
     company: str
     job_type: JobType
+    url: str
     job_location: Optional[JobLocation]
     required_skills: List[str]
     recommended_experience_level: ExperienceLevel

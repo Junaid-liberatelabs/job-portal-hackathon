@@ -43,6 +43,7 @@ class User(Base):
     linkedin_url = Column(String, nullable=True)
     github_url = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
+    institution = Column(String, nullable=True)
     field_of_study = Column(String, nullable=True)
     graduation_year = Column(Integer, nullable=True)
     cgpa = Column(Float, nullable=True)
