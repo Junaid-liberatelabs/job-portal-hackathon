@@ -1,5 +1,42 @@
 <template>
   <div class="relative bg-ink-50 min-h-screen py-8">
+    <!-- Notification Popup -->
+    <Transition name="popup">
+      <div
+        v-if="showNotification"
+        class="fixed top-4 right-4 z-50 max-w-md rounded-lg shadow-lg p-4"
+        :class="notificationType === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'"
+      >
+        <div class="flex items-start gap-3">
+          <div v-if="notificationType === 'success'" class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div v-else class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p
+              class="text-sm font-medium"
+              :class="notificationType === 'success' ? 'text-green-800' : 'text-red-800'"
+            >
+              {{ notificationMessage }}
+            </p>
+          </div>
+          <button
+            @click="showNotification = false"
+            class="flex-shrink-0 text-ink-400 hover:text-ink-600 transition-colors"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Transition>
     <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8">
       <!-- Welcome Header -->
       <div class="space-y-2">
@@ -27,6 +64,53 @@
               <NuxtLink to="/profile" class="text-sm font-semibold text-amber-700 hover:text-amber-800">
                 Complete Profile →
               </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CV Upload Section -->
+      <div class="rounded-2xl border border-brand-200 bg-brand-50 p-6">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-semibold text-brand-900">Upload Your CV</h3>
+            <p class="mt-1 text-sm text-brand-800">Upload your CV to automatically extract and add skills to your profile</p>
+            <div class="mt-4">
+              <label class="cursor-pointer">
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept=".pdf"
+                  class="hidden"
+                  @change="handleFileSelect"
+                  :disabled="uploading"
+                />
+                <div class="flex items-center gap-3">
+                  <button
+                    type="button"
+                    :disabled="uploading"
+                    class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    @click="fileInput?.click()"
+                  >
+                    <span v-if="!uploading">Choose PDF File</span>
+                    <span v-else class="flex items-center gap-2">
+                      <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
+                    </span>
+                  </button>
+                  <span v-if="selectedFile" class="text-sm text-brand-700">{{ selectedFile.name }}</span>
+                </div>
+              </label>
+              <p v-if="uploadError" class="mt-2 text-sm text-red-600">{{ uploadError }}</p>
+              <p v-if="uploadSuccess" class="mt-2 text-sm text-green-600">{{ uploadSuccess }}</p>
             </div>
           </div>
         </div>
@@ -242,6 +326,78 @@ const api = useApi()
 const router = useRouter()
 
 await auth.fetchProfile()
+
+// CV Upload functionality
+const fileInput = ref<HTMLInputElement | null>(null)
+const uploading = ref(false)
+const selectedFile = ref<File | null>(null)
+const uploadError = ref<string | null>(null)
+const uploadSuccess = ref<string | null>(null)
+
+// Notification popup
+const showNotification = ref(false)
+const notificationMessage = ref('')
+const notificationType = ref<'success' | 'error'>('success')
+
+const showNotificationPopup = (message: string, type: 'success' | 'error') => {
+  notificationMessage.value = message
+  notificationType.value = type
+  showNotification.value = true
+  setTimeout(() => {
+    showNotification.value = false
+  }, 5000)
+}
+
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    if (file.type !== 'application/pdf') {
+      uploadError.value = 'Please upload a PDF file'
+      uploadSuccess.value = null
+      showNotificationPopup('Please upload a PDF file', 'error')
+      return
+    }
+    selectedFile.value = file
+    uploadError.value = null
+    uploadSuccess.value = null
+    uploadCV(file)
+  }
+}
+
+const uploadCV = async (file: File) => {
+  uploading.value = true
+  uploadError.value = null
+  uploadSuccess.value = null
+  showNotification.value = false
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await api('/skill-analysis/analyze', {
+      method: 'POST',
+      body: formData
+    })
+
+    selectedFile.value = null
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
+
+    // Refresh user profile to show new skills
+    await auth.fetchProfile()
+
+    // Show success notification
+    showNotificationPopup('CV analyzed successfully! Skills have been added to your profile.', 'success')
+  } catch (error: any) {
+    const errorMessage = error?.response?._data?.detail || 'Failed to upload CV. Please try again.'
+    uploadError.value = errorMessage
+    showNotificationPopup(errorMessage, 'error')
+  } finally {
+    uploading.value = false
+  }
+}
 
 const navigateToJob = (jobId: string) => {
   router.push(`/jobs/${jobId}`)
@@ -460,3 +616,20 @@ onUnmounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.popup-enter-active,
+.popup-leave-active {
+  transition: all 0.3s ease;
+}
+
+.popup-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.popup-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+</style>
