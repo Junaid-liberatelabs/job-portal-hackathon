@@ -36,7 +36,7 @@
         
         <!-- Match Badge -->
         <div class="flex flex-col items-end gap-2 shrink-0">
-          <div v-if="matchPercentage !== null" :class="matchBadgeClasses">
+          <div v-if="matchPercentage !== null && matchPercentage > 0" :class="matchBadgeClasses">
             <span class="text-sm font-bold">{{ matchPercentage }}%</span>
             <span class="text-[10px] font-semibold opacity-90">MATCH</span>
           </div>
@@ -99,11 +99,13 @@ interface Props {
   job: Job
   userSkills?: string[]
   isSaved?: boolean
+  similarityScore?: number | null // Backend similarity score (0-1)
 }
 
 const props = withDefaults(defineProps<Props>(), {
   userSkills: () => [],
-  isSaved: false
+  isSaved: false,
+  similarityScore: null
 })
 
 const emit = defineEmits<{
@@ -115,6 +117,11 @@ const emit = defineEmits<{
 const { formatJobType, formatLocation, formatSalaryRange, calculateSkillMatch } = useJobs()
 
 const matchPercentage = computed(() => {
+  // Prioritize backend similarity score if available
+  if (props.similarityScore !== null && props.similarityScore !== undefined) {
+    return Math.round(props.similarityScore * 100)
+  }
+  // Fallback to frontend calculation if no backend score
   if (!props.userSkills || props.userSkills.length === 0) return null
   return calculateSkillMatch(props.job, props.userSkills)
 })

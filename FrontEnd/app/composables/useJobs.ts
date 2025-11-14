@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { ExperienceLevel, JobType } from '~/stores/auth'
 
-export type JobLocation = 'remote' | 'hybrid' | 'onsite'
+export type JobLocation = 'remote' | 'hybrid' | 'on_site'
 
 export interface Job {
   id: string
@@ -11,6 +11,7 @@ export interface Job {
   job_type: JobType
   job_location: JobLocation | null
   required_skills: string[]
+  url: string | null
   recommended_experience_level: ExperienceLevel
   salary_range_min: number | null
   salary_range_max: number | null
@@ -19,11 +20,11 @@ export interface Job {
 }
 
 export interface JobFilters {
+  skip?: number
+  limit?: number
   job_type?: JobType
   experience_level?: ExperienceLevel
-  location?: JobLocation
-  skills?: string[]
-  search?: string
+  skills?: string | string[] // Can be comma-separated string or array (will be converted to string)
 }
 
 export const useJobs = () => {
@@ -37,17 +38,23 @@ export const useJobs = () => {
     error.value = null
     
     try {
-      const params = new URLSearchParams()
+      const query: Record<string, any> = {}
       
-      if (filters?.job_type) params.append('job_type', filters.job_type)
-      if (filters?.experience_level) params.append('experience_level', filters.experience_level)
-      if (filters?.location) params.append('location', filters.location)
-      if (filters?.search) params.append('search', filters.search)
+      if (filters?.skip !== undefined) query.skip = filters.skip
+      if (filters?.limit !== undefined) query.limit = filters.limit
+      if (filters?.job_type) query.job_type = filters.job_type
+      if (filters?.experience_level) query.experience_level = filters.experience_level
       
-      const queryString = params.toString()
-      const url = queryString ? `/jobs?${queryString}` : '/jobs'
+      // Convert skills array to comma-separated string if needed
+      if (filters?.skills) {
+        if (Array.isArray(filters.skills)) {
+          query.skills = filters.skills.join(',')
+        } else {
+          query.skills = filters.skills
+        }
+      }
       
-      const data = await api<Job[]>(url)
+      const data = await api<Job[]>('/jobs/', { query })
       jobs.value = data || []
       return data
     } catch (err: any) {
@@ -73,15 +80,32 @@ export const useJobs = () => {
     }
   }
 
-  const getRecommendedJobs = async () => {
+  const getSimilarJobs = async (jobId: string, limit: number = 5) => {
     loading.value = true
     error.value = null
     
     try {
-      const data = await api<Job[]>('/jobs/recommended')
+      const query: Record<string, any> = { limit }
+      const data = await api<Array<{ job: Job; similarity_score: number }>>(`/jobs/${jobId}/similar`, { query })
       return data || []
     } catch (err: any) {
-      error.value = err?.response?._data?.detail ?? 'Failed to fetch recommended jobs'
+      error.value = err?.response?._data?.detail ?? 'Failed to fetch similar jobs'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getJobRecommendations = async (limit: number = 10) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const query: Record<string, any> = { limit }
+      const data = await api<Array<{ job: Job; similarity_score: number }>>('/recommendations/jobs', { query })
+      return data || []
+    } catch (err: any) {
+      error.value = err?.response?._data?.detail ?? 'Failed to fetch job recommendations'
       return []
     } finally {
       loading.value = false
@@ -120,7 +144,7 @@ export const useJobs = () => {
     const locationMap: Record<JobLocation, string> = {
       remote: 'Remote',
       hybrid: 'Hybrid',
-      onsite: 'On-site'
+      on_site: 'On-site'
     }
     return locationMap[location] || location
   }
@@ -138,7 +162,8 @@ export const useJobs = () => {
     error,
     fetchJobs,
     fetchJobById,
-    getRecommendedJobs,
+    getSimilarJobs,
+    getJobRecommendations,
     calculateSkillMatch,
     formatJobType,
     formatLocation,

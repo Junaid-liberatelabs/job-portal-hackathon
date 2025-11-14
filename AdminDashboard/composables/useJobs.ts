@@ -30,10 +30,19 @@ interface JobFormData {
   salary_range_max?: number
 }
 
+interface JobFilters {
+  skip?: number
+  limit?: number
+  job_type?: string
+  experience_level?: string
+  skills?: string
+}
+
 export const useJobs = () => {
   const apiFetch = useAdminApi()
   
   const jobsWithApplicants = ref<JobWithApplicantsCount[]>([])
+  const jobs = ref<Job[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -49,6 +58,51 @@ export const useJobs = () => {
       return data
     } catch (e: any) {
       error.value = e.message || 'Failed to fetch jobs'
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchJobs = async (filters?: JobFilters) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const params = new URLSearchParams()
+      if (filters?.skip !== undefined) params.append('skip', filters.skip.toString())
+      if (filters?.limit !== undefined) params.append('limit', filters.limit.toString())
+      if (filters?.job_type) params.append('job_type', filters.job_type)
+      if (filters?.experience_level) params.append('experience_level', filters.experience_level)
+      if (filters?.skills) params.append('skills', filters.skills)
+      
+      const queryString = params.toString()
+      const url = queryString ? `/jobs/?${queryString}` : '/jobs/'
+      
+      const data = await apiFetch<Job[]>(url, {
+        method: 'GET'
+      })
+      jobs.value = data
+      return data
+    } catch (e: any) {
+      error.value = e.message || 'Failed to fetch jobs'
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getJobById = async (jobId: string) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const data = await apiFetch<Job>(`/jobs/${jobId}`, {
+        method: 'GET'
+      })
+      return data
+    } catch (e: any) {
+      error.value = e.message || 'Failed to fetch job'
       throw e
     } finally {
       loading.value = false
@@ -112,9 +166,12 @@ export const useJobs = () => {
 
   return {
     jobsWithApplicants,
+    jobs,
     loading,
     error,
     fetchJobsWithApplicants,
+    fetchJobs,
+    getJobById,
     createJob,
     updateJob,
     deleteJob
