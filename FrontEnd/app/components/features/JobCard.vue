@@ -34,7 +34,7 @@
           </div>
         </div>
         
-        <!-- Match Badge -->
+        <!-- Match Badge and Bookmark -->
         <div class="flex flex-col items-end gap-2 shrink-0">
           <div v-if="matchPercentage !== null && matchPercentage > 0" :class="matchBadgeClasses">
             <span class="text-sm font-bold">{{ matchPercentage }}%</span>
@@ -43,6 +43,14 @@
           <span class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-ink-100 to-ink-50 text-[11px] font-bold text-ink-600 uppercase tracking-wider">
             {{ formatExperienceLevel(job.recommended_experience_level) }}
           </span>
+          <button
+            @click.stop="$emit('save', job)"
+            class="text-ink-400 hover:text-brand-600 transition-all duration-300 p-2 rounded-xl hover:bg-brand-50 group/bookmark"
+            :aria-label="isSaved ? 'Remove bookmark' : 'Bookmark job'"
+          >
+            <BookmarkIcon v-if="!isSaved" class="h-5 w-5 group-hover/bookmark:scale-110 transition-transform" />
+            <BookmarkSolidIcon v-else class="h-5 w-5 text-brand-600 group-hover/bookmark:scale-110 transition-transform" />
+          </button>
         </div>
       </div>
       
@@ -65,16 +73,7 @@
       </div>
       
       <!-- Actions -->
-      <div class="flex items-center justify-between pt-3 border-t border-ink-100/50">
-        <button
-          @click.stop="$emit('save', job)"
-          class="flex items-center gap-2 text-ink-400 hover:text-brand-600 transition-all duration-300 p-2 rounded-xl hover:bg-brand-50 group/bookmark"
-          :aria-label="isSaved ? 'Remove bookmark' : 'Bookmark job'"
-        >
-          <BookmarkIcon v-if="!isSaved" class="h-5 w-5 group-hover/bookmark:scale-110 transition-transform" />
-          <BookmarkSolidIcon v-else class="h-5 w-5 text-brand-600 group-hover/bookmark:scale-110 transition-transform" />
-        </button>
-        
+      <div class="flex items-center justify-end pt-3 border-t border-ink-100/50">
         <button
           @click.stop="handleApply"
           :disabled="applying || hasApplied"

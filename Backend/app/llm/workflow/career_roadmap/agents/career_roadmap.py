@@ -12,7 +12,7 @@ class CareerRoadmap:
     def __init__(self):
         self.logger = get_logger(__name__)
         # self.llm = ChatGroq(model_name="openai/gpt-oss-20b")
-        self.llm_gpt= ChatOpenAI(model="gpt-4.1-mini", max_retries=3)
+        self.llm_gpt= ChatOpenAI(model="gpt-4.1", max_retries=3)
         self.llm_gemini = ChatGoogleGenerativeAI(model="gemini-2.5-flash", max_retries=3)
         self.fallback_llm = self.llm_gpt.with_fallbacks([self.llm_gemini])
         self.system_prompt = load_yaml_prompt(path="career_roadmap/career_roadmap", key="SYSTEM_PROMPT")
