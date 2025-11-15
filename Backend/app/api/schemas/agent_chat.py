@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, List
 
 class AgentInitResponse(BaseModel):
     thread_id: str
@@ -13,3 +13,11 @@ class AgentChatMessageResponse(BaseModel):
 
 class routerSchema(BaseModel):
     decided_node: Literal["mentor", "generic"]
+
+class ConversationMessage(BaseModel):
+    content: str
+    type: str
+
+class ConversationResponse(BaseModel):
+    thread_id: str
+    messages: List[ConversationMessage]

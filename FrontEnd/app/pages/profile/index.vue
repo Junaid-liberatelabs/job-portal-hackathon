@@ -7,8 +7,10 @@
           <div class="flex items-start gap-6">
             <!-- Avatar -->
             <div class="relative">
-              <div class="h-24 w-24 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg">
-                <span class="text-white font-bold text-3xl">{{ userInitials }}</span>
+              <div class="h-24 w-24 rounded-full bg-ink-100 flex items-center justify-center shadow-lg border-2 border-ink-200">
+                <svg class="h-12 w-12 text-ink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
               </div>
             </div>
             
@@ -594,12 +596,6 @@ watchEffect(() => {
   form.gpa = auth.user.cgpa != null ? String(auth.user.cgpa) : ''
   form.experience_level = (auth.user.experience_level || 'student') as ExperienceLevel
   form.preferred_career_track = auth.user.preferred_career_track
-})
-
-const userInitials = computed(() => {
-  if (!auth.user?.full_name) return '?'
-  const names = auth.user.full_name.split(' ')
-  return names.map(n => n[0]).join('').toUpperCase().slice(0, 2)
 })
 
 const memberSince = computed(() => {

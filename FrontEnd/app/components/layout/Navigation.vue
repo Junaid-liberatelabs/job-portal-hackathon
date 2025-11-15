@@ -61,8 +61,10 @@
               @click="toggleProfileMenu"
               class="flex items-center gap-2 p-2 pr-3 rounded-full hover:bg-ink-50 transition-all duration-200"
             >
-              <div class="h-10 w-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg ring-2 ring-white hover:scale-105 transition-transform">
-                <span class="text-white font-bold text-sm">{{ userInitials }}</span>
+              <div class="h-10 w-10 rounded-full bg-ink-100 flex items-center justify-center shadow-lg ring-2 ring-white hover:scale-105 transition-transform border border-ink-200">
+                <svg class="h-6 w-6 text-ink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
               </div>
               <div class="hidden lg:flex flex-col items-start">
                 <span class="text-sm font-semibold text-ink-900">{{ user?.full_name }}</span>
@@ -89,8 +91,10 @@
                 <!-- User Info Header -->
                 <div class="px-4 py-4 bg-gradient-to-br from-brand-50 to-white border-b border-ink-100">
                   <div class="flex items-center gap-3">
-                    <div class="h-12 w-12 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-md">
-                      <span class="text-white font-bold">{{ userInitials }}</span>
+                    <div class="h-12 w-12 rounded-full bg-ink-100 flex items-center justify-center shadow-md border border-ink-200">
+                      <svg class="h-7 w-7 text-ink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-sm font-semibold text-ink-900 truncate">{{ user?.full_name }}</p>
@@ -217,12 +221,6 @@ const profileMenuRef = ref(null)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const user = computed(() => authStore.user)
 
-const userInitials = computed(() => {
-  if (!user.value?.full_name) return '?'
-  const names = user.value.full_name.split(' ')
-  return names.map(n => n[0]).join('').toUpperCase().slice(0, 2)
-})
-
 // Icon components as template strings for Material Design icons
 const HomeIcon = () => h('svg', { class: 'h-5 w-5', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [
   h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' })
@@ -248,13 +246,19 @@ const RoadmapIcon = () => h('svg', { class: 'h-5 w-5', fill: 'none', viewBox: '0
   h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7' })
 ])
 
+const RobotIcon = () => h('img', { 
+  src: '/images/oppy.svg', 
+  alt: 'Oppy', 
+  class: 'h-5 w-5' 
+})
+
 const navigationItems = [
   { path: '/dashboard', label: 'Dashboard', icon: HomeIcon },
   { path: '/jobs', label: 'Jobs', icon: BriefcaseIcon },
   { path: '/resources', label: 'Resources', icon: BookIcon },
   { path: '/skill-gap-analysis', label: 'Skill Gap', icon: ChartIcon },
   { path: '/career-roadmap', label: 'Roadmap', icon: RoadmapIcon },
-  { path: '/profile', label: 'Profile', icon: UserIcon }
+  { path: '/chat', label: 'Oppy', icon: RobotIcon }
 ]
 
 const isActive = (path: string) => {
