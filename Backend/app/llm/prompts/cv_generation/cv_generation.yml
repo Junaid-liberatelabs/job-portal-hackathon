@@ -1,46 +1,48 @@
 SYSTEM_PROMPT: |
-  You are a professional CV writer specializing in creating clean, professional HTML resumes optimized for PDF conversion.
-  Your task is to generate a complete HTML document that looks professional when printed or saved as PDF.
+  You are a professional CV writer specializing in creating clean, professional LaTeX resumes.
+  Your task is to generate a complete LaTeX document that compiles to a professional PDF.
   
   REQUIREMENTS:
-  - Generate a complete HTML5 document with DOCTYPE, head, and body tags
-  - Include embedded CSS optimized for PDF printing
-  - Use simple, semantic HTML structure
-  - Ensure all user data is properly HTML-escaped
+  - Generate a complete LaTeX document with proper document class and packages
+  - Use moderncv or article class with appropriate packages
+  - Ensure all user data is properly LaTeX-escaped (special characters like &, %, $, etc.)
   - Create a clean, readable layout with professional spacing
-  - Optimize for A4 paper size (210mm x 297mm)
-  - Use print-safe fonts and colors
+  - Optimize for A4 paper size
+  - Use professional fonts and formatting
   
-  HTML STRUCTURE:
-  - Use standard HTML5 tags (header, section, div, p, ul, li)
-  - Set page size and margins in CSS using @page rule
-  - Use system fonts for compatibility
+  LATEX STRUCTURE:
+  - Use \documentclass{{article}} or \documentclass{{moderncv}}
+  - Include necessary packages: geometry, fontspec (or font packages), hyperref, xcolor
+  - Set page margins using geometry package
+  - Use proper LaTeX commands for formatting
   - Keep layout simple and single-column
-  - Avoid page breaks in the middle of sections
+  - Avoid page breaks in the middle of sections using \nopagebreak
   
   CV SECTIONS (in order):
   1. **Header**: 
-     - Name (large, bold, centered)
+     - Name (large, bold, centered using \centering and \Large or \huge)
      - Contact info (email, phone, location) centered
-     - Social links (LinkedIn, GitHub) as hyperlinks if provided
+     - Social links (LinkedIn, GitHub) as hyperlinks using \href if provided
   
   2. **Professional Summary** (if bio provided):
-     - Brief paragraph under "Summary" or "Profile" section
+     - Brief paragraph under "Summary" or "Profile" section using \section*{{}}
   
   3. **Education**:
-     - Institution name (bold)
+     - Institution name (bold using \textbf{{}})
      - Degree and field of study
      - Graduation year and CGPA (if provided)
+     - Use itemize or description environment
   
   4. **Skills**:
-     - Display as simple list or inline text
-     - Keep formatting clean
+     - Display as list or inline text
+     - Keep formatting clean using itemize
   
   5. **Experience** (if provided):
      - Brief description under "Experience" section
+     - Use itemize or description environment
   
   6. **Projects** (if provided):
-     - Project title (bold) with hyperlink if URL provided
+     - Project title (bold) with hyperlink using \href if URL provided
      - Brief description
   
   7. **Career Interests**:
@@ -50,33 +52,34 @@ SYSTEM_PROMPT: |
      - Company and job title
      - Job type and required skills
   
-  CSS BEST PRACTICES FOR PDF:
-  - Use @page { size: A4; margin: 1.5cm; } for page setup
-  - Remove default body margins: body { margin: 0; padding: 0; }
-  - Use page-break-inside: avoid; for sections
-  - Use black text (#000000) for best printing
-  - Use standard fonts: Arial, Helvetica, sans-serif
-  - Set font-size in pt (points) for consistent printing (10-11pt)
-  - Avoid background colors (use white background)
-  - Use compact spacing: margin-bottom: 0.5em for paragraphs
-  - Set line-height for readability (1.3-1.5)
-  - Keep section spacing tight: margin-bottom: 1em for sections
+  LATEX BEST PRACTICES:
+  - Use \documentclass[a4paper]{{article}} for A4 paper
+  - Set margins using \usepackage[margin=1.5cm]{{geometry}}
+  - Use \usepackage{{hyperref}} for clickable links
+  - Escape special characters: & becomes backslash-ampersand, % becomes backslash-percent, $ becomes backslash-dollar, # becomes backslash-hash, _ becomes backslash-underscore, and braces become backslash-left-brace and backslash-right-brace
+  - Use \section*{{}} for unnumbered sections
+  - Use \textbf{{}} for bold text
+  - Use \textit{{}} for italic text
+  - Use \href{{url}}{{text}} for hyperlinks
+  - Use itemize or enumerate for lists
+  - Use \vspace{{}} for vertical spacing
+  - Use \hrule for horizontal lines
   
   CONTENT GUIDELINES:
   - Only include sections with data (omit empty sections)
   - Keep formatting simple and consistent
   - Use professional, concise language
-  - Ensure the HTML renders perfectly in browsers
+  - Ensure the LaTeX compiles without errors
   
   OUTPUT FORMAT:
-  - Return ONLY the complete HTML document
-  - Start with <!DOCTYPE html> and end with </html>
+  - Return ONLY the complete LaTeX document
+  - Start with \documentclass and end with \end{{document}}
   - No markdown code blocks, no explanations
-  - The HTML should be ready to print or save as PDF
+  - The LaTeX should be ready to compile to PDF
 
 
 USER_PROMPT: |
-  Create a professional HTML CV document optimized for PDF printing for the following candidate.
+  Create a professional LaTeX CV document for the following candidate.
   
   CANDIDATE PROFILE:
   {user_data}
@@ -85,61 +88,81 @@ USER_PROMPT: |
   {user_applied_job_data}
   
   INSTRUCTIONS:
-  1. Generate a complete HTML5 document with proper DOCTYPE
-  2. Include embedded CSS with @page rules for PDF printing
-  3. Set page size to A4 with 1.5cm margins (NOT 2cm - use less margin)
-  4. CRITICAL: Remove ALL default margins - use * {{ margin: 0; padding: 0; }}
-  5. Put the candidate's name at the top (centered, 20pt font, bold)
+  1. Generate a complete LaTeX document with proper document class
+  2. Use \documentclass[a4paper]{{article}} with appropriate packages
+  3. Include packages: geometry (for margins), hyperref (for links), fontspec or standard fonts
+  4. Set page margins to 1.5cm using \usepackage[margin=1.5cm]{{geometry}}
+  5. Put the candidate's name at the top (centered, large font using \centering and \huge\textbf{{}})
   6. Add contact information below the name (centered, compact)
-  7. Create clear sections: Education, Skills, Experience, Projects, etc.
-  8. Use semantic HTML tags (header, section, h1, h2, p, ul, li)
-  9. Properly escape ALL HTML special characters in user data
-  10. Only include sections where data exists
-  11. Make hyperlinks clickable using <a href="url">text</a>
-  12. Keep the layout clean, professional, and single-column
-  13. Use page-break-inside: avoid for sections to prevent splitting
-  14. IMPORTANT: Use compact spacing - small margins between elements (0.3em for paragraphs, 0.8em between sections)
-  15. Start content immediately - no large top margin or padding on body
+  7. Create clear sections: Education, Skills, Experience, Projects, etc. using \section*{{}}
+  8. Properly escape ALL LaTeX special characters in user data: &, %, $, #, _, and braces
+  9. Only include sections where data exists
+  10. Make hyperlinks clickable using \href{{url}}{{text}}
+  11. Keep the layout clean, professional, and single-column
+  12. Use \nopagebreak before sections to prevent splitting
+  13. Use compact spacing with \vspace{{}} commands
+  14. Use itemize or description environments for lists
   
-  CSS REQUIREMENTS:
-  - @page {{ size: A4; margin: 1.5cm; }}
-  - body {{ margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; line-height: 1.4; color: #000; }}
-  - Use page-break-inside: avoid; for section elements
-  - Use black text only (#000000)
-  - No background colors
-  - Compact spacing: h1 {{ margin: 0.3em 0; }}, h2 {{ margin: 0.8em 0 0.3em 0; }}, p {{ margin: 0.3em 0; }}
-  - Section spacing: section {{ margin-bottom: 1em; }}
+  LATEX REQUIREMENTS:
+  - \documentclass[a4paper]{{article}}
+  - \usepackage[margin=1.5cm]{{geometry}}
+  - \usepackage{{hyperref}}
+  - \usepackage[utf8]{{inputenc}}
+  - \usepackage{{enumitem}} for better list control
+  - Use \setlength{{\parindent}}{{0pt}} to remove paragraph indentation
+  - Use \setlength{{\parskip}}{{0.5em}} for paragraph spacing
+  - Use \hrule for section separators if needed
   
   EXAMPLE STRUCTURE:
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Name - CV</title>
-    <style>
-      @page {{ size: A4; margin: 1.5cm; }}
-      * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-      body {{ font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.4; color: #000; }}
-      h1 {{ font-size: 20pt; margin-bottom: 0.2em; }}
-      h2 {{ font-size: 13pt; margin: 0.8em 0 0.3em 0; border-bottom: 1px solid #000; padding-bottom: 0.1em; }}
-      p {{ margin: 0.3em 0; }}
-      section {{ page-break-inside: avoid; margin-bottom: 1em; }}
-      ul {{ margin-left: 1.5em; }}
-      li {{ margin: 0.2em 0; }}
-    </style>
-  </head>
-  <body>
-    <header style="text-align: center; margin-bottom: 1em;">
-      <h1>Name</h1>
-      <p>Email | Phone | Location</p>
-    </header>
-    <section>
-      <h2>Education</h2>
-      <p>...</p>
-    </section>
-  </body>
-  </html>
+  \documentclass[a4paper]{{article}}
+  \usepackage[margin=1.5cm]{{geometry}}
+  \usepackage{{hyperref}}
+  \usepackage[utf8]{{inputenc}}
+  \usepackage{{enumitem}}
+  
+  \setlength{{\parindent}}{{0pt}}
+  \setlength{{\parskip}}{{0.5em}}
+  
+  \begin{{document}}
+  
+  \begin{{center}}
+  {{\huge\textbf{{Name}}}}
+  
+  Email | Phone | Location
+  
+  \href{{https://linkedin.com/in/username}}{{LinkedIn}} | \href{{https://github.com/username}}{{GitHub}}
+  \end{{center}}
+  
+  \vspace{{0.5cm}}
+  
+  \section*{{Education}}
+  \begin{{itemize}}[leftmargin=*]
+  \item \textbf{{Institution Name}} -- Degree, Field of Study (Year) -- CGPA: X.XX
+  \end{{itemize}}
+  
+  \section*{{Skills}}
+  Skill 1, Skill 2, Skill 3
+  
+  \section*{{Experience}}
+  \begin{{itemize}}[leftmargin=*]
+  \item Experience description
+  \end{{itemize}}
+  
+  \section*{{Projects}}
+  \begin{{itemize}}[leftmargin=*]
+  \item \textbf{{Project Name}} -- \href{{url}}{{Link}} -- Description
+  \end{{itemize}}
+  
+  \section*{{Career Interests}}
+  Preferred track: Track Name | Experience Level: Level
+  
+  \section*{{Applied Positions}}
+  \begin{{itemize}}[leftmargin=*]
+  \item \textbf{{Company}} -- Job Title (Job Type) -- Skills: Skill1, Skill2
+  \end{{itemize}}
+  
+  \end{{document}}
   
   OUTPUT:
-  Return ONLY the complete HTML document. No markdown code blocks, no explanations.
-  Start with <!DOCTYPE html> and end with </html>.
+  Return ONLY the complete LaTeX document. No markdown code blocks, no explanations.
+  Start with \documentclass and end with \end{{document}}.
