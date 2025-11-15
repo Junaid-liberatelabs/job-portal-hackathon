@@ -68,6 +68,17 @@
               </div>
             </div>
             <p class="text-sm font-semibold text-ink-600">Profile Complete</p>
+            <button
+              @click="downloadCV"
+              :disabled="downloadingCV"
+              class="mt-2 flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-semibold hover:from-brand-600 hover:to-brand-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg v-if="!downloadingCV" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span v-else class="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent block"></span>
+              {{ downloadingCV ? 'Generating...' : 'Download CV' }}
+            </button>
           </div>
         </div>
       </div>
@@ -515,7 +526,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, watchEffect, computed, type Ref } from 'vue'
-import { definePageMeta, useAsyncData } from '#imports'
+import { definePageMeta, useAsyncData, useRuntimeConfig } from '#imports'
 import { useAuthStore, type ExperienceLevel, type UpdateProfilePayload } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
 import Button from '~/components/ui/Button.vue'
@@ -635,6 +646,48 @@ const progressOffset = computed(() => {
 const basicInfoStatusMessage = ref('')
 const educationStatusMessage = ref('')
 const statusMessage = ref('')
+const downloadingCV = ref(false)
+
+const downloadCV = async () => {
+  downloadingCV.value = true
+  try {
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
+    const url = `${apiBase}/cv/cv-export?format=latex`
+    
+    const headers: Record<string, string> = {}
+    if (auth.token) {
+      headers['Authorization'] = `${auth.tokenType ?? 'Bearer'} ${auth.token}`
+    }
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers
+    })
+    
+    if (!response.ok) {
+      throw new Error(`Failed to generate CV: ${response.statusText}`)
+    }
+    
+    // Get the blob from response
+    const blob = await response.blob()
+    
+    // Create a download link
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = `CV_${auth.user?.full_name || 'Profile'}_${new Date().toISOString().split('T')[0]}.tex`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(downloadUrl)
+  } catch (error: any) {
+    console.error('Failed to download CV:', error)
+    alert(error?.message || 'Failed to download CV. Please try again.')
+  } finally {
+    downloadingCV.value = false
+  }
+}
 
 const toNullableString = (value: string | null | undefined) => {
   if (value == null) return null
