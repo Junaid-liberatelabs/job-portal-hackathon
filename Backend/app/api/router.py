@@ -11,6 +11,7 @@ from app.api.endpoints.applications import router as applications_router
 from app.api.endpoints.skill_analysis import router as skill_analysis_router
 from app.api.endpoints.skill_gap_analysis import router as skill_gap_analysis_router
 from app.api.endpoints.career_roadmap import router as career_roadmap_router
+from app.api.endpoints.cv_export import router as cv_export_router
 
 from fastapi import APIRouter
 
@@ -24,3 +25,4 @@ router.include_router(applications_router, prefix="/applications", tags=["applic
 router.include_router(skill_analysis_router, prefix="/skill-analysis", tags=["skill-analysis"])
 router.include_router(skill_gap_analysis_router, prefix="/skill-gap-analysis", tags=["skill-gap-analysis"])
 router.include_router(career_roadmap_router, prefix="/career-roadmap", tags=["career-roadmap"])
+router.include_router(cv_export_router, prefix="/cv", tags=["cv-export"])
